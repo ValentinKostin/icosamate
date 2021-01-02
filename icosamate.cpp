@@ -65,11 +65,32 @@ bool Icosamate::solved() const
 	return true;
 }
 
-IcosamateInSpace::IcosamateInSpace()
+IcosamateInSpace::IcosamateInSpace() : 
+	axes_({
+		{0, {7, 11, 10, 9, 8}}, { 1, {2, 3, 4, 5, 6} }, {2, {1, 6, 11, 7, 3}}, { 3, {1, 2, 7, 8, 4} },
+		{4, {1, 3, 8, 9, 5}}, {	5, {1, 4, 9, 10, 6}}, {6, {1, 5, 10, 11, 2}}, { 7, {2, 11, 0, 8, 3} },
+		{8, {3, 7, 0, 9, 4}}, {	9, {4, 8, 0, 10, 5}}, { 10, {5, 9, 0, 11, 6} }, {11, {2, 6, 10, 0, 7} }
+		})
 {
 	for (size_t i = 0; i < vert_elems_.size(); i++)
 	{
 		vert_elem_by_axis_.push_back(i);
 		axis_by_vert_elem_.push_back(i);
 	}
+
+	// проверка, что оси заполнены корректно:
+	std::vector<size_t> near_axis_count(AXIS_COUNT);
+	for (const Axis& a : axes_)
+	{
+		check(a.invariant());
+		for (AxisId id : a.near_axes_)
+			++near_axis_count[id];
+	}
+	for (size_t ac : near_axis_count)
+		check(ac == Axis::NEAR_AXIS_COUNT);
+}
+
+void IcosamateInSpace::move(AxisId axis_id)
+{
+  // ZAGL
 }

@@ -47,12 +47,25 @@ public:
 	bool solved() const;
 };
 
+struct Axis
+{
+	AxisId id_;
+	static const size_t NEAR_AXIS_COUNT = 5;
+	std::vector<AxisId> near_axes_; // обход по часовой стрелке
+	bool invariant() const
+	{
+		return near_axes_.size() == NEAR_AXIS_COUNT;
+	}
+};
+
 // расположение относительно фиксированных осей 0-11
 class IcosamateInSpace : protected Icosamate
 {
+	const std::vector<Axis> axes_;
 	static const size_t AXIS_COUNT = 12;
 	std::vector<VertexId> vert_elem_by_axis_;
 	std::vector<AxisId> axis_by_vert_elem_;
 public:
 	IcosamateInSpace();
+	void move(AxisId axis_id); // поворот по часовой стрелке вдоль указанной оси
 };
