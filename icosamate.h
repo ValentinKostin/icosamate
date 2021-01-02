@@ -4,7 +4,8 @@
 #include "def.h"
 
 typedef int Color;
-typedef int VertexId;
+typedef size_t VertexId;
+typedef size_t AxisId;
 
 class ColorNotFound {};
 class BadFaceInit {};
@@ -36,6 +37,7 @@ struct Face
 
 class Icosamate
 {
+protected:
 	const std::vector<VertexElem> vert_elems_;
 	std::vector<Face> faces_;
 	void fill_faces();
@@ -43,4 +45,14 @@ class Icosamate
 public:
 	Icosamate();
 	bool solved() const;
+};
+
+// расположение относительно фиксированных осей 0-11
+class IcosamateInSpace : protected Icosamate
+{
+	static const size_t AXIS_COUNT = 12;
+	std::vector<VertexId> vert_elem_by_axis_;
+	std::vector<AxisId> axis_by_vert_elem_;
+public:
+	IcosamateInSpace();
 };

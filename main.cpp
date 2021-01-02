@@ -42,7 +42,7 @@ void usage()
 ///////////////////////////////////////////	 
 FnameStr default_log_path()
 {
-	return change_exe_ext(L".log");
+	return change_exe_ext(L".iclog");
 }
 ///////////////////////////////////////////	 
 FnameStr default_ini_path()
@@ -64,8 +64,7 @@ int main()
 
 	try
 	{
-		Icosamate ic;
-
+		IcosamateInSpace ic;
 		log << "Icosamate created\n";		
 	}
 	catch (const std::string& err)

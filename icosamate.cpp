@@ -64,3 +64,12 @@ bool Icosamate::solved() const
 	}
 	return true;
 }
+
+IcosamateInSpace::IcosamateInSpace()
+{
+	for (size_t i = 0; i < vert_elems_.size(); i++)
+	{
+		vert_elem_by_axis_.push_back(i);
+		axis_by_vert_elem_.push_back(i);
+	}
+}
