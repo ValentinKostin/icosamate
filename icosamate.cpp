@@ -190,5 +190,33 @@ void IcosamateInSpace::move(AxisId axis_id, size_t n)
 
 void IcosamateInSpace::turn(AxisId axis_id, size_t n)
 {
-	// ZAGL
+	const Axis& a = axes_[axis_id];
+
+	VertexId vid = vert_elem_by_axis_[a.id_];
+	VertexId near_vid[5];
+	for (size_t i = 0; i < 5; i++)
+		near_vid[i] = a.near_axes_[i];
+
+	const Axis& a_op = axes_[a.opposite_id_];
+
+	VertexId op_vid = vert_elem_by_axis_[a_op.id_];
+	VertexId near_op_vid[5];
+	for (size_t i = 0; i < 5; i++)
+		near_op_vid[i] = a_op.near_axes_[i];
+
+	Icosamate::turn(vid, near_vid, op_vid, near_op_vid, n);
+
+	AxisId near_axis_id[5];
+	for (size_t i = 0; i < 5; i++)
+		near_axis_id[i] = axis_by_vert_elem_[near_vid[i]];
+
+	for (size_t i = 0; i < 5; i++)
+	{
+		VertexId nvid = near_vid[i];
+		AxisId aid = near_axis_id[i];
+		size_t next_ind = next_index(i, n, false);
+		VertexId new_nvid = near_vid[next_ind];
+		axis_by_vert_elem_[new_nvid] = aid;
+		vert_elem_by_axis_[aid] = new_nvid;
+	}
 }

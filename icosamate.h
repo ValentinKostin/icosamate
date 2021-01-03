@@ -79,7 +79,7 @@ struct Axis
 };
 
 // расположение относительно фиксированных осей 0-11
-class IcosamateInSpace : protected Icosamate
+class IcosamateInSpace : public Icosamate
 {
 	const std::vector<Axis> axes_; // первые 6 - основные оси, остальные - им противоположные
 	static const size_t AXIS_COUNT = 12;

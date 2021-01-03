@@ -65,7 +65,19 @@ int main()
 	try
 	{
 		IcosamateInSpace ic;
-		log << "Icosamate created\n";		
+		log << "Icosamate created\n";
+		check(ic.solved());
+
+		ic.turn(0, 1);
+		check(!ic.solved());
+
+		ic.turn(0, 1);
+		check(!ic.solved());
+
+		ic.turn(0, 3);
+		check(ic.solved());
+
+		log << "Icosamate test OK\n";
 	}
 	catch (const std::string& err)
 	{
