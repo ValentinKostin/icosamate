@@ -35,13 +35,28 @@ struct Face
 	Face(Color center_col) : center_col_(center_col) {}
 };
 
+struct Vertex
+{
+	VertexId id_;
+	std::vector < Face* > faces_;  // по часовой стрелке
+	static const size_t FACE_COUNT = 5;
+	bool invariant() const
+	{
+		return faces_.size() == FACE_COUNT;
+	}
+	Vertex(VertexId id) : id_(id) {}
+};
+
 class Icosamate
 {
 protected:
 	const std::vector<VertexElem> vert_elems_;
 	std::vector<Face> faces_;
+	std::vector<Vertex> vertices_;
 	void fill_faces();
 	static const size_t COLORS_COUNT = 20;
+	void fill_vertices();
+	static const size_t VERTICES_COUNT = 12;
 public:
 	Icosamate();
 	bool solved() const;
@@ -67,5 +82,6 @@ class IcosamateInSpace : protected Icosamate
 	std::vector<AxisId> axis_by_vert_elem_;
 public:
 	IcosamateInSpace();
-	void move(AxisId axis_id); // поворот по часовой стрелке вдоль указанной оси
+	void move(AxisId axis_id); // поворот как единого целого по часовой стрелке вдоль указанной оси
+	void turn(AxisId axis_id); // поворот половины икосаэдра по часовой стрелке вдоль указанной оси  
 };

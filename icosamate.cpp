@@ -42,6 +42,21 @@ void Icosamate::fill_faces()
 		check(f.invariant());
 }
 
+void Icosamate::fill_vertices()
+{
+	for (size_t i = 0; i < vert_elems_.size(); ++i)
+	{
+		const VertexElem& ve = vert_elems_[i];
+		Vertex v(i);
+		for (Color c : ve.colors_)
+			v.faces_.push_back(&faces_.at(c));
+		vertices_.push_back(v);
+	}
+
+	for (const Vertex& v : vertices_)
+		check(v.invariant());
+}
+
 Icosamate::Icosamate() :
 	vert_elems_({
 		{0, {0, 19, 18, 17, 16}}, { 1, {1, 2, 3, 4, 5} }, {2, {1, 6, 7, 8, 2}}, { 3, {2, 8, 9, 10, 3} },
@@ -49,10 +64,11 @@ Icosamate::Icosamate() :
 		{8, {9, 17, 18, 11, 10}}, {	9, {11, 18, 19, 13, 12}}, { 10, {0, 15, 14, 13, 19} }, {11, {0, 16, 7, 6, 15} }
 		})
 {
-  fill_faces();
+	fill_faces();
+	fill_vertices();
 
-  if (!solved())
-	  raise("Bad icosamate init");
+	if (!solved())
+		raise("Bad icosamate init");
 }
 
 bool Icosamate::solved() const
@@ -93,4 +109,9 @@ IcosamateInSpace::IcosamateInSpace() :
 void IcosamateInSpace::move(AxisId axis_id)
 {
   // ZAGL
+}
+
+void IcosamateInSpace::turn(AxisId axis_id)
+{
+	// ZAGL
 }
