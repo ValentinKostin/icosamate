@@ -52,11 +52,15 @@ class Icosamate
 protected:
 	const std::vector<VertexElem> vert_elems_;
 	std::vector<Face> faces_;
-	std::vector<Vertex> vertices_;
+//	std::vector<Vertex> vertices_;
 	void fill_faces();
 	static const size_t COLORS_COUNT = 20;
-	void fill_vertices();
+//	void fill_vertices();
 	static const size_t VERTICES_COUNT = 12;
+	void half_turn(VertexId vid, VertexId near_vid[5], size_t n);
+
+	// вращения вокруг оси и противоположной эквивалентны с точки зрения картины
+	void turn(VertexId vid, VertexId near_vid[5], VertexId op_vid, VertexId near_op_vid[5], size_t n); // n - сколько раз поворачивать по часовой стрелке
 public:
 	Icosamate();
 	bool solved() const;
@@ -65,6 +69,7 @@ public:
 struct Axis
 {
 	AxisId id_;
+	AxisId opposite_id_;
 	static const size_t NEAR_AXIS_COUNT = 5;
 	std::vector<AxisId> near_axes_; // обход по часовой стрелке
 	bool invariant() const
@@ -76,12 +81,13 @@ struct Axis
 // расположение относительно фиксированных осей 0-11
 class IcosamateInSpace : protected Icosamate
 {
-	const std::vector<Axis> axes_;
+	const std::vector<Axis> axes_; // первые 6 - основные оси, остальные - им противоположные
 	static const size_t AXIS_COUNT = 12;
 	std::vector<VertexId> vert_elem_by_axis_;
 	std::vector<AxisId> axis_by_vert_elem_;
 public:
 	IcosamateInSpace();
-	void move(AxisId axis_id); // поворот как единого целого по часовой стрелке вдоль указанной оси
-	void turn(AxisId axis_id); // поворот половины икосаэдра по часовой стрелке вдоль указанной оси  
+	// вращения вокруг оси и противоположной эквивалентны с точки зрения элементов, но не с точки зрения их расположения в пространстве
+	void move(AxisId axis_id, size_t n); // поворот как единого целого по часовой стрелке вдоль указанной оси
+	void turn(AxisId axis_id, size_t n); // поворот половины икосаэдра по часовой стрелке вдоль указанной оси  
 };

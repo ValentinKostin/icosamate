@@ -1,4 +1,6 @@
-﻿#include "icosamate.h"
+﻿#include  <map>
+
+#include "icosamate.h"
 
 size_t VertexElem::color_index(Color c) const
 {
@@ -42,20 +44,95 @@ void Icosamate::fill_faces()
 		check(f.invariant());
 }
 
-void Icosamate::fill_vertices()
+size_t next_index(size_t el_index, size_t n, bool clockwise)
 {
-	for (size_t i = 0; i < vert_elems_.size(); ++i)
+	return (el_index + (clockwise ? n : 5-n)) % 5;
+}
+
+// грань f имеет ровно одну ссылку из inds, этот индекс в vert_elems_colors_inds_ и выдаётся
+size_t NO_UNIQUE_INDEX = Face::VERTEX_ELEM_COUNT;
+size_t unique_index(const std::map<VertexId, size_t>& inds, const Face& f)
+{
+	size_t r = NO_UNIQUE_INDEX;
+	for (size_t i=0; i< Face::VERTEX_ELEM_COUNT; ++i)
 	{
-		const VertexElem& ve = vert_elems_[i];
-		Vertex v(i);
-		for (Color c : ve.colors_)
-			v.faces_.push_back(&faces_.at(c));
-		vertices_.push_back(v);
+		const VertexElem* ve = f.vert_elems_[i];
+		auto q = inds.find(ve->id_);
+		if (q != inds.end())
+		{
+			if (r != NO_UNIQUE_INDEX)
+				return NO_UNIQUE_INDEX;
+
+			r = i;
+		}
+	}
+	return r;
+}
+
+struct LayerPicture
+{
+	Face* face_ptr_ = nullptr;
+	size_t vert_elems_ind = NO_UNIQUE_INDEX;
+	const VertexElem* vertex_elem_ = nullptr;	 // вершина, которая заменяется при повороте
+	VertexElemColorIndex color_index_ = VertexElem::COLORS_COUNT;
+};
+
+void Icosamate::half_turn(VertexId vid, VertexId near_vid[5], size_t n)
+{
+	// ищем те грани, у которых ровно 1 ссылка на элементы из near_vid
+	std::map<VertexId, size_t> inds;
+	for (size_t i = 0; i < 5; ++i)
+		inds.insert({ near_vid[i], i });
+
+	LayerPicture pic[5];
+	for (Face& f : faces_)
+	{
+		size_t ind = unique_index(inds, f);
+		if (ind != NO_UNIQUE_INDEX)
+		{
+			VertexId nvid = f.vert_elems_[ind]->id_;
+			size_t f_ind = inds.at(nvid);
+			LayerPicture& lp = pic[f_ind];
+			lp.face_ptr_ = &f;
+			lp.vert_elems_ind = ind;
+			lp.vertex_elem_ = f.vert_elems_[lp.vert_elems_ind];
+			lp.color_index_ = f.vert_elems_colors_inds_[lp.vert_elems_ind];
+		}
 	}
 
-	for (const Vertex& v : vertices_)
-		check(v.invariant());
+	for (size_t i = 0; i < 5; i++)
+	{
+		LayerPicture& lp = pic[i];
+		check(lp.face_ptr_!=nullptr);
+		
+		size_t repl_index = next_index(i, n, false);
+		const LayerPicture& repl_lp = pic[repl_index];
+
+		lp.face_ptr_->vert_elems_[lp.vert_elems_ind] = repl_lp.vertex_elem_;
+		lp.face_ptr_->vert_elems_colors_inds_[lp.vert_elems_ind] = repl_lp.color_index_;
+	}
 }
+
+void Icosamate::turn(VertexId vid, VertexId near_vid[5], VertexId op_vid, VertexId near_op_vid[5], size_t n)
+{
+	half_turn(vid, near_vid, n);
+	half_turn(op_vid, near_op_vid, n);
+}
+
+//void Icosamate::fill_vertices()
+//{
+//	for (size_t i = 0; i < vert_elems_.size(); ++i)
+//	{
+//		const VertexElem& ve = vert_elems_[i];
+//		Vertex v(i);
+//		for (Color c : ve.colors_)
+//			v.faces_.push_back(&faces_.at(c));
+//		vertices_.push_back(v);
+//	}
+//
+//	for (const Vertex& v : vertices_)
+//		check(v.invariant());
+//}
 
 Icosamate::Icosamate() :
 	vert_elems_({
@@ -65,7 +142,7 @@ Icosamate::Icosamate() :
 		})
 {
 	fill_faces();
-	fill_vertices();
+//	fill_vertices();
 
 	if (!solved())
 		raise("Bad icosamate init");
@@ -83,9 +160,9 @@ bool Icosamate::solved() const
 
 IcosamateInSpace::IcosamateInSpace() : 
 	axes_({
-		{0, {7, 11, 10, 9, 8}}, { 1, {2, 3, 4, 5, 6} }, {2, {1, 6, 11, 7, 3}}, { 3, {1, 2, 7, 8, 4} },
-		{4, {1, 3, 8, 9, 5}}, {	5, {1, 4, 9, 10, 6}}, {6, {1, 5, 10, 11, 2}}, { 7, {2, 11, 0, 8, 3} },
-		{8, {3, 7, 0, 9, 4}}, {	9, {4, 8, 0, 10, 5}}, { 10, {5, 9, 0, 11, 6} }, {11, {2, 6, 10, 0, 7} }
+		{0, 1, {7, 11, 10, 9, 8}}, { 1, 0, {2, 3, 4, 5, 6} }, {2, 9, {1, 6, 11, 7, 3}}, { 3, 10, {1, 2, 7, 8, 4} },
+		{4, 11, {1, 3, 8, 9, 5}}, {	5, 7, {1, 4, 9, 10, 6}}, {6, 8, {1, 5, 10, 11, 2}}, { 7, 5, {2, 11, 0, 8, 3} },
+		{8, 6, {3, 7, 0, 9, 4}}, { 9, 2, {4, 8, 0, 10, 5}}, { 10, 3, {5, 9, 0, 11, 6} }, {11, 4, {2, 6, 10, 0, 7} }
 		})
 {
 	for (size_t i = 0; i < vert_elems_.size(); i++)
@@ -106,12 +183,12 @@ IcosamateInSpace::IcosamateInSpace() :
 		check(ac == Axis::NEAR_AXIS_COUNT);
 }
 
-void IcosamateInSpace::move(AxisId axis_id)
+void IcosamateInSpace::move(AxisId axis_id, size_t n)
 {
   // ZAGL
 }
 
-void IcosamateInSpace::turn(AxisId axis_id)
+void IcosamateInSpace::turn(AxisId axis_id, size_t n)
 {
 	// ZAGL
 }
