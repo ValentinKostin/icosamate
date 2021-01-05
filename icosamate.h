@@ -87,6 +87,11 @@ struct IcosamateDifference
 	size_t vert_elems_count_ = 0; //  число несовпавших вершинных элементов
 	size_t vert_elems_diff_orient_ = 0;	 //  число совпавших вершинных элементов, но в другой ориентации
 	size_t centers_count_ = 0; // число несовпавших центральных элементов
+
+	bool empty() const 
+	{
+		return vert_elems_count_ == 0 && vert_elems_diff_orient_ == 0 && centers_count_ == 0;
+	}
 };
 
 // расположение относительно фиксированных осей 0-11

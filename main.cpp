@@ -64,18 +64,22 @@ int main()
 
 	try
 	{
-		IcosamateInSpace ic;
+		IcosamateInSpace ic0;
 		log << "Icosamate created\n";
-		check(ic.solved());
+		check(ic0.solved());
 
+		IcosamateInSpace ic = ic0;
 		ic.turn(0, 1);
 		check(!ic.solved());
+		IcosamateDifference diff = IcosamateInSpace::difference(ic0, ic);
 
 		ic.turn(0, 1);
 		check(!ic.solved());
 
 		ic.turn(0, 3);
 		check(ic.solved());
+		IcosamateDifference diff2 = IcosamateInSpace::difference(ic0, ic);
+		check(diff2.empty());
 
 		log << "Icosamate test OK\n";
 	}
