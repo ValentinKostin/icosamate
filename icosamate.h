@@ -33,19 +33,20 @@ struct Face
 	}
 	bool is_one_color() const;
 	Face(Color center_col) : center_col_(center_col) {}
+	size_t index(VertexId id) const;
 };
 
-struct Vertex
-{
-	VertexId id_;
-	std::vector < Face* > faces_;  // по часовой стрелке
-	static const size_t FACE_COUNT = 5;
-	bool invariant() const
-	{
-		return faces_.size() == FACE_COUNT;
-	}
-	Vertex(VertexId id) : id_(id) {}
-};
+//struct Vertex
+//{
+//	VertexId id_;
+//	std::vector < Face* > faces_;  // по часовой стрелке
+//	static const size_t FACE_COUNT = 5;
+//	bool invariant() const
+//	{
+//		return faces_.size() == FACE_COUNT;
+//	}
+//	Vertex(VertexId id) : id_(id) {}
+//};
 
 class Icosamate
 {
@@ -62,6 +63,8 @@ protected:
 
 	// вращения вокруг оси и противоположной эквивалентны с точки зрения картины
 	void turn(VertexId vid, VertexId near_vid[5], VertexId op_vid, VertexId near_op_vid[5], size_t n); // n - сколько раз поворачивать по часовой стрелке
+
+	const Face& face(VertexId v0, VertexId v1, VertexId v2) const;
 public:
 	Icosamate();
 	bool solved() const;
@@ -79,16 +82,28 @@ struct Axis
 	}
 };
 
+struct IcosamateDifference
+{
+	size_t vert_elems_count_ = 0; //  число несовпавших вершинных элементов
+	size_t vert_elems_diff_orient_ = 0;	 //  число совпавших вершинных элементов, но в другой ориентации
+	size_t centers_count_ = 0; // число несовпавших центральных элементов
+};
+
 // расположение относительно фиксированных осей 0-11
 class IcosamateInSpace : public Icosamate
 {
-	const std::vector<Axis> axes_; // первые 6 - основные оси, остальные - им противоположные
+	static const std::vector<Axis> make_axes();
+	static const std::vector<Axis> axes_; // первые 6 - основные оси, остальные - им противоположные
 	static const size_t AXIS_COUNT = 12;
 	std::vector<VertexId> vert_elem_by_axis_;
 	std::vector<AxisId> axis_by_vert_elem_;
 public:
 	IcosamateInSpace();
 	// вращения вокруг оси и противоположной эквивалентны с точки зрения элементов, но не с точки зрения их расположения в пространстве
-	void move(AxisId axis_id, size_t n); // поворот как единого целого по часовой стрелке вдоль указанной оси
-	void turn(AxisId axis_id, size_t n); // поворот половины икосаэдра по часовой стрелке вдоль указанной оси  
+	//void move(AxisId axis_id, size_t n); // поворот как единого целого по часовой стрелке вдоль указанной оси
+	void turn(AxisId axis_id, size_t n); // поворот половины икосаэдра по часовой стрелке вдоль указанной оси
+
+	// икосаэдры не поворачиваются, смотрится сравнение как есть
+	static IcosamateDifference difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2);
 };
+

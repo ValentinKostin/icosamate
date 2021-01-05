@@ -24,6 +24,17 @@ bool Face::is_one_color() const
 	return true;
 }
 
+size_t Face::index(VertexId id) const
+{
+	for (size_t i = 0; i < vert_elems_.size(); i++)
+	{
+		const VertexElem& ve = *vert_elems_[i];
+		if (ve.id_ == id)
+			return i;
+	}
+	return VERTEX_ELEM_COUNT;
+}
+
 void Icosamate::fill_faces()
 {
 	for (Color c = 0; c < COLORS_COUNT; c++)
@@ -136,7 +147,8 @@ void Icosamate::turn(VertexId vid, VertexId near_vid[5], VertexId op_vid, Vertex
 
 const std::vector<VertexElem> Icosamate::make_vert_elems()
 {
-	return {
+	return 
+	{
 		  {0, {0, 19, 18, 17, 16}}, { 1, {1, 2, 3, 4, 5} }, {2, {1, 6, 7, 8, 2}}, { 3, {2, 8, 9, 10, 3} },
 		  {4, {3, 10, 11, 12, 4}}, {	5, {4, 12, 13, 14, 5}}, {6, {1, 5, 14, 15, 6}}, { 7, {7, 16, 17, 9, 8} },
 		  {8, {9, 17, 18, 11, 10}}, {	9, {11, 18, 19, 13, 12}}, { 10, {0, 15, 14, 13, 19} }, {11, {0, 16, 7, 6, 15} }
@@ -164,12 +176,32 @@ bool Icosamate::solved() const
 	return true;
 }
 
-IcosamateInSpace::IcosamateInSpace() : 
-	axes_({
-		{0, 1, {7, 11, 10, 9, 8}}, { 1, 0, {2, 3, 4, 5, 6} }, {2, 9, {1, 6, 11, 7, 3}}, { 3, 10, {1, 2, 7, 8, 4} },
-		{4, 11, {1, 3, 8, 9, 5}}, {	5, 7, {1, 4, 9, 10, 6}}, {6, 8, {1, 5, 10, 11, 2}}, { 7, 5, {2, 11, 0, 8, 3} },
-		{8, 6, {3, 7, 0, 9, 4}}, { 9, 2, {4, 8, 0, 10, 5}}, { 10, 3, {5, 9, 0, 11, 6} }, {11, 4, {2, 6, 10, 0, 7} }
-		})
+const Face& Icosamate::face(VertexId v0, VertexId v1, VertexId v2) const
+{
+	for (const Face& f : faces_)
+	{
+		if (f.index(v0) == Face::VERTEX_ELEM_COUNT) continue;
+		if (f.index(v1) == Face::VERTEX_ELEM_COUNT) continue;
+		if (f.index(v2) == Face::VERTEX_ELEM_COUNT) continue;
+		return f;
+	}
+	raise("Cannot find face");
+	return faces_[0];
+}
+
+const std::vector<Axis> IcosamateInSpace::make_axes()
+{
+	return
+	{
+		{0, 1, { 7, 11, 10, 9, 8 }}, { 1, 0, {2, 3, 4, 5, 6} }, { 2, 9, {1, 6, 11, 7, 3} }, { 3, 10, {1, 2, 7, 8, 4} },
+		{ 4, 11, {1, 3, 8, 9, 5} }, { 5, 7, {1, 4, 9, 10, 6} }, { 6, 8, {1, 5, 10, 11, 2} }, { 7, 5, {2, 11, 0, 8, 3} },
+		{ 8, 6, {3, 7, 0, 9, 4} }, { 9, 2, {4, 8, 0, 10, 5} }, { 10, 3, {5, 9, 0, 11, 6} }, { 11, 4, {2, 6, 10, 0, 7} }
+	};
+}
+
+const std::vector<Axis> IcosamateInSpace::axes_ = make_axes();
+
+IcosamateInSpace::IcosamateInSpace()
 {
 	for (size_t i = 0; i < vert_elems_.size(); i++)
 	{
@@ -189,10 +221,10 @@ IcosamateInSpace::IcosamateInSpace() :
 		check(ac == Axis::NEAR_AXIS_COUNT);
 }
 
-void IcosamateInSpace::move(AxisId axis_id, size_t n)
-{
-  // ZAGL
-}
+//void IcosamateInSpace::move(AxisId axis_id, size_t n)
+//{
+//  // ZAGL
+//}
 
 void IcosamateInSpace::turn(AxisId axis_id, size_t n)
 {
@@ -225,4 +257,39 @@ void IcosamateInSpace::turn(AxisId axis_id, size_t n)
 		axis_by_vert_elem_[new_nvid] = aid;
 		vert_elem_by_axis_[aid] = new_nvid;
 	}
+}
+
+IcosamateDifference IcosamateInSpace::difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2)
+{
+	IcosamateDifference r;
+	for (const Axis& a : axes_)
+	{
+		VertexId v1_0 = i1.vert_elem_by_axis_[a.id_];
+		VertexId v2_0 = i2.vert_elem_by_axis_[a.id_];
+		if (v1_0 != v2_0)
+			++r.vert_elems_count_;
+		else
+		{
+			VertexId v1_1 = i1.vert_elem_by_axis_[a.near_axes_[0]];
+			VertexId v2_1 = i2.vert_elem_by_axis_[a.near_axes_[0]];
+			VertexId v1_2 = i1.vert_elem_by_axis_[a.near_axes_[1]];
+			VertexId v2_2 = i2.vert_elem_by_axis_[a.near_axes_[1]];
+			const Face& f1 = i1.face(v1_0, v1_1, v1_2);
+			const Face& f2 = i2.face(v2_0, v2_1, v2_2);
+			if ( f1.vert_elems_colors_inds_[ f1.index(v1_0) ] != f2.vert_elems_colors_inds_[f2.index(v2_0)] )
+				++r.vert_elems_diff_orient_;
+		}
+	}
+
+	for (const Face& f1 : i1.faces_)
+	{
+		VertexId v2_0 = i2.vert_elem_by_axis_[i1.axis_by_vert_elem_[f1.vert_elems_[0]->id_]];
+		VertexId v2_1 = i2.vert_elem_by_axis_[i1.axis_by_vert_elem_[f1.vert_elems_[1]->id_]];
+		VertexId v2_2 = i2.vert_elem_by_axis_[i1.axis_by_vert_elem_[f1.vert_elems_[2]->id_]];
+		const Face& f2 = i2.face(v2_0, v2_1, v2_2);
+		if (f1.center_col_!=f2.center_col_)
+			++r.centers_count_;
+	}
+
+	return r;
 }
