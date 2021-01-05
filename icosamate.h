@@ -50,7 +50,8 @@ struct Vertex
 class Icosamate
 {
 protected:
-	const std::vector<VertexElem> vert_elems_;
+	static const std::vector<VertexElem> make_vert_elems();
+	static const std::vector<VertexElem> vert_elems_;
 	std::vector<Face> faces_;
 //	std::vector<Vertex> vertices_;
 	void fill_faces();

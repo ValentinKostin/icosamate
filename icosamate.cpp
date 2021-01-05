@@ -134,12 +134,18 @@ void Icosamate::turn(VertexId vid, VertexId near_vid[5], VertexId op_vid, Vertex
 //		check(v.invariant());
 //}
 
-Icosamate::Icosamate() :
-	vert_elems_({
-		{0, {0, 19, 18, 17, 16}}, { 1, {1, 2, 3, 4, 5} }, {2, {1, 6, 7, 8, 2}}, { 3, {2, 8, 9, 10, 3} },
-		{4, {3, 10, 11, 12, 4}}, {	5, {4, 12, 13, 14, 5}}, {6, {1, 5, 14, 15, 6}}, { 7, {7, 16, 17, 9, 8} },
-		{8, {9, 17, 18, 11, 10}}, {	9, {11, 18, 19, 13, 12}}, { 10, {0, 15, 14, 13, 19} }, {11, {0, 16, 7, 6, 15} }
-		})
+const std::vector<VertexElem> Icosamate::make_vert_elems()
+{
+	return {
+		  {0, {0, 19, 18, 17, 16}}, { 1, {1, 2, 3, 4, 5} }, {2, {1, 6, 7, 8, 2}}, { 3, {2, 8, 9, 10, 3} },
+		  {4, {3, 10, 11, 12, 4}}, {	5, {4, 12, 13, 14, 5}}, {6, {1, 5, 14, 15, 6}}, { 7, {7, 16, 17, 9, 8} },
+		  {8, {9, 17, 18, 11, 10}}, {	9, {11, 18, 19, 13, 12}}, { 10, {0, 15, 14, 13, 19} }, {11, {0, 16, 7, 6, 15} }
+	};
+}
+
+const std::vector<VertexElem> Icosamate::vert_elems_ = Icosamate::make_vert_elems();
+
+Icosamate::Icosamate()
 {
 	fill_faces();
 //	fill_vertices();
