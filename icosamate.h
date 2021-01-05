@@ -102,6 +102,7 @@ class IcosamateInSpace : public Icosamate
 	static const size_t AXIS_COUNT = 12;
 	std::vector<VertexId> vert_elem_by_axis_;
 	std::vector<AxisId> axis_by_vert_elem_;
+	void move_half(AxisId axis_id, size_t n, bool clockwise); // поворот половины как единого целого по часовой стрелке вдоль указанной оси
 public:
 	IcosamateInSpace();
 	// вращения вокруг оси и противоположной эквивалентны с точки зрения элементов, но не с точки зрения их расположения в пространстве

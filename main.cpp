@@ -49,7 +49,51 @@ FnameStr default_ini_path()
 {
 	return change_exe_ext(L".ini");
 }
-///////////////////////////////////////////	 
+///////////////////////////////////////////	
+
+void test_turn(IcosamateInSpace& ic, const IcosamateInSpace& ic0, AxisId axis_id)
+{
+	ic.turn(axis_id, 1);
+	check(!ic.solved());
+	IcosamateDifference diff = IcosamateInSpace::difference(ic0, ic);
+	check(diff.vert_elems_count_ == 5 && diff.vert_elems_diff_orient_ == 1 && diff.centers_count_ == 10);
+
+	ic.turn(axis_id, 1);
+	check(!ic.solved());
+
+	ic.turn(axis_id, 3);
+	check(ic.solved());
+	IcosamateDifference diff2 = IcosamateInSpace::difference(ic0, ic);
+	check(diff2.empty());
+}
+
+void test_turn(IcosamateInSpace& ic, const IcosamateInSpace& ic0)
+{
+	for (AxisId axis_id = 0; axis_id < 12; ++axis_id)
+		test_turn(ic, ic0, axis_id);
+}
+
+void test_move(IcosamateInSpace& ic, const IcosamateInSpace& ic0, AxisId axis_id)
+{
+	ic.move(axis_id, 1);
+	check(ic.solved());
+	IcosamateDifference diff = IcosamateInSpace::difference(ic0, ic);
+	check(diff.vert_elems_count_ == 10 && diff.vert_elems_diff_orient_ == 2 && diff.centers_count_ == 20);
+
+	ic.move(axis_id, 1);
+	check(ic.solved());
+
+	ic.move(axis_id, 3);
+	check(ic.solved());
+	IcosamateDifference diff2 = IcosamateInSpace::difference(ic0, ic);
+	check(diff2.empty());
+}
+
+void test_move(IcosamateInSpace& ic, const IcosamateInSpace& ic0)
+{
+	for (AxisId axis_id = 0; axis_id < 12; ++axis_id)
+		test_move(ic, ic0, axis_id);
+}
 
 int main()
 {
@@ -69,17 +113,9 @@ int main()
 		check(ic0.solved());
 
 		IcosamateInSpace ic = ic0;
-		ic.turn(0, 1);
-		check(!ic.solved());
-		IcosamateDifference diff = IcosamateInSpace::difference(ic0, ic);
 
-		ic.turn(0, 1);
-		check(!ic.solved());
-
-		ic.turn(0, 3);
-		check(ic.solved());
-		IcosamateDifference diff2 = IcosamateInSpace::difference(ic0, ic);
-		check(diff2.empty());
+		test_turn(ic, ic0);
+		test_move(ic, ic0);
 
 		log << "Icosamate test OK\n";
 	}
