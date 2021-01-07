@@ -81,6 +81,7 @@ void IcosamateExplorer::actions(const ActionS& a)
 	log_ << "d=" << d << ", sd=" << sd;
 
 	auto p = ic_.period(a);
-	log_ << ", p=" << p;
+	auto sp = ic_.solving_period(a);
+	log_ << ", p=" << p << ", sp=" << sp;
 	log_ << std::endl;
 }
