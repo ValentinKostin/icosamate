@@ -18,7 +18,7 @@ class IcosamateExplorer
 
 public:
 	IcosamateExplorer(std::ostream& log);
-	void actions(const ActionS& a);
+	void actions(const ActionS& a, size_t mul=1);
 };
 
 

@@ -97,10 +97,34 @@ IcosamateExplorer::IcosamateExplorer(std::ostream& log)	: log_(log)
 {
 }
 
-void IcosamateExplorer::actions(const ActionS& a)
+std::string mul_str(const ActionS& a, size_t mul)
 {
-	log_ << "Actions " << to_str(a) << ": ";
+	std::string r;
+	if (mul != 1)
+		r += "(";
+	r += to_str(a);
+	if (mul != 1)
+		r += ")x" + std::to_string(mul);
+	return r;
+}
 
+ActionS mul_actions(const ActionS& a, size_t mul)
+{
+	check(mul > 0);
+	if (mul == 1)
+		return a;
+	ActionS r;
+	r.reserve(a.size() * mul);
+	for (size_t i = 0; i < mul; i++)
+		r.insert(r.end(), a.begin(), a.end());
+	return r;
+}
+
+void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
+{
+	log_ << "Actions " << mul_str(aa, mul) << ": ";
+
+	ActionS a = mul_actions(aa, mul);
 	ic_.actions(a);
 
 	auto d = ic_.difference(ic0_, ic_);

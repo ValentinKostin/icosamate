@@ -157,9 +157,14 @@ int main(int argc, char* argv[])
 			test(log);
 		if (command == "explore")
 		{
-			IcosamateExplorer ex (log);
+			IcosamateExplorer ex (log);			
 			if (args.count("actions") > 0)
-				ex.actions(from_str(args.at("actions")));
+			{	
+				size_t n = 1;
+				if (args.count("n") > 0)
+					n = std::stoull(args.at("n"));
+				ex.actions(from_str(args.at("actions")), n);
+			}
 		}
 	}
 	catch (const std::string& err)
