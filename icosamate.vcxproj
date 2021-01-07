@@ -139,11 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="explorer.cpp" />
     <ClCompile Include="icosamate.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="def.h" />
+    <ClInclude Include="explorer.h" />
     <ClInclude Include="icosamate.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>

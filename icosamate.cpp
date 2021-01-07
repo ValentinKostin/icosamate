@@ -332,20 +332,11 @@ void IcosamateInSpace::action(Action a)
 	if (a > A_6_MOVE_CCW || a < 0)
 		return;
 
+	AxisId ax_id = (a - 1) % 6 + 1;
 	if (a >= A_1_MOVE_CW)
-	{
-		if (a >= A_1_MOVE_CCW)
-			move(a % 6, 4);
-		else
-			move(a % 6, 1);
-	}
+		move(ax_id, a >= A_1_MOVE_CCW ? 4 : 1);
 	else
-	{
-		if (a >= A_1_TURN_CCW)
-			turn(a % 6, 4);
-		else
-			turn(a % 6, 1);
-	}
+		turn(ax_id, a >= A_1_TURN_CCW ? 4 : 1);
 }
 
 void IcosamateInSpace::actions(const ActionS& aaa)

@@ -110,8 +110,11 @@ struct IcosamateDifference
 typedef int Action;
 static const Action A_NO_ACTION = 0;
 static const Action A_1_TURN_CW = 1;
+static const Action A_6_TURN_CW = 6;
 static const Action A_1_TURN_CCW = 7;
+static const Action A_6_TURN_CCW = 12;
 static const Action A_1_MOVE_CW = 13;
+static const Action A_6_MOVE_CW = 18;
 static const Action A_1_MOVE_CCW = 19;
 static const Action A_6_MOVE_CCW = 25;
 typedef std::vector<Action>	ActionS;
@@ -140,10 +143,7 @@ public:
 	void action(Action a);
 	void actions(const ActionS& a);
 
-
-	// икосаэдры не поворачиваются, смотрится сравнение как есть
-	static IcosamateDifference difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2);
-
-	static IcosamateDifference solving_difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2);
+	static IcosamateDifference difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2); // икосаэдры не поворачиваются, смотрится сравнение как есть
+	static IcosamateDifference solving_difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2);  // сравнение без учёта ориентации в пространстве
 };
 
