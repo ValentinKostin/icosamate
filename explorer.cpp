@@ -54,6 +54,7 @@ ActionS from_str(const std::string& s)
 		}
 		Action a = act_delta + cw_delta + Action(ax_id);
 		r.push_back(a);
+		act_delta = 0;
 	}
 	return r;
 }
