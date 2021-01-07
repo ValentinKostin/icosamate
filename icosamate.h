@@ -107,6 +107,15 @@ struct IcosamateDifference
 	}
 };
 
+typedef int Action;
+static const Action A_NO_ACTION = 0;
+static const Action A_1_TURN_CW = 1;
+static const Action A_1_TURN_CCW = 7;
+static const Action A_1_MOVE_CW = 13;
+static const Action A_1_MOVE_CCW = 19;
+static const Action A_6_MOVE_CCW = 25;
+typedef std::vector<Action>	ActionS;
+
 // расположение относительно фиксированных осей 0-11
 class IcosamateInSpace : public Icosamate
 {
@@ -121,6 +130,13 @@ public:
 	// вращения вокруг оси и противоположной эквивалентны с точки зрения элементов, но не с точки зрения их расположения в пространстве
 	void move(AxisId axis_id, size_t n); // поворот икосаэдра как единого целого по часовой стрелке вдоль указанной оси
 	void turn(AxisId axis_id, size_t n); // поворот половины икосаэдра по часовой стрелке вдоль указанной оси
+
+	static Action inverse(Action a);
+	static ActionS inverse(const ActionS& a);
+	static ActionS commutator(const ActionS& a1, const ActionS& a2);
+
+	void action(Action a);
+	void actions(const ActionS& a);
 
 	// икосаэдры не поворачиваются, смотрится сравнение как есть
 	static IcosamateDifference difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2);

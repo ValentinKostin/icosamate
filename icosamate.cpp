@@ -286,6 +286,74 @@ void IcosamateInSpace::turn(AxisId axis_id, size_t n)
 	}
 }
 
+Action IcosamateInSpace::inverse(Action a)
+{
+	if (a > A_6_MOVE_CCW || a < 0)
+		return A_NO_ACTION;
+
+	if (a >= A_1_MOVE_CW)
+	{
+		if (a >= A_1_MOVE_CCW)
+			return a-6;
+		else
+			return a+6;
+	}
+	else
+	{
+		if (a >= A_1_TURN_CCW)
+			return a - 6;
+		else
+			return a + 6;
+	}
+}
+
+ActionS IcosamateInSpace::inverse(const ActionS& a)
+{
+	ActionS r;
+	r.reserve(a.size());
+	for (auto q = a.cbegin(); q != a.cend(); ++q)
+		r.push_back(inverse(*q));
+	return r;
+}
+
+ActionS IcosamateInSpace::commutator(const ActionS& a1, const ActionS& a2)
+{
+	ActionS r = a1;
+	r.insert(r.end(), a2.begin(), a2.end());
+	ActionS a1_inv = inverse(a1);
+	r.insert(r.end(), a1_inv.begin(), a1_inv.end());
+	ActionS a2_inv = inverse(a2);
+	r.insert(r.end(), a2_inv.begin(), a2_inv.end());
+	return r;
+}
+
+void IcosamateInSpace::action(Action a)
+{
+	if (a > A_6_MOVE_CCW || a < 0)
+		return;
+
+	if (a >= A_1_MOVE_CW)
+	{
+		if (a >= A_1_MOVE_CCW)
+			move(a % 6, 4);
+		else
+			move(a % 6, 1);
+	}
+	else
+	{
+		if (a >= A_1_TURN_CCW)
+			turn(a % 6, 4);
+		else
+			turn(a % 6, 1);
+	}
+}
+
+void IcosamateInSpace::actions(const ActionS& aaa)
+{
+	for (const auto& a : aaa)
+		action(a);
+}
+
 IcosamateDifference IcosamateInSpace::difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2)
 {
 	IcosamateDifference r;
