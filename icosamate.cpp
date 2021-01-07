@@ -288,23 +288,13 @@ void IcosamateInSpace::turn(AxisId axis_id, size_t n)
 
 Action IcosamateInSpace::inverse(Action a)
 {
-	if (a > A_6_MOVE_CCW || a < 0)
+	if (a > A_12_MOVE_CCW || a < 0)
 		return A_NO_ACTION;
 
 	if (a >= A_1_MOVE_CW)
-	{
-		if (a >= A_1_MOVE_CCW)
-			return a-6;
-		else
-			return a+6;
-	}
+		return (a >= A_1_MOVE_CCW) ? a - 12 : a + 12;
 	else
-	{
-		if (a >= A_1_TURN_CCW)
-			return a - 6;
-		else
-			return a + 6;
-	}
+		return (a >= A_1_TURN_CCW) ? a - 12 : a + 12;
 }
 
 ActionS IcosamateInSpace::inverse(const ActionS& a)
@@ -329,10 +319,10 @@ ActionS IcosamateInSpace::commutator(const ActionS& a1, const ActionS& a2)
 
 void IcosamateInSpace::action(Action a)
 {
-	if (a > A_6_MOVE_CCW || a < 0)
+	if (a > A_12_MOVE_CCW || a < 0)
 		return;
 
-	AxisId ax_id = (a - 1) % 6 + 1;
+	AxisId ax_id = a % 12;
 	if (a >= A_1_MOVE_CW)
 		move(ax_id, a >= A_1_MOVE_CCW ? 4 : 1);
 	else
