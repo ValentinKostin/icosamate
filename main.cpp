@@ -4,11 +4,13 @@
 #include <fstream>
 #include <chrono>
 #include <ctime>
+#include <map>
 
 #include <windows.h>
 
 #include "version.h"
 #include "icosamate.h"
+#include "explorer.h"
 
 typedef std::wstring FnameStr;
 
@@ -101,7 +103,39 @@ void test_move(IcosamateInSpace& ic, const IcosamateInSpace& ic0)
 		test_move(ic, ic0, axis_id);
 }
 
-int main()
+void test(std::ostream& log)
+{
+	IcosamateInSpace ic0;
+	log << "Icosamate created\n";
+	check(ic0.solved());
+
+	IcosamateInSpace ic = ic0;
+
+	test_turn(ic, ic0);
+	test_move(ic, ic0);
+
+	log << "Icosamate test OK\n";
+}
+
+typedef std::map<std::string, std::string> Args;
+
+Args get_args(int argc, char* argv[])
+{
+	Args r;
+	for (int i = 2; i < argc; ++i)
+	{
+		std::string s = argv[i];
+		size_t k = s.find('=');
+		if (k == std::string::npos) throw std::string("Bad argument ") + s;
+
+		r.insert({ s.substr(0, k), s.substr(k + 1) });
+	}
+
+	return r;
+}
+
+
+int main(int argc, char* argv[])
 {
 	auto time = std::chrono::system_clock::now();
 	std::time_t tt_time = std::chrono::system_clock::to_time_t(time);
@@ -112,18 +146,21 @@ int main()
 	log << "================================================================================" << std::endl;
 	log << PROGR_NAME << " " << PROGR_VERSION << "    " << ctimebuf; // std::endl уже вписывается автоматом
 
+	if (argc < 2) usage();
+	std::string command = argv[1];
+
 	try
 	{
-		IcosamateInSpace ic0;
-		log << "Icosamate created\n";
-		check(ic0.solved());
+		Args args = get_args(argc, argv);
 
-		IcosamateInSpace ic = ic0;
-
-		test_turn(ic, ic0);
-		test_move(ic, ic0);
-
-		log << "Icosamate test OK\n";
+		if (command == "test")
+			test(log);
+		if (command == "explore")
+		{
+			IcosamateExplorer ex (log);
+			if (args.count("actions") > 0)
+				ex.actions(from_str(args.at("actions")));
+		}
 	}
 	catch (const std::string& err)
 	{

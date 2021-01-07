@@ -58,12 +58,28 @@ ActionS from_str(const std::string& s)
 	return r;
 }
 
+std::ostream& operator<<(std::ostream& oss, const IcosamateDifference& d)
+{
+	oss << "(" << d.vert_elems_count_ << "," << d.vert_elems_diff_orient_ << "," << d.centers_count_ << ")";
+	return oss;
+}
+
 IcosamateExplorer::IcosamateExplorer(std::ostream& log)	: log_(log)
 {
-
 }
 
 void IcosamateExplorer::actions(const ActionS& a)
 {
+	log_ << "Actions " << to_str(a) << ": ";
 
+	ic_.actions(a);
+
+	auto d = ic_.difference(ic0_, ic_);
+	auto sd = ic_.solving_difference(ic0_, ic_);
+
+	log_ << "d=" << d << ", sd=" << sd;
+
+	auto p = ic_.period(a);
+	log_ << ", p=" << p;
+	log_ << std::endl;
 }
