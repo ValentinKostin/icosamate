@@ -92,6 +92,19 @@ struct IcosamateDifference
 	{
 		return vert_elems_count_ == 0 && vert_elems_diff_orient_ == 0 && centers_count_ == 0;
 	}
+
+	bool operator<(const IcosamateDifference& d) const
+	{
+		if (vert_elems_count_ < d.vert_elems_count_)
+			return true;
+		if (d.vert_elems_count_ < vert_elems_count_)
+			return false;
+		if (vert_elems_diff_orient_ < d.vert_elems_diff_orient_)
+			return true;
+		if (d.vert_elems_diff_orient_ < vert_elems_diff_orient_)
+			return false;
+		return centers_count_ < d.centers_count_;
+	}
 };
 
 // расположение относительно фиксированных осей 0-11
@@ -106,10 +119,12 @@ class IcosamateInSpace : public Icosamate
 public:
 	IcosamateInSpace();
 	// вращения вокруг оси и противоположной эквивалентны с точки зрения элементов, но не с точки зрения их расположения в пространстве
-	void move(AxisId axis_id, size_t n); // поворот как единого целого по часовой стрелке вдоль указанной оси
+	void move(AxisId axis_id, size_t n); // поворот икосаэдра как единого целого по часовой стрелке вдоль указанной оси
 	void turn(AxisId axis_id, size_t n); // поворот половины икосаэдра по часовой стрелке вдоль указанной оси
 
 	// икосаэдры не поворачиваются, смотрится сравнение как есть
 	static IcosamateDifference difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2);
+
+	static IcosamateDifference solving_difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2);
 };
 

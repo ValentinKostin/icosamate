@@ -320,3 +320,20 @@ IcosamateDifference IcosamateInSpace::difference(const IcosamateInSpace& i1, con
 
 	return r;
 }
+
+IcosamateDifference IcosamateInSpace::solving_difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2)
+{
+	IcosamateDifference r = difference(i1, i2);
+	IcosamateInSpace ic = i2;
+	for (const Axis& a : axes_)
+	{
+		for (size_t i=0; i<Axis::NEAR_AXIS_COUNT; ++i)
+		{
+			ic.move(a.id_, 1);
+			IcosamateDifference d = difference(i1, ic);
+			if (d < r)
+				r = d;
+		}
+	}
+	return r;
+}

@@ -57,6 +57,8 @@ void test_turn(IcosamateInSpace& ic, const IcosamateInSpace& ic0, AxisId axis_id
 	check(!ic.solved());
 	IcosamateDifference diff = IcosamateInSpace::difference(ic0, ic);
 	check(diff.vert_elems_count_ == 5 && diff.vert_elems_diff_orient_ == 1 && diff.centers_count_ == 10);
+	IcosamateDifference sdiff = IcosamateInSpace::solving_difference(ic0, ic);
+	check(sdiff.vert_elems_count_ == 5 && sdiff.vert_elems_diff_orient_ == 1 && sdiff.centers_count_ == 10);
 
 	ic.turn(axis_id, 1);
 	check(!ic.solved());
@@ -65,6 +67,8 @@ void test_turn(IcosamateInSpace& ic, const IcosamateInSpace& ic0, AxisId axis_id
 	check(ic.solved());
 	IcosamateDifference diff2 = IcosamateInSpace::difference(ic0, ic);
 	check(diff2.empty());
+	IcosamateDifference sdiff2 = IcosamateInSpace::solving_difference(ic0, ic);
+	check(sdiff2.empty());
 }
 
 void test_turn(IcosamateInSpace& ic, const IcosamateInSpace& ic0)
@@ -79,6 +83,8 @@ void test_move(IcosamateInSpace& ic, const IcosamateInSpace& ic0, AxisId axis_id
 	check(ic.solved());
 	IcosamateDifference diff = IcosamateInSpace::difference(ic0, ic);
 	check(diff.vert_elems_count_ == 10 && diff.vert_elems_diff_orient_ == 2 && diff.centers_count_ == 20);
+	IcosamateDifference sdiff = IcosamateInSpace::solving_difference(ic0, ic);
+	check(sdiff.empty());
 
 	ic.move(axis_id, 1);
 	check(ic.solved());
