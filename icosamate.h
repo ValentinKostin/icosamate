@@ -134,9 +134,12 @@ public:
 	static Action inverse(Action a);
 	static ActionS inverse(const ActionS& a);
 	static ActionS commutator(const ActionS& a1, const ActionS& a2);
+	static size_t period(const ActionS& a);
+	static size_t solving_period(const ActionS& a);
 
 	void action(Action a);
 	void actions(const ActionS& a);
+
 
 	// икосаэдры не поворачиваются, смотрится сравнение как есть
 	static IcosamateDifference difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2);

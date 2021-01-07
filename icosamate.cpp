@@ -354,6 +354,31 @@ void IcosamateInSpace::actions(const ActionS& aaa)
 		action(a);
 }
 
+size_t IcosamateInSpace::period(const ActionS& a)
+{
+	size_t r = 0;
+	IcosamateInSpace ic0;
+	IcosamateInSpace ic = ic0;
+	do
+	{
+		ic.actions(a);
+		++r;
+	} while (!difference(ic0, ic).empty());
+	return r;
+}
+
+size_t IcosamateInSpace::solving_period(const ActionS& a)
+{
+	size_t r = 0;
+	IcosamateInSpace ic;
+	do
+	{
+		ic.actions(a);
+		++r;
+	} while (!ic.solved());
+	return r;
+}
+
 IcosamateDifference IcosamateInSpace::difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2)
 {
 	IcosamateDifference r;
