@@ -158,12 +158,21 @@ int main(int argc, char* argv[])
 		if (command == "explore")
 		{
 			if (args.count("actions") > 0)
-			{	
+			{
 				IcosamateExplorer ex(log);
 				size_t n = 1;
 				if (args.count("n") > 0)
 					n = std::stoull(args.at("n"));
 				ex.actions(from_str(args.at("actions")), n);
+			}
+			else if (args.count("tree") > 0)
+			{
+				IcosamateExplorer ex(log);
+
+				size_t n = std::stoll(args.at("tree"));
+				bool add_cooms = args.count("add_commutators") > 0 && args.at("add_commutators") == "1";
+
+				ex.tree(n, add_cooms);
 			}
 			else if (args.count("type") > 0)
 			{

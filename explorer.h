@@ -25,15 +25,24 @@ class IcosamateExplorer
 	std::ostream& log_;
 
 	const IcosamateInSpace ic0_;
-	IcosamateInSpace ic_;
-	ActionS actions_;
+	mutable IcosamateInSpace ic_;
 
-	typedef std::multimap<IcosamateDifference, ActionS> ActMap;
+	typedef std::map<IcosamateDifference, ActionS> ActMap;
 	ActMap actmap_, solving_actmap_;
+	typedef std::map<size_t, ActionS> PeriodMap;
+	PeriodMap per_map_, solving_per_map_;
+	template<class P> void print(const P& actmap, const char* name)
+	{
+		log_ << name << std::endl;
+		for (const auto& p : actmap)
+			log_ << p.first << ": " << to_str(p.second) << std::endl;
+	}
+
 	void process_elem(const ActionS& a);
 
-	ActionResult calc_result() const;
-	void tree_step(const ActionS& a);
+	ActionResult calc_result(const ActionS& aa) const;
+	void tree_step(const ActionS& a, bool add_commutators);
+	void tree_level(const ActionS& a, size_t max_l, bool add_commutators);
 
 public:
 	IcosamateExplorer(std::ostream& log);

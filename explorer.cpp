@@ -127,14 +127,16 @@ ActionS mul_actions(const ActionS& a, size_t mul)
 	return r;
 }
 
-ActionResult IcosamateExplorer::calc_result() const
+ActionResult IcosamateExplorer::calc_result(const ActionS& a) const
 {
+	ic_ = ic0_;
+	ic_.actions(a);
 	return
 	{
 		ic_.difference(ic0_, ic_),
 		ic_.solving_difference(ic0_, ic_),
-		ic_.period(actions_),
-		ic_.solving_period(actions_)
+		ic_.period(a),
+		ic_.solving_period(a)
 	};
 }
 
@@ -142,22 +144,66 @@ void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
 {
 	log_ << "Actions " << mul_str(aa, mul) << ": ";
 
-	actions_ = mul_actions(aa, mul);
-	ic_.actions(actions_);
+	auto acts = mul_actions(aa, mul);
 
-	auto r = calc_result();
+	auto r = calc_result(acts);
 
 	log_ << r << std::endl;
 }
 
-void IcosamateExplorer::tree_step(const ActionS& a)
+void IcosamateExplorer::process_elem(const ActionS& a)
 {
+	log_ << to_str(a) << ": ";
 
+	auto r = calc_result(a);
+
+	actmap_.insert({ r.diff_, a });
+	solving_actmap_.insert({ r.solved_diff_, a });
+	per_map_.insert({ r.period_, a });
+	solving_per_map_.insert({ r.solved_period_, a });
+
+	log_ << r << std::endl;
+}
+
+void IcosamateExplorer::tree_step(const ActionS& a, bool add_commutators)
+{
+	process_elem(a);
+
+	if (!add_commutators) return;
+
+	for (size_t i = 1; i < a.size(); ++i)
+	{
+		ActionS ca = IcosamateInSpace::commutator(a, int(i));
+		process_elem(ca);
+	}
+}
+
+void IcosamateExplorer::tree_level(const ActionS& aa, size_t max_l, bool add_commutators)
+{
+	tree_step(aa, add_commutators);
+
+	if (aa.size() >= max_l)
+		return;
+
+	ActionS an = aa;
+	an.push_back(A_NO_ACTION);
+	for (Action a = A_1_TURN_CW; a<= A_12_TURN_CCW; ++a)
+	{
+		an.back() = a;
+		tree_level(an, max_l, add_commutators);
+	}
 }
 
 void IcosamateExplorer::tree(size_t n, bool add_commutators)
 {
+	ActionS acts;
+	acts.push_back(A_1_TURN_CW);
+	tree_level(acts, n, add_commutators);
 
+	print(actmap_, "Difference");
+	print(solving_actmap_, "Solving difference");
+	print(per_map_, "Period");
+	print(solving_per_map_, "Solving period");
 }
 
 
