@@ -54,10 +54,12 @@ class IcosamateExplorer
 	void tree_level(const ActionS& a, size_t max_l, bool add_commutators);
 
 	bool with_solving_ = true;
+	bool with_period_ = true;
 
 public:
 	IcosamateExplorer(std::ostream& log);
 	void set_with_solving(bool w) { with_solving_ = w; }
+	void set_with_period(bool w) { with_period_ = w; }
 	void actions(const ActionS& a, size_t mul = 1);
 	void tree(size_t n, bool add_commutators);
 };

@@ -95,12 +95,14 @@ std::ostream& operator<<(std::ostream& oss, const IcosamateDifference& d)
 
 std::ostream& operator<<(std::ostream& oss, const ActionResult& r)
 {
+	bool has_period = r.period_ > 0;
 	bool has_solving = r.solved_period_ > 0;
 	oss << "d=" << r.diff_;
 	if (has_solving)
 		oss << ", sd=" << r.solved_diff_;
-	oss << ", p=" << with_facorization(r.period_);
-	if (has_solving)
+	if (has_period)
+		oss << ", p=" << with_facorization(r.period_);
+	if (has_solving && has_period)
 		oss << ", sp=" << with_facorization(r.solved_period_);
 	return oss;
 }
@@ -140,8 +142,8 @@ ActionResult IcosamateExplorer::calc_result(const ActionS& a) const
 	{
 		ic_.difference(ic0_, ic_),
 		with_solving_ ? ic_.solving_difference(ic0_, ic_) : IcosamateDifference(),
-		ic_.period(a),
-		with_solving_ ? ic_.solving_period(a) : 0
+		with_period_ ? ic_.period(a) : 0,
+		with_solving_ && with_period_ ? ic_.solving_period(a) : 0
 	};
 }
 
@@ -200,9 +202,13 @@ void IcosamateExplorer::tree_level(const ActionS& aa, size_t max_l, bool add_com
 		return;
 
 	ActionS an = aa;
+	Action inverse_last_action = IcosamateInSpace::inverse(an.back());
 	an.push_back(A_NO_ACTION);
 	for (Action a = A_1_TURN_CW; a<= A_12_TURN_CCW; ++a)
 	{
+		if (a == inverse_last_action)
+			continue;
+
 		an.back() = a;
 		tree_level(an, max_l, add_commutators);
 	}
