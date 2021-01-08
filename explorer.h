@@ -21,6 +21,13 @@ struct ActionResult
 };
 
 std::ostream& operator<<(std::ostream& oss, const ActionResult& r);
+inline const IcosamateDifference& with_facorization(const IcosamateDifference& d) { return d; }
+inline std::string with_facorization(size_t n)
+{
+	std::ostringstream oss;
+	oss << n << "(" << factorization_str(n) << ")";
+	return oss.str();
+}
 
 class IcosamateExplorer
 {
@@ -33,13 +40,6 @@ class IcosamateExplorer
 	ActMap actmap_, solving_actmap_;
 	typedef std::map<size_t, ActionS> PeriodMap;
 	PeriodMap per_map_, solving_per_map_;
-	static const IcosamateDifference& with_facorization(const IcosamateDifference& d) { return d; }
-	static std::string with_facorization(size_t n) 
-	{ 
-		std::ostringstream oss;
-		oss << n << " (" << factorization_str(n) << ")";
-		return oss.str();
-	}
 	template<class P> void print(const P& actmap, const char* name)
 	{
 		log_ << name << std::endl;

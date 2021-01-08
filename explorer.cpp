@@ -96,7 +96,7 @@ std::ostream& operator<<(std::ostream& oss, const IcosamateDifference& d)
 std::ostream& operator<<(std::ostream& oss, const ActionResult& r)
 {
 	oss << "d=" << r.diff_ << ", sd=" << r.solved_diff_;
-	oss << ", p=" << r.period_ << ", sp=" << r.solved_period_;
+	oss << ", p=" << with_facorization(r.period_) << ", sp=" << with_facorization(r.solved_period_);
 	return oss;
 }
 
@@ -151,16 +151,25 @@ void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
 	log_ << r << std::endl;
 }
 
+template<class M, class R> void add_action_res(M& m, const R& r, const ActionS& a)
+{
+	auto q = m.find(r);
+	if (q == m.end())
+		m.insert({ r, a });
+	else if (q->second.size() > a.size())
+		m[r] = a;
+}
+
 void IcosamateExplorer::process_elem(const ActionS& a)
 {
 	log_ << to_str(a) << ": ";
 
 	auto r = calc_result(a);
 
-	actmap_.insert({ r.diff_, a });
-	solving_actmap_.insert({ r.solved_diff_, a });
-	per_map_.insert({ r.period_, a });
-	solving_per_map_.insert({ r.solved_period_, a });
+	add_action_res(actmap_, r.diff_, a);
+	add_action_res(solving_actmap_, r.solved_diff_, a);
+	add_action_res(per_map_, r.period_, a);
+	add_action_res(solving_per_map_, r.solved_period_, a);
 
 	log_ << r << std::endl;
 }
