@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="def.h" />
     <ClInclude Include="explorer.h" />
+    <ClInclude Include="factorization.h" />
     <ClInclude Include="icosamate.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>
