@@ -169,8 +169,11 @@ int main(int argc, char* argv[])
 			{
 				IcosamateExplorer ex(log);
 
+				bool with_solving = args.count("with_solving")==0 || args.at("with_solving") != "0";
+				ex.set_with_solving(with_solving);
+
 				size_t n = std::stoll(args.at("tree"));
-				bool add_cooms = args.count("add_commutators") > 0 && args.at("add_commutators") == "1";
+				bool add_cooms = args.count("add_commutators") > 0 && args.at("add_commutators") == "1";				
 
 				ex.tree(n, add_cooms);
 			}

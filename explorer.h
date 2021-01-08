@@ -25,7 +25,7 @@ inline const IcosamateDifference& with_facorization(const IcosamateDifference& d
 inline std::string with_facorization(size_t n)
 {
 	std::ostringstream oss;
-	oss << n << "(" << factorization_str(n) << ")";
+	oss << n << " (" << factorization_str(n) << ")";
 	return oss.str();
 }
 
@@ -53,10 +53,13 @@ class IcosamateExplorer
 	void tree_step(const ActionS& a, bool add_commutators);
 	void tree_level(const ActionS& a, size_t max_l, bool add_commutators);
 
+	bool with_solving_ = true;
+
 public:
 	IcosamateExplorer(std::ostream& log);
-	void actions(const ActionS& a, size_t mul=1);
-	void tree(size_t n, bool add_commutators = true);
+	void set_with_solving(bool w) { with_solving_ = w; }
+	void actions(const ActionS& a, size_t mul = 1);
+	void tree(size_t n, bool add_commutators);
 };
 
 // проверка всевозможных действий для оси и соседних

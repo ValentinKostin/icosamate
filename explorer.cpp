@@ -95,8 +95,13 @@ std::ostream& operator<<(std::ostream& oss, const IcosamateDifference& d)
 
 std::ostream& operator<<(std::ostream& oss, const ActionResult& r)
 {
-	oss << "d=" << r.diff_ << ", sd=" << r.solved_diff_;
-	oss << ", p=" << with_facorization(r.period_) << ", sp=" << with_facorization(r.solved_period_);
+	bool has_solving = r.solved_period_ > 0;
+	oss << "d=" << r.diff_;
+	if (has_solving)
+		oss << ", sd=" << r.solved_diff_;
+	oss << ", p=" << with_facorization(r.period_);
+	if (has_solving)
+		oss << ", sp=" << with_facorization(r.solved_period_);
 	return oss;
 }
 
@@ -134,9 +139,9 @@ ActionResult IcosamateExplorer::calc_result(const ActionS& a) const
 	return
 	{
 		ic_.difference(ic0_, ic_),
-		ic_.solving_difference(ic0_, ic_),
+		with_solving_ ? ic_.solving_difference(ic0_, ic_) : IcosamateDifference(),
 		ic_.period(a),
-		ic_.solving_period(a)
+		with_solving_ ? ic_.solving_period(a) : 0
 	};
 }
 
