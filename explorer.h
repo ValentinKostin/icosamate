@@ -21,4 +21,6 @@ public:
 	void actions(const ActionS& a, size_t mul=1);
 };
 
+// проверка всевозможных действий для оси и соседних
+void explore_near_axis(std::ostream& log);
 

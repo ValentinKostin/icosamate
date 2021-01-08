@@ -124,7 +124,10 @@ class IcosamateInSpace : public Icosamate
 {
 	static const std::vector<Axis> make_axes();
 	static const std::vector<Axis> axes_; // первые 6 - основные оси, остальные - им противоположные
+public:
 	static const size_t AXIS_COUNT = 12;
+	static const Axis& axis(AxisId ax_id) { return axes_.at(ax_id); }
+private:
 	std::vector<VertexId> vert_elem_by_axis_;
 	std::vector<AxisId> axis_by_vert_elem_;
 	void move_half(AxisId axis_id, size_t n, bool clockwise); // поворот половины как единого целого по часовой стрелке вдоль указанной оси
@@ -134,6 +137,8 @@ public:
 	void move(AxisId axis_id, size_t n); // поворот икосаэдра как единого целого по часовой стрелке вдоль указанной оси
 	void turn(AxisId axis_id, size_t n); // поворот половины икосаэдра по часовой стрелке вдоль указанной оси
 
+	static Action turn_action(AxisId axis_id, bool clockwise);
+	static Action move_action(AxisId axis_id, bool clockwise);
 	static Action inverse(Action a);
 	static ActionS inverse(const ActionS& a);
 	static ActionS commutator(const ActionS& a1, const ActionS& a2);

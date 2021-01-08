@@ -157,13 +157,18 @@ int main(int argc, char* argv[])
 			test(log);
 		if (command == "explore")
 		{
-			IcosamateExplorer ex (log);			
 			if (args.count("actions") > 0)
 			{	
+				IcosamateExplorer ex(log);
 				size_t n = 1;
 				if (args.count("n") > 0)
 					n = std::stoull(args.at("n"));
 				ex.actions(from_str(args.at("actions")), n);
+			}
+			else if (args.count("type") > 0)
+			{
+				if (args.at("type") == "near_axis")
+					explore_near_axis(log);
 			}
 		}
 	}

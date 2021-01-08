@@ -31,7 +31,7 @@ std::string to_str(const ActionS& acts)
 
 		if (a >= A_1_MOVE_CW)
 			r.push_back('M');
-		AxisId ax_id = (a - 1) % 12 + 1;
+		AxisId ax_id = a % 12;
 		r.push_back(axis_char(ax_id));
 		if (a >= A_1_MOVE_CCW || a >= A_1_TURN_CCW && a <= A_12_TURN_CCW)
 			r.push_back('\'');
@@ -136,4 +136,38 @@ void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
 	auto sp = ic_.solving_period(a);
 	log_ << ", p=" << p << ", sp=" << sp;
 	log_ << std::endl;
+}
+
+
+void explore_near_axis(std::ostream& log, bool turn1, bool turn2, bool is_1_cw, bool is_2_cw)
+{
+	for (AxisId ax_id = 0; ax_id < IcosamateInSpace::AXIS_COUNT; ax_id++)
+	{
+		Action a1 = turn1 ? IcosamateInSpace::turn_action(ax_id, is_1_cw) : IcosamateInSpace::move_action(ax_id, is_1_cw);
+		const Axis& a = IcosamateInSpace::axis(ax_id);
+		for (AxisId near_ax_id : a.near_axes_)
+		{
+			Action a2 = turn2 ? IcosamateInSpace::turn_action(near_ax_id, is_2_cw) : IcosamateInSpace::move_action(near_ax_id, is_2_cw);
+
+			ActionS aa = { a1, a2 };
+			IcosamateExplorer ex(log);
+			ex.actions(aa);
+		}
+	}
+}
+
+void explore_near_axis(std::ostream& log, bool turn1, bool turn2)
+{
+	explore_near_axis(log, turn1, turn2, true, true);
+	explore_near_axis(log, turn1, turn2, true, false);
+	explore_near_axis(log, turn1, turn2, false, true);
+	explore_near_axis(log, turn1, turn2, false, false);
+}
+
+void explore_near_axis(std::ostream& log)
+{
+	explore_near_axis(log, true, true);
+	explore_near_axis(log, true, false);
+	explore_near_axis(log, false, true);
+	explore_near_axis(log, false, false);
 }

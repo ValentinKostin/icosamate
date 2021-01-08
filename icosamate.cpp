@@ -286,6 +286,16 @@ void IcosamateInSpace::turn(AxisId axis_id, size_t n)
 	}
 }
 
+Action IcosamateInSpace::turn_action(AxisId axis_id, bool clockwise)
+{
+	return Action((clockwise ? 0 : 12) + (axis_id == 0 ? 12 : axis_id));
+}
+
+Action IcosamateInSpace::move_action(AxisId axis_id, bool clockwise)
+{
+	return turn_action(axis_id, clockwise) + 24;
+}
+
 Action IcosamateInSpace::inverse(Action a)
 {
 	if (a > A_12_MOVE_CCW || a < 0)
