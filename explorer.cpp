@@ -93,6 +93,13 @@ std::ostream& operator<<(std::ostream& oss, const IcosamateDifference& d)
 	return oss;
 }
 
+std::ostream& operator<<(std::ostream& oss, const ActionResult& r)
+{
+	oss << "d=" << r.diff_ << ", sd=" << r.solved_diff_;
+	oss << ", p=" << r.period_ << ", sp=" << r.solved_period_;
+	return oss;
+}
+
 IcosamateExplorer::IcosamateExplorer(std::ostream& log)	: log_(log)
 {
 }
@@ -120,22 +127,37 @@ ActionS mul_actions(const ActionS& a, size_t mul)
 	return r;
 }
 
+ActionResult IcosamateExplorer::calc_result() const
+{
+	return
+	{
+		ic_.difference(ic0_, ic_),
+		ic_.solving_difference(ic0_, ic_),
+		ic_.period(actions_),
+		ic_.solving_period(actions_)
+	};
+}
+
 void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
 {
 	log_ << "Actions " << mul_str(aa, mul) << ": ";
 
-	ActionS a = mul_actions(aa, mul);
-	ic_.actions(a);
+	actions_ = mul_actions(aa, mul);
+	ic_.actions(actions_);
 
-	auto d = ic_.difference(ic0_, ic_);
-	auto sd = ic_.solving_difference(ic0_, ic_);
+	auto r = calc_result();
 
-	log_ << "d=" << d << ", sd=" << sd;
+	log_ << r << std::endl;
+}
 
-	auto p = ic_.period(a);
-	auto sp = ic_.solving_period(a);
-	log_ << ", p=" << p << ", sp=" << sp;
-	log_ << std::endl;
+void IcosamateExplorer::tree_step(const ActionS& a)
+{
+
+}
+
+void IcosamateExplorer::tree(size_t n, bool add_commutators)
+{
+
 }
 
 

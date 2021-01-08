@@ -327,6 +327,17 @@ ActionS IcosamateInSpace::commutator(const ActionS& a1, const ActionS& a2)
 	return r;
 }
 
+ActionS IcosamateInSpace::commutator(const ActionS& a, int i)
+{
+	check(i >= 1 && i < a.size());
+	ActionS r = a;
+	for (int j = i - 1; j >= 0; j--)
+		r.push_back(inverse(a[j]));
+	for (int j = int(a.size() - 1); j >= i; j--)
+		r.push_back(inverse(a[j]));
+	return r;
+}
+
 void IcosamateInSpace::action(Action a)
 {
 	if (a > A_12_MOVE_CCW || a < 0)

@@ -141,6 +141,7 @@ public:
 	static Action move_action(AxisId axis_id, bool clockwise);
 	static Action inverse(Action a);
 	static ActionS inverse(const ActionS& a);
+	static ActionS commutator(const ActionS& a, int i); // разбить в месте i и продолжить до коммутатора
 	static ActionS commutator(const ActionS& a1, const ActionS& a2);
 	static size_t period(const ActionS& a);
 	static size_t solving_period(const ActionS& a);
