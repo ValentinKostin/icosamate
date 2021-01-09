@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
 			if (args.count("actions") > 0)
 			{
 				IcosamateExplorer ex(log);
-				size_t n = 1;
+				size_t n = 0;
 				if (args.count("n") > 0)
 					n = std::stoull(args.at("n"));
 				ex.actions(from_str(args.at("actions")), n);

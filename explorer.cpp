@@ -107,6 +107,7 @@ std::ostream& operator<<(std::ostream& oss, const ActionResult& r)
 	return oss;
 }
 
+
 IcosamateExplorer::IcosamateExplorer(std::ostream& log)	: log_(log)
 {
 }
@@ -147,15 +148,27 @@ ActionResult IcosamateExplorer::calc_result(const ActionS& a) const
 	};
 }
 
-void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
+void IcosamateExplorer::process_actions(const ActionS& aa, size_t mul)
 {
-	log_ << "Actions " << mul_str(aa, mul) << ": ";
+	log_ << mul_str(aa, mul) << ": ";
 
 	auto acts = mul_actions(aa, mul);
 
 	auto r = calc_result(acts);
 
 	log_ << r << std::endl;
+}
+
+void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
+{
+	if (mul>0)
+		return process_actions(aa, mul);
+
+	size_t period = IcosamateInSpace::period(aa);
+	std::vector<size_t> nn = multiplyers(period);
+	process_actions(aa, 1);
+	for (auto n : nn)
+		process_actions(aa, n);
 }
 
 template<class M, class R> void add_action_res(M& m, const R& r, const ActionS& a)

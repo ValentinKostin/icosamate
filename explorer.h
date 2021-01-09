@@ -56,6 +56,8 @@ class IcosamateExplorer
 	bool with_solving_ = true;
 	bool with_period_ = true;
 
+	void process_actions(const ActionS& a, size_t mul);
+
 public:
 	IcosamateExplorer(std::ostream& log);
 	void set_with_solving(bool w) { with_solving_ = w; }

@@ -30,3 +30,12 @@ inline std::string factorization_str(size_t n)
 		r.pop_back();
 	return r;
 }
+
+inline std::vector<size_t> multiplyers(size_t n)
+{
+	std::vector<size_t> r;
+	for (size_t d = 2; d < n; ++d)
+		if (n % d == 0)
+			r.push_back(d);
+	return r;
+}
