@@ -190,7 +190,8 @@ void IcosamateExplorer::tree_step(const ActionS& a, bool add_commutators)
 	for (size_t i = 1; i < a.size(); ++i)
 	{
 		ActionS ca = IcosamateInSpace::commutator(a, int(i));
-		process_elem(ca);
+		if (IcosamateInSpace::canonic(ca))
+			process_elem(ca);
 	}
 }
 
@@ -203,10 +204,14 @@ void IcosamateExplorer::tree_level(const ActionS& aa, size_t max_l, bool add_com
 
 	ActionS an = aa;
 	Action inverse_last_action = IcosamateInSpace::inverse(an.back());
+	size_t n = an.size();
+	Action doubling_last_action = (n > 1 && an[n - 1] == an[n - 2]) ? an[n - 1] : A_NO_ACTION;  // три одинаковых эквивалентны двум обратным, а если первые единицы, то 111 эквивалентно отражённым 11
 	an.push_back(A_NO_ACTION);
 	for (Action a = A_1_TURN_CW; a<= A_12_TURN_CCW; ++a)
 	{
 		if (a == inverse_last_action)
+			continue;
+		if (a == doubling_last_action)
 			continue;
 
 		an.back() = a;

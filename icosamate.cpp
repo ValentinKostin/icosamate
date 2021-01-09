@@ -381,6 +381,15 @@ size_t IcosamateInSpace::solving_period(const ActionS& a)
 	return r;
 }
 
+bool IcosamateInSpace::canonic(const ActionS& a)
+{
+	for (size_t i = 1; i < a.size(); ++i)
+		if (inverse(a[i - 1]) == a[i])
+			return false;
+
+	return true;
+}
+
 IcosamateDifference IcosamateInSpace::difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2)
 {
 	IcosamateDifference r;
