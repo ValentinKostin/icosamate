@@ -141,13 +141,11 @@ bool GLWindowInit(const GLWindow *window)
 
 	// запросим у OpenGL свободный индекс VAO
 	glGenVertexArrays(1, &vertVAO);
-
 	// сделаем VAO активным
 	glBindVertexArray(vertVAO);
 
 	// создадим VBO для данных вершин
 	glGenBuffers(1, &vertVBO);
-
 	// начинаем работу с буфером для вершин
 	glBindBuffer(GL_ARRAY_BUFFER, vertVBO);
 	// поместим в буфер координаты вершин куба
@@ -226,25 +224,27 @@ void GLWindowRender(const GLWindow *window)
 // функция обновления
 void GLWindowUpdate(const GLWindow *window, double deltaTime)
 {
-	//ASSERT(window);
-	//ASSERT(deltaTime >= 0.0); // проверка на возможность бага
+	deltaTime *= 0.1;
 
-	//// матрица вращения куба
-	//Matrix4 modelMatrix;
+	ASSERT(window);
+	ASSERT(deltaTime >= 0.0); // проверка на возможность бага
 
-	//// зададим углы поворота куба с учетом времени
-	//if ((cubeRotation[0] += 3.0f * (float)deltaTime) > 360.0f)
-	//	cubeRotation[0] -= 360.0f;
+	// матрица вращения кубика
+	Matrix4 modelMatrix;
 
-	//if ((cubeRotation[1] += 15.0f * (float)deltaTime) > 360.0f)
-	//	cubeRotation[1] -= 360.0f;
+	// зададим углы поворота кубика с учетом времени
+	if ((cubeRotation[0] += 3.0f * (float)deltaTime) > 360.0f)
+		cubeRotation[0] -= 360.0f;
 
-	//if ((cubeRotation[2] += 7.0f * (float)deltaTime) > 360.0f)
-	//	cubeRotation[2] -= 360.0f;
+	if ((cubeRotation[1] += 15.0f * (float)deltaTime) > 360.0f)
+		cubeRotation[1] -= 360.0f;
 
-	//// рассчитаем матрицу преобразования координат вершин куба
-	//Matrix4Rotation(modelMatrix, cubeRotation[0], cubeRotation[1], cubeRotation[2]);
-	//Matrix4Mul(modelViewProjectionMatrix, viewProjectionMatrix, modelMatrix);
+	if ((cubeRotation[2] += 7.0f * (float)deltaTime) > 360.0f)
+		cubeRotation[2] -= 360.0f;
+
+	// рассчитаем матрицу преобразования координат вершин куба
+	Matrix4Rotation(modelMatrix, cubeRotation[0], cubeRotation[1], cubeRotation[2]);
+	Matrix4Mul(modelViewProjectionMatrix, viewProjectionMatrix, modelMatrix);
 }
 
 // функция обработки ввода с клавиатуры и мыши
