@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="draw">
+      <UniqueIdentifier>{3e070bea-c948-4d75-b0c8-b0239579e0f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="draw\data">
+      <UniqueIdentifier>{213a06b4-6325-46ba-bc79-58ce4979db14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="draw\GL">
+      <UniqueIdentifier>{b31754fc-2d0b-48ff-839b-3b59332b5145}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="icosamate.cpp">
@@ -23,6 +32,24 @@
     </ClCompile>
     <ClCompile Include="explorer.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="draw\common.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw\draw.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw\GLWindow.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw\OpenGL.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw\Shader.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw\Texture.cpp">
+      <Filter>draw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,5 +68,37 @@
     <ClInclude Include="factorization.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="draw\common.h">
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="draw\GLWindow.h">
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="draw\OpenGL.h">
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="draw\Shader.h">
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="draw\Texture.h">
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="draw\draw.h">
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="draw\GL\glext.h">
+      <Filter>draw\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="draw\GL\wglext.h">
+      <Filter>draw\GL</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="draw\data\color_poly.fs">
+      <Filter>draw\data</Filter>
+    </None>
+    <None Include="draw\data\color_poly.vs">
+      <Filter>draw\data</Filter>
+    </None>
   </ItemGroup>
 </Project>

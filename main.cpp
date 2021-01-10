@@ -12,7 +12,7 @@
 #include "icosamate.h"
 #include "explorer.h"
 
-typedef std::wstring FnameStr;
+typedef std::string FnameStr;
 
 /////////////////////////////////////////////
 FnameStr get_exe_path()
@@ -23,7 +23,7 @@ FnameStr get_exe_path()
 	return lpFilename;
 }
 ///////////////////////////////////////////	 
-FnameStr change_exe_ext(const wchar_t* new_ext)
+FnameStr change_exe_ext(const char* new_ext)
 {
 	FnameStr log_fname = get_exe_path();
 	check(log_fname.size() > 4);
@@ -44,12 +44,12 @@ void usage()
 ///////////////////////////////////////////	 
 FnameStr default_log_path()
 {
-	return change_exe_ext(L".iclog");
+	return change_exe_ext(".iclog");
 }
 ///////////////////////////////////////////	 
 FnameStr default_ini_path()
 {
-	return change_exe_ext(L".ini");
+	return change_exe_ext(".ini");
 }
 ///////////////////////////////////////////	
 
