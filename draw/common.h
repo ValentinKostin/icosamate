@@ -12,7 +12,7 @@
 
 bool LoadFile(const char *fileName, bool binary, uint8_t **buffer, uint32_t *size);
 
-#define LOG_ERROR(str,...) {} // ZAGL
+#define LOG_ERROR(str,...) {raise("OpenGL error");} // ZAGL
 #define LOG_DEBUG(str,...) {} // ZAGL
 #define ASSERT(a) check(a)
 

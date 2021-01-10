@@ -11,8 +11,7 @@
 #include "version.h"
 #include "icosamate.h"
 #include "explorer.h"
-
-typedef std::string FnameStr;
+#include "draw/draw.h"
 
 /////////////////////////////////////////////
 FnameStr get_exe_path()
@@ -30,6 +29,16 @@ FnameStr change_exe_ext(const char* new_ext)
 	log_fname.resize(log_fname.size() - 4);
 	log_fname += new_ext;
 	return log_fname;
+}
+///////////////////////////////////////////	 
+std::string get_data_full_path(const char* sh_fname)
+{
+	FnameStr r = get_exe_path();
+	auto q = r.find_last_of("/\\");
+	r.resize(q);
+	r += "/data/";
+	r += sh_fname;
+	return r;
 }
 ///////////////////////////////////////////	 
 void usage()
@@ -115,6 +124,8 @@ void test(std::ostream& log)
 	test_move(ic, ic0);
 
 	log << "Icosamate test OK\n";
+
+	ic_draw(log);
 }
 
 typedef std::map<std::string, std::string> Args;

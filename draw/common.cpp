@@ -9,7 +9,7 @@ bool LoadFile(const char *fileName, bool binary, uint8_t **buffer, uint32_t *siz
 	ASSERT(size);
 
 	FILE     *input;
-	uint32_t fileSize, readed;
+	uint32_t fileSize;
 
 	const char mode[] = {'r', binary ? 'b' : 't', '\0'};
 
@@ -33,7 +33,7 @@ bool LoadFile(const char *fileName, bool binary, uint8_t **buffer, uint32_t *siz
 	*buffer = new uint8_t[fileSize];
 	ASSERT(*buffer);
 
-	readed = fread(*buffer, 1, fileSize, input);
+	auto readed = fread(*buffer, 1, fileSize, input);
 
 	fclose(input);
 
