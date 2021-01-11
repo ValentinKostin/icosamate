@@ -7,43 +7,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "draw.h"
-
-// данные матрицы
-typedef float Matrix4[16];
-
-// пременные для хранения идентификаторов шейдерной программы и текстуры
-static GLuint shaderProgram_colors = 0, shaderProgram_one_color=0, colorTexture = 0;
-
-// для хранения двух углов поворота куба
-static float  cubeRotation[3] = {0.0f, 0.0f, 0.0f};
-
-// матрицы преобразования
-static Matrix4 modelViewProjectionMatrix = {0.0f}, viewMatrix = {0.0f},
-               projectionMatrix = {0.0f}, viewProjectionMatrix = {0.0f};
-
-// индексы полученный из шейдерной программы
-static GLint modelViewProjectionMatrixLocation_colors = -1, positionLocation_colors = -1, colorLocation = -1, 
-	modelViewProjectionMatrixLocation_one_color = -1, positionLocation_one_color = -1, sketchColorLocation=-1;
-
-static float  sketchColor[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-
-// для хранения VAO и VBO связанных вершинами
-static GLuint vertVBO = -1;
-static GLuint vertVBO_one_color = -1;
-static GLuint vertVAO = -1;
-static GLuint vertVAO_one_color = -1;
-
-// количество вершин
-static const uint32_t verticesCount = 9;
-const int vertexSize = 7 * sizeof(float);
-
-// буфер вершин
-static const float s = 1.0f; // половина размера куба
-static const float vertBuffer[verticesCount][7] = {
-	{-s, s, s, 1.0f, 0.0f, 0.0f, 1.0f}, { s, s, s, 1.0f, 0.0f, 0.0f, 1.0f}, { s,-s, s, 1.0f, 0.0f, 0.0f, 1.0f},
-	{-s, s, s, 1.0f, 0.0f, 0.0f, 1.0f}, { s,-s, s, 1.0f, 0.0f, 0.0f, 1.0f}, { -s, -s, s, 1.0f, 0.0f, 0.0f, 1.0f},
-	{-s, s,-s, 0.0f, 1.0f, 0.0f, 1.0f}, {-s, s, s, 0.0f, 1.0f, 0.0f, 1.0f}, {-s,-s, s, 0.0f, 1.0f, 0.0f, 1.0f}
-};
+#include "draw_impl.h"
 
 // построение перспективной матрицы
 static void Matrix4Perspective(Matrix4 M, float fovy, float aspect, float znear, float zfar)
@@ -183,7 +147,7 @@ bool GLWindowInit(const GLWindow *window)
 	// начинаем работу с буфером для вершин
 	glBindBuffer(GL_ARRAY_BUFFER, vertVBO_one_color);
 	// поместим в буфер координаты вершин куба
-	glBufferData(GL_ARRAY_BUFFER, verticesCount * vertexSize, vertBuffer, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, icd().one_color_buffer_bytes_count(), icd().one_color_buffer(), GL_STATIC_DRAW);
 
 	// получим индекс матрицы из шейдерной программы
 	modelViewProjectionMatrixLocation_one_color = glGetUniformLocation(shaderProgram_one_color, "modelViewProjectionMatrix");
@@ -192,13 +156,12 @@ bool GLWindowInit(const GLWindow *window)
 	if (sketchColorLocation != -1)
 		glUniform4fv(sketchColorLocation, 1, sketchColor);
 
-	offset = 0;
 	// получим индекс вершинного атрибута 'position' из шейдерной программы
 	positionLocation_one_color = glGetAttribLocation(shaderProgram_one_color, "position");
 	if (positionLocation_one_color != -1)
 	{
 		// укажем параметры вершинного атрибута для текущего активного VBO
-		glVertexAttribPointer(positionLocation_one_color, 3, GL_FLOAT, GL_FALSE, vertexSize, offset);
+		glVertexAttribPointer(positionLocation_one_color, 3, GL_FLOAT, GL_FALSE, GLsizei(icd().one_color_buffer_coord_byte_size()), 0);
 		// разрешим использование вершинного атрибута
 		glEnableVertexAttribArray(positionLocation_one_color);
 	}
@@ -259,7 +222,7 @@ void GLWindowRender(const GLWindow *window)
 		glUniformMatrix4fv(modelViewProjectionMatrixLocation_one_color, 1, GL_TRUE, modelViewProjectionMatrix);
 
 	glBindVertexArray(vertVAO_one_color);
-	glDrawArrays(GL_TRIANGLES, 0, verticesCount);
+	glDrawArrays(GL_TRIANGLES, 0, GLsizei(icd().one_color_buffer_coords_count()));
 
 	// проверка на ошибки
 	OPENGL_CHECK_FOR_ERRORS();

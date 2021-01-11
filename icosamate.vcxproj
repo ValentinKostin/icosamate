@@ -142,6 +142,7 @@
     <ClCompile Include="coord.cpp" />
     <ClCompile Include="draw\common.cpp" />
     <ClCompile Include="draw\draw.cpp" />
+    <ClCompile Include="draw\draw_impl.cpp" />
     <ClCompile Include="draw\GLWindow.cpp" />
     <ClCompile Include="draw\OpenGL.cpp" />
     <ClCompile Include="draw\Shader.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="def.h" />
     <ClInclude Include="draw\common.h" />
     <ClInclude Include="draw\draw.h" />
+    <ClInclude Include="draw\draw_impl.h" />
     <ClInclude Include="draw\GLWindow.h" />
     <ClInclude Include="draw\GL\glext.h" />
     <ClInclude Include="draw\GL\wglext.h" />

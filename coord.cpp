@@ -7,7 +7,7 @@
 IcosomateCoords::IcosomateCoords(double radius) : radius_(radius)
 {
 	fill_coords();
-	fill_face_triangles();
+	fill_face_triangles();	
 }
 
 void IcosomateCoords::fill_coords()
@@ -33,7 +33,7 @@ void IcosomateCoords::fill_coords()
 		coords_[ax_id].z_ = rsin;
 	}
 
-	for (AxisId ax_id = 7; ax_id <= 10; ax_id++)
+	for (AxisId ax_id = 7; ax_id <= 11; ax_id++)
 	{
 		coords_[ax_id].ax_id_ = ax_id;
 		coords_[ax_id].x_ = rcos * sin(s_angle * (ax_id-1.0));
@@ -41,10 +41,19 @@ void IcosomateCoords::fill_coords()
 		coords_[ax_id].z_ = -rsin;
 	}
 
-	coords_[1].ax_id_ = 0;
+	coords_[0].ax_id_ = 0;
 	coords_[0].x_ = 0;
 	coords_[0].y_ = 0;
 	coords_[0].z_ = -radius_;
+
+	const double eps = 1e-8;
+	for (auto& c: coords_)
+	{
+		if (fabs(c.x_) < eps)
+			c.x_ = 0;
+		if (fabs(c.y_) < eps)
+			c.y_ = 0;
+	}
 }
 
 void VertTriangle::rotate_start_min()
@@ -68,9 +77,9 @@ void VertTriangle::rotate_start_min()
 void IcosomateCoords::fill_face_triangles()
 {
 	std::set<VertTriangle> filled_triangles;
-	for (AxisId ax_id = 0; ax_id < IcosamateInSpace::AXIS_COUNT; ax_id++)
+	for (AxisId ax_id = 0; ax_id < axes().count(); ax_id++)
 	{
-		const Axis& a = IcosamateInSpace::axis(ax_id);
+		const Axis& a = axes().axis(ax_id);
 		for (size_t i=0; i<5; ++i)
 		{
 			VertTriangle t;
@@ -79,7 +88,7 @@ void IcosomateCoords::fill_face_triangles()
 			t.coords_[2] = &coords_[a.near_axes_[(i+1)%5]];
 			t.rotate_start_min();
 
-			if (filled_triangles.count(t))
+			if (filled_triangles.count(t)>0)
 				continue;
 			
 			FaceTriangleId id = face_triangles_.size();
@@ -87,6 +96,7 @@ void IcosomateCoords::fill_face_triangles()
 			filled_triangles.insert(t);
 		}
 	}
+	check(face_triangles_.size() == IcosamateInSpace::FACE_COUNT);
 }
 
 

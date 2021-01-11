@@ -25,11 +25,11 @@ inline bool operator<(const VertTriangle& t1, const VertTriangle& t2)
 	if (t1.coords_[0]->ax_id_ < t2.coords_[0]->ax_id_)
 		return false;
 	if (t2.coords_[0]->ax_id_ < t1.coords_[0]->ax_id_)
-		return false;
+		return true;
 	if (t1.coords_[1]->ax_id_ < t2.coords_[1]->ax_id_)
 		return false;
 	if (t2.coords_[1]->ax_id_ < t1.coords_[1]->ax_id_)
-		return false;
+		return true;
 	return t1.coords_[2]->ax_id_ < t2.coords_[2]->ax_id_;
 }
 
@@ -50,6 +50,7 @@ class IcosomateCoords
 	void fill_face_triangles();
 public:
 	IcosomateCoords(double radius = 1.0);
-	const Coord& coord(AxisId axis_id) const { return coords_.at(axis_id); }
 	double radius() const { return radius_; }
+	const Coord& vertex(AxisId axis_id) const { return coords_.at(axis_id); }
+	const FaceTriangle& face_triangle(FaceTriangleId id) const { return face_triangles_.at(id); }
 };

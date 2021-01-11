@@ -119,18 +119,31 @@ static const Action A_1_MOVE_CCW = 37;
 static const Action A_12_MOVE_CCW = 48;
 typedef std::vector<Action>	ActionS;
 
-// расположение относительно фиксированных осей 0-11
-class IcosamateInSpace : public Icosamate
+// фиксированные оси 0-11
+class Axes
 {
 	static const std::vector<Axis> make_axes();
-	static const std::vector<Axis> axes_; // первые 6 - основные оси, остальные - им противоположные
+	const std::vector<Axis> axes_; // первые 6 - основные оси, остальные - им противоположные
 public:
-	static const size_t AXIS_COUNT = 12;
-	static const Axis& axis(AxisId ax_id) { return axes_.at(ax_id); }
+	Axes();
+	const Axis& axis(AxisId ax_id) const { return axes_.at(ax_id); }
+	const Axis& operator[](AxisId ax_id) const { return axes_.at(ax_id); }
+	const std::vector<Axis>& axes() const { return axes_; }
+	size_t count() const { return 12; }
+};
+
+const Axes& axes();
+
+// расположение относительно фиксированных осей
+class IcosamateInSpace : public Icosamate
+{
+public:
 private:
 	std::vector<VertexId> vert_elem_by_axis_;
 	std::vector<AxisId> axis_by_vert_elem_;
 	void move_half(AxisId axis_id, size_t n, bool clockwise); // поворот половины как единого целого по часовой стрелке вдоль указанной оси
+public:
+	static const size_t FACE_COUNT = 20;
 public:
 	IcosamateInSpace();
 	// вращения вокруг оси и противоположной эквивалентны с точки зрения элементов, но не с точки зрения их расположения в пространстве

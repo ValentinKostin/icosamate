@@ -247,10 +247,10 @@ void IcosamateExplorer::tree(size_t n, bool add_commutators)
 
 void explore_near_axis(std::ostream& log, bool turn1, bool turn2, bool is_1_cw, bool is_2_cw)
 {
-	for (AxisId ax_id = 0; ax_id < IcosamateInSpace::AXIS_COUNT; ax_id++)
+	for (AxisId ax_id = 0; ax_id < axes().count(); ax_id++)
 	{
 		Action a1 = turn1 ? IcosamateInSpace::turn_action(ax_id, is_1_cw) : IcosamateInSpace::move_action(ax_id, is_1_cw);
-		const Axis& a = IcosamateInSpace::axis(ax_id);
+		const Axis& a = axes().axis(ax_id);
 		for (AxisId near_ax_id : a.near_axes_)
 		{
 			Action a2 = turn2 ? IcosamateInSpace::turn_action(near_ax_id, is_2_cw) : IcosamateInSpace::move_action(near_ax_id, is_2_cw);

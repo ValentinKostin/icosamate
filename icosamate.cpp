@@ -62,6 +62,7 @@ size_t next_index(size_t el_index, size_t n, bool clockwise)
 
 // грань f имеет ровно одну ссылку из inds, этот индекс в vert_elems_colors_inds_ и выдаётся
 size_t NO_UNIQUE_INDEX = Face::VERTEX_ELEM_COUNT;
+
 size_t unique_index(const std::map<VertexId, size_t>& inds, const Face& f)
 {
 	size_t r = NO_UNIQUE_INDEX;
@@ -189,7 +190,7 @@ const Face& Icosamate::face(VertexId v0, VertexId v1, VertexId v2) const
 	return faces_[0];
 }
 
-const std::vector<Axis> IcosamateInSpace::make_axes()
+const std::vector<Axis> Axes::make_axes()
 {
 	return
 	{
@@ -199,18 +200,12 @@ const std::vector<Axis> IcosamateInSpace::make_axes()
 	};
 }
 
-const std::vector<Axis> IcosamateInSpace::axes_ = make_axes();
-
-IcosamateInSpace::IcosamateInSpace()
+Axes::Axes() : axes_(make_axes())
 {
-	for (size_t i = 0; i < vert_elems_.size(); i++)
-	{
-		vert_elem_by_axis_.push_back(i);
-		axis_by_vert_elem_.push_back(i);
-	}
+	check(axes_.size() == count());
 
 	// проверка, что оси заполнены корректно:
-	std::vector<size_t> near_axis_count(AXIS_COUNT);
+	std::vector<size_t> near_axis_count(axes_.size());
 	for (const Axis& a : axes_)
 	{
 		check(a.invariant());
@@ -221,9 +216,25 @@ IcosamateInSpace::IcosamateInSpace()
 		check(ac == Axis::NEAR_AXIS_COUNT);
 }
 
+const Axes& axes()
+{
+	static Axes	axes;
+	return axes;
+}
+
+
+IcosamateInSpace::IcosamateInSpace()
+{
+	for (size_t i = 0; i < vert_elems_.size(); i++)
+	{
+		vert_elem_by_axis_.push_back(i);
+		axis_by_vert_elem_.push_back(i);
+	}
+}
+
 void IcosamateInSpace::move_half(AxisId axis_id, size_t n, bool clockwise)
 {
-	const Axis& a = axes_[axis_id];
+	const Axis& a = axes()[axis_id];
 	AxisId near_axis_id[5];
 	for (size_t i = 0; i < 5; i++)
 		near_axis_id[i] = a.near_axes_[i];
@@ -246,14 +257,14 @@ void IcosamateInSpace::move_half(AxisId axis_id, size_t n, bool clockwise)
 
 void IcosamateInSpace::move(AxisId axis_id, size_t n)
 {
-	const Axis& a = axes_[axis_id];
+	const Axis& a = axes()[axis_id];
 	move_half(a.id_, n, true);
 	move_half(a.opposite_id_, n, false);
 }
 
 void IcosamateInSpace::turn(AxisId axis_id, size_t n)
 {
-	const Axis& a = axes_[axis_id];
+	const Axis& a = axes()[axis_id];
 	AxisId near_axis_id[5];
 	for (size_t i = 0; i < 5; i++)
 		near_axis_id[i] = a.near_axes_[i];
@@ -263,7 +274,7 @@ void IcosamateInSpace::turn(AxisId axis_id, size_t n)
 	for (size_t i = 0; i < 5; i++)
 		near_vid[i] = vert_elem_by_axis_[near_axis_id[i]];
 
-	const Axis& a_op = axes_[a.opposite_id_];
+	const Axis& a_op = axes()[a.opposite_id_];
 	AxisId near_op_axis_id[5];
 	for (size_t i = 0; i < 5; i++)
 		near_op_axis_id[i] = a_op.near_axes_[i];
@@ -393,7 +404,7 @@ bool IcosamateInSpace::canonic(const ActionS& a)
 IcosamateDifference IcosamateInSpace::difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2)
 {
 	IcosamateDifference r;
-	for (const Axis& a : axes_)
+	for (const Axis& a : axes().axes())
 	{
 		VertexId v1_0 = i1.vert_elem_by_axis_[a.id_];
 		VertexId v2_0 = i2.vert_elem_by_axis_[a.id_];
@@ -429,7 +440,7 @@ IcosamateDifference IcosamateInSpace::solving_difference(const IcosamateInSpace&
 {
 	IcosamateDifference r = difference(i1, i2);
 	IcosamateInSpace ic = i2;
-	for (const Axis& a : axes_)
+	for (const Axis& a : axes().axes())
 	{
 		for (size_t i=0; i<Axis::NEAR_AXIS_COUNT; ++i)
 		{
