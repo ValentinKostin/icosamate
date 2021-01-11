@@ -173,7 +173,6 @@ bool ShaderProgramValidate(GLuint program)
 	glValidateProgram(program);
 	return (ShaderProgramStatus(program, GL_VALIDATE_STATUS) == GL_TRUE);
 }
-
 void ShaderProgramBind(GLuint program)
 {
 	// сделаем шейдерную программу активной
@@ -185,3 +184,24 @@ void ShaderProgramUnbind()
 	// сделаем текущую шейдерную программу неактивной
 	glUseProgram(0);
 }
+
+
+GLuint OpenShaderProgram(const char* fileName)
+{
+	// создадим и загрузим шейдерную программу
+	auto shaderProgram = ShaderProgramCreateFromFile(get_data_full_path(fileName).c_str(), ST_VERTEX | ST_FRAGMENT);
+
+	if (!shaderProgram)
+		return -1;
+
+	// собираем созданную и загруженную шейдерную программу
+	if (!ShaderProgramLink(shaderProgram))
+		return -1;
+
+	// проверка шейдерной программы на корректность
+	if (!ShaderProgramValidate(shaderProgram))
+		return -1;
+
+	return shaderProgram;
+}
+

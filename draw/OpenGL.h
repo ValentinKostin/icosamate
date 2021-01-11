@@ -24,9 +24,11 @@ extern GLenum g_OpenGLError;
 	}
 
 // проверка на ошибки OpenGL
-#define OPENGL_CHECK_FOR_ERRORS() \
-	if ((g_OpenGLError = glGetError()) != GL_NO_ERROR) \
+inline void OPENGL_CHECK_FOR_ERRORS()
+{
+	if ((g_OpenGLError = glGetError()) != GL_NO_ERROR)
 		LOG_ERROR("OpenGL error 0x%X\n", (unsigned)g_OpenGLError);
+}
 
 // инициализация необходимых расширений OpenGL
 bool OpenGLInitExtensions();
@@ -72,5 +74,6 @@ extern PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
 extern PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
 extern PFNGLUNIFORMMATRIX4FVPROC   glUniformMatrix4fv;
 extern PFNGLUNIFORM1IPROC          glUniform1i;
+extern PFNGLUNIFORM4FVPROC         glUniform4fv;
 
 #endif /* OPENGL_H */

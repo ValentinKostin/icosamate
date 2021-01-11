@@ -21,6 +21,8 @@ bool ShaderProgramLink(GLuint program);
 // проверяет собранную шейдерную программу на корректность
 bool ShaderProgramValidate(GLuint program);
 
+GLuint OpenShaderProgram(const char* fileName);
+
 // делает указанную шейдерную программу активной
 void ShaderProgramBind(GLuint program);
 
