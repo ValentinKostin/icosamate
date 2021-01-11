@@ -14,21 +14,29 @@ typedef size_t FaceTriangleId;
 
 struct VertTriangle
 {
-protected:
+public:
 	void rotate_start_min(); // циклическое перемещение	coords_, чтобы в начале был минимальный
 public:
-	const Coord* coords_[3]; // по часовой стрелке, начинаются с минимального
+	const Coord* coords_[3] = { 0,0,0 }; // по часовой стрелке, начинаются с минимального
 };
 
 inline bool operator<(const VertTriangle& t1, const VertTriangle& t2)
 {
-	// ZAGL 
-	return false;
+	if (t1.coords_[0]->ax_id_ < t2.coords_[0]->ax_id_)
+		return false;
+	if (t2.coords_[0]->ax_id_ < t1.coords_[0]->ax_id_)
+		return false;
+	if (t1.coords_[1]->ax_id_ < t2.coords_[1]->ax_id_)
+		return false;
+	if (t2.coords_[1]->ax_id_ < t1.coords_[1]->ax_id_)
+		return false;
+	return t1.coords_[2]->ax_id_ < t2.coords_[2]->ax_id_;
 }
 
 struct FaceTriangle	: public VertTriangle
 {
-	FaceTriangleId id_;
+	FaceTriangleId id_ = 20;
+	FaceTriangle(FaceTriangleId id, const VertTriangle& t) : VertTriangle(t), id_(id) {}
 };
 
 
