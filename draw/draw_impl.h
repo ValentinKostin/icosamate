@@ -21,8 +21,6 @@ projectionMatrix = { 0.0f }, viewProjectionMatrix = { 0.0f };
 static GLint modelViewProjectionMatrixLocation_colors = -1, positionLocation_colors = -1, colorLocation = -1,
 modelViewProjectionMatrixLocation_one_color = -1, positionLocation_one_color = -1, sketchColorLocation = -1;
 
-static float  sketchColor[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-
 // для хранения VAO и VBO связанных вершинами
 static GLuint vertVBO = -1;
 static GLuint vertVBO_one_color = -1;
@@ -46,12 +44,16 @@ class IcosamateDrawing
 	std::vector<float> one_color_buffer_;
 	void fill_one_color_buffer();
 	void add_to_one_color_buffer(const Coord& c);
+
+	float sketch_color_[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 public:
 	IcosamateDrawing();
+
 	const float* one_color_buffer() const { return &one_color_buffer_[0]; }
 	size_t one_color_buffer_coords_count() const { return one_color_buffer_.size() / 3; }
 	size_t one_color_buffer_bytes_count() const { return one_color_buffer_.size() * sizeof(float); }
 	size_t one_color_buffer_coord_byte_size() const { return 3 * sizeof(float); }
+	const float* sketch_color() const { return sketch_color_; }
 };
 
 IcosamateDrawing& icd();

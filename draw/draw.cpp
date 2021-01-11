@@ -74,7 +74,7 @@ bool GLWindowInit(const GLWindow *window)
 	glViewport(0, 0, window->width, window->height);
 
 	// параметры OpenGL
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(255.0f/255.0f, 245.0f / 255.0f, 213.0f / 255.0f, 1.0f);
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -154,7 +154,7 @@ bool GLWindowInit(const GLWindow *window)
 
 	sketchColorLocation = glGetUniformLocation(shaderProgram_one_color, "sketchColor");
 	if (sketchColorLocation != -1)
-		glUniform4fv(sketchColorLocation, 1, sketchColor);
+		glUniform4fv(sketchColorLocation, 1, icd().sketch_color());
 
 	// получим индекс вершинного атрибута 'position' из шейдерной программы
 	positionLocation_one_color = glGetAttribLocation(shaderProgram_one_color, "position");
@@ -215,7 +215,7 @@ void GLWindowRender(const GLWindow *window)
 	glDrawArrays(GL_TRIANGLES, 0, verticesCount);
 
 	ShaderProgramBind(shaderProgram_one_color);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// передаем в шейдер матрицу преобразования координат вершин
 	if (modelViewProjectionMatrixLocation_one_color != -1)
