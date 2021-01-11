@@ -51,6 +51,9 @@
     <ClCompile Include="draw\Texture.cpp">
       <Filter>draw</Filter>
     </ClCompile>
+    <ClCompile Include="coord.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="def.h">
@@ -91,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="draw\GL\wglext.h">
       <Filter>draw\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="coord.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

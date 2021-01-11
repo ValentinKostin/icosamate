@@ -268,7 +268,7 @@ void GLWindowRender(const GLWindow *window)
 // функция обновления
 void GLWindowUpdate(const GLWindow *window, double deltaTime)
 {
-	deltaTime *= 0.1;
+	deltaTime *= 0.25;
 
 	ASSERT(window);
 	ASSERT(deltaTime >= 0.0); // проверка на возможность бага

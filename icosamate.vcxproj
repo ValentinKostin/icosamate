@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="coord.cpp" />
     <ClCompile Include="draw\common.cpp" />
     <ClCompile Include="draw\draw.cpp" />
     <ClCompile Include="draw\GLWindow.cpp" />
@@ -150,6 +151,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="coord.h" />
     <ClInclude Include="def.h" />
     <ClInclude Include="draw\common.h" />
     <ClInclude Include="draw\draw.h" />
