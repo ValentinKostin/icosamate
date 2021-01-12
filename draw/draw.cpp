@@ -107,7 +107,7 @@ bool GLWindowInit(const GLWindow *window)
 	// начинаем работу с буфером для вершин
 	glBindBuffer(GL_ARRAY_BUFFER, vertVBO);
 	// поместим в буфер координаты вершин куба
-	glBufferData(GL_ARRAY_BUFFER, verticesCount * vertexSize, vertBuffer, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, icd().multi_colors_buffer_bytes_count(), icd().multi_colors_buffer(), GL_STATIC_DRAW);
 
 	// сделаем шейдерную программу активной
 	ShaderProgramBind(shaderProgram_colors);
@@ -120,7 +120,7 @@ bool GLWindowInit(const GLWindow *window)
 	if (positionLocation_colors != -1)
 	{
 		// укажем параметры вершинного атрибута для текущего активного VBO
-		glVertexAttribPointer(positionLocation_colors, 3, GL_FLOAT, GL_FALSE, vertexSize, offset);
+		glVertexAttribPointer(positionLocation_colors, 3, GL_FLOAT, GL_FALSE, GLsizei(icd().multi_colors_buffer_coord_byte_size()), offset);
 		// разрешим использование вершинного атрибута
 		glEnableVertexAttribArray(positionLocation_colors);
 	}
@@ -131,7 +131,7 @@ bool GLWindowInit(const GLWindow *window)
 	if (colorLocation != -1)
 	{
 		// укажем параметры вершинного атрибута для текущего активного VBO
-		glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, vertexSize, offset);
+		glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, GLsizei(icd().multi_colors_buffer_coord_byte_size()), offset);
 		// разрешим использование вершинного атрибута
 		glEnableVertexAttribArray(colorLocation);
 	}
@@ -201,9 +201,8 @@ void GLWindowRender(const GLWindow *window)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// делаем шейдерную программу активной
+	// рисовка цветов треугольничков
 	ShaderProgramBind(shaderProgram_colors);
-
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// передаем в шейдер матрицу преобразования координат вершин
@@ -212,12 +211,12 @@ void GLWindowRender(const GLWindow *window)
 
 	// выводим на экран все что относится к VAO
 	glBindVertexArray(vertVAO);
-	glDrawArrays(GL_TRIANGLES, 0, verticesCount);
+	glDrawArrays(GL_TRIANGLES, 0, GLsizei(icd().multi_colors_buffer_coords_count()));
 
+ 	// рисовка каркаса
 	ShaderProgramBind(shaderProgram_one_color);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	// передаем в шейдер матрицу преобразования координат вершин
 	if (modelViewProjectionMatrixLocation_one_color != -1)
 		glUniformMatrix4fv(modelViewProjectionMatrixLocation_one_color, 1, GL_TRUE, modelViewProjectionMatrix);
 

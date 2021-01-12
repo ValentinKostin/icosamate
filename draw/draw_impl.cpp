@@ -19,7 +19,7 @@ void IcosamateDrawing::add_to_one_color_buffer(const Coord& c)
 void IcosamateDrawing::fill_one_color_buffer_faces()
 {
 	size_t n = IcosamateInSpace::FACE_COUNT;
-	one_color_buffer_.reserve(3 * n);
+	one_color_buffer_.reserve(n * 3 * 3);
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
@@ -32,7 +32,7 @@ void IcosamateDrawing::fill_one_color_buffer_faces()
 void IcosamateDrawing::fill_one_color_buffer_faces_subtriangles()
 {
 	size_t n = IcosamateInSpace::FACE_COUNT;
-	one_color_buffer_.reserve(3 * 4 * n);
+	one_color_buffer_.reserve(n * 4 * 3 * 3);
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
@@ -53,21 +53,39 @@ void IcosamateDrawing::fill_one_color_buffer_faces_subtriangles()
 
 void IcosamateDrawing::fill_one_color_buffer()
 {
-	fill_one_color_buffer_faces();
-	//fill_one_color_buffer_faces_subtriangles();
+	//fill_one_color_buffer_faces();
+	fill_one_color_buffer_faces_subtriangles();
+}
+
+void add_color(std::vector<float>& buf, float color[4])
+{
+	const float* p = &color[0];
+	buf.insert(buf.end(), p, p + 4);
 }
 
 void IcosamateDrawing::fill_multi_colors_buffer()
 {
-	size_t n = IcosamateInSpace::FACE_COUNT;
-	multi_colors_buffer_.reserve(7 * 4 * n);
-	for (size_t i = 0; i < one_color_buffer_.size()/3; i += 3)
-	{
+	float test_color[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 
+	size_t n = IcosamateInSpace::FACE_COUNT;
+	multi_colors_buffer_.reserve(n * 4 * 3 * 7);
+	for (FaceTriangleId id = 0; id < n; id++)
+	{
+		const FaceTriangle& t = gic.face_triangle(id);
+		for (size_t j = 0; j < 4; j++) // перебор треугольничков - элементов
+		{
+			for (size_t k = 0; k < 3; k++) // перебор вершин в треугольничках
+			{
+				const float* crd_buf = &one_color_buffer_[id * 4 * 3 * 3 + j * 3 * 3 + k * 3];
+				multi_colors_buffer_.insert(multi_colors_buffer_.end(), crd_buf, crd_buf + 3);
+				add_color(multi_colors_buffer_, test_color);
+			}
+		}
 	}
 }
 
 IcosamateDrawing::IcosamateDrawing()
 {
 	fill_one_color_buffer();
+	fill_multi_colors_buffer();
 }
