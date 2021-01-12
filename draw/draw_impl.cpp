@@ -23,43 +23,48 @@ void IcosamateDrawing::fill_one_color_buffer_faces()
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
-		for (size_t i = 0; i < 3; ++i)
-		{
-			add_to_one_color_buffer(t.vert_coords(0));
-			add_to_one_color_buffer(t.vert_coords(1));
-			add_to_one_color_buffer(t.vert_coords(2));
-		}
+		add_to_one_color_buffer(t.vert_coords(0));
+		add_to_one_color_buffer(t.vert_coords(1));
+		add_to_one_color_buffer(t.vert_coords(2));
 	}
 }
 
 void IcosamateDrawing::fill_one_color_buffer_faces_subtriangles()
 {
 	size_t n = IcosamateInSpace::FACE_COUNT;
-	one_color_buffer_.reserve(3 * 4* n);
+	one_color_buffer_.reserve(3 * 4 * n);
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
-		for (size_t i = 0; i < 3; ++i)
-		{
-			add_to_one_color_buffer(t.vertex_subtriangle_coord(0, 0));
-			add_to_one_color_buffer(t.vertex_subtriangle_coord(0, 1));
-			add_to_one_color_buffer(t.vertex_subtriangle_coord(0, 2));
-			add_to_one_color_buffer(t.vertex_subtriangle_coord(1, 0));
-			add_to_one_color_buffer(t.vertex_subtriangle_coord(1, 1));
-			add_to_one_color_buffer(t.vertex_subtriangle_coord(1, 2));
-			add_to_one_color_buffer(t.vertex_subtriangle_coord(2, 0));
-			add_to_one_color_buffer(t.vertex_subtriangle_coord(2, 1));
-			add_to_one_color_buffer(t.vertex_subtriangle_coord(2, 2));
-			add_to_one_color_buffer(t.center_subtriangle_coord(0));
-			add_to_one_color_buffer(t.center_subtriangle_coord(1));
-			add_to_one_color_buffer(t.center_subtriangle_coord(2));
-		}
+		add_to_one_color_buffer(t.vertex_subtriangle_coord(0, 0));
+		add_to_one_color_buffer(t.vertex_subtriangle_coord(0, 1));
+		add_to_one_color_buffer(t.vertex_subtriangle_coord(0, 2));
+		add_to_one_color_buffer(t.vertex_subtriangle_coord(1, 0));
+		add_to_one_color_buffer(t.vertex_subtriangle_coord(1, 1));
+		add_to_one_color_buffer(t.vertex_subtriangle_coord(1, 2));
+		add_to_one_color_buffer(t.vertex_subtriangle_coord(2, 0));
+		add_to_one_color_buffer(t.vertex_subtriangle_coord(2, 1));
+		add_to_one_color_buffer(t.vertex_subtriangle_coord(2, 2));
+		add_to_one_color_buffer(t.center_subtriangle_coord(0));
+		add_to_one_color_buffer(t.center_subtriangle_coord(1));
+		add_to_one_color_buffer(t.center_subtriangle_coord(2));
 	}
 }
 
 void IcosamateDrawing::fill_one_color_buffer()
 {
-	fill_one_color_buffer_faces_subtriangles();
+	fill_one_color_buffer_faces();
+	//fill_one_color_buffer_faces_subtriangles();
+}
+
+void IcosamateDrawing::fill_multi_colors_buffer()
+{
+	size_t n = IcosamateInSpace::FACE_COUNT;
+	multi_colors_buffer_.reserve(7 * 4 * n);
+	for (size_t i = 0; i < one_color_buffer_.size()/3; i += 3)
+	{
+
+	}
 }
 
 IcosamateDrawing::IcosamateDrawing()
