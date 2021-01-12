@@ -215,7 +215,7 @@ void GLWindowRender(const GLWindow *window)
 	glDrawArrays(GL_TRIANGLES, 0, verticesCount);
 
 	ShaderProgramBind(shaderProgram_one_color);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// передаем в шейдер матрицу преобразования координат вершин
 	if (modelViewProjectionMatrixLocation_one_color != -1)

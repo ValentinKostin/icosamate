@@ -42,8 +42,10 @@ static const float vertBuffer[verticesCount][7] = {
 class IcosamateDrawing
 {
 	std::vector<float> one_color_buffer_;
-	void fill_one_color_buffer();
 	void add_to_one_color_buffer(const Coord& c);
+	void fill_one_color_buffer_faces(); // треугольники граней икосаэдра
+	void fill_one_color_buffer_faces_subtriangles(); // каждая грань икосаэдра делится на четыре элемента-треугольничка
+	void fill_one_color_buffer();
 
 	float sketch_color_[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 public:

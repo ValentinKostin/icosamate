@@ -4,6 +4,19 @@
 #include <cmath>
 #include <set>
 
+FaceTriangle::FaceTriangle(FaceTriangleId id, const VertTriangle& t) : VertTriangle(t), id_(id)
+{
+	fill_subtriangle_coords();
+}
+
+void FaceTriangle::fill_subtriangle_coords()
+{
+	Coord p01 = (*coords_[0] + *coords_[1]) * 0.5;
+	Coord p12 = (*coords_[1] + *coords_[2]) * 0.5;
+	Coord p20 = (*coords_[2] + *coords_[0]) * 0.5;
+	subtriangle_coords_ = { *coords_[0], p01, p20, *coords_[1], p12, p01, *coords_[2], p20, p12, p12, p20, p01 };
+}
+
 IcosomateCoords::IcosomateCoords(double radius) : radius_(radius)
 {
 	fill_coords();
@@ -36,8 +49,8 @@ void IcosomateCoords::fill_coords()
 	for (AxisId ax_id = 7; ax_id <= 11; ax_id++)
 	{
 		coords_[ax_id].ax_id_ = ax_id;
-		coords_[ax_id].x_ = rcos * sin(s_angle * (ax_id-1.0));
-		coords_[ax_id].y_ = rcos * cos(s_angle * (ax_id-1.0));
+		coords_[ax_id].x_ = rcos * sin(s_angle * (ax_id - 1.0));
+		coords_[ax_id].y_ = rcos * cos(s_angle * (ax_id - 1.0));
 		coords_[ax_id].z_ = -rsin;
 	}
 
