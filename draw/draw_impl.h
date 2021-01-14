@@ -27,6 +27,7 @@ static GLuint vertVBO_one_color = -1;
 static GLuint vertVAO = -1;
 static GLuint vertVAO_one_color = -1;
 
+typedef int DrawColor;
 
 class IcosamateDrawing
 {
@@ -39,6 +40,10 @@ class IcosamateDrawing
 
 	std::vector<float> multi_colors_buffer_;  // координаты вершин	треугольников вместе с цветом, после каждой вершины
 	void fill_multi_colors_buffer();
+
+	std::vector<DrawColor> draw_colors_;
+	std::vector<float> gl_face_colors_;
+	void fill_gl_face_colors();
 
 public:
 	IcosamateDrawing();
