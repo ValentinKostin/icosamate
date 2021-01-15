@@ -227,28 +227,30 @@ void GLWindowRender(const GLWindow *window)
 	OPENGL_CHECK_FOR_ERRORS();
 }
 
+void rotation_angle_change(float* cubeRotation, int scr_ax_num, bool increase, double deltaTime)
+{
+	float d = 5.0f * (float)deltaTime;
+	float n = cubeRotation[scr_ax_num] + (float)(increase ? d : -d);
+	if (n > 360.0f)
+		n -= 360.0f;
+	if (n < -360.0f)
+		n += 360.0f;
+	cubeRotation[scr_ax_num] = n;
+}
+
 // функция обновления
 void GLWindowUpdate(const GLWindow *window, double deltaTime)
 {
-	deltaTime *= 0.25;
+	if (!icd().rotation_animation())
+		return;
 
 	ASSERT(window);
 	ASSERT(deltaTime >= 0.0); // проверка на возможность бага
 
-	// матрица вращения кубика
-	Matrix4 modelMatrix;
+	rotation_angle_change(cubeRotation, icd().rotate_animation_screen_axis(), icd().rotation_animation_angle_increase(), deltaTime);
 
-	// зададим углы поворота кубика с учетом времени
-	if ((cubeRotation[0] += 3.0f * (float)deltaTime) > 360.0f)
-		cubeRotation[0] -= 360.0f;
-
-	if ((cubeRotation[1] += 15.0f * (float)deltaTime) > 360.0f)
-		cubeRotation[1] -= 360.0f;
-
-	if ((cubeRotation[2] += 7.0f * (float)deltaTime) > 360.0f)
-		cubeRotation[2] -= 360.0f;
-
-	// рассчитаем матрицу преобразования координат вершин куба
+	// рассчитаем матрицу преобразования координат вершин куба	
+	Matrix4 modelMatrix; // матрица вращения кубика
 	Matrix4Rotation(modelMatrix, cubeRotation[0], cubeRotation[1], cubeRotation[2]);
 	Matrix4Mul(modelViewProjectionMatrix, viewProjectionMatrix, modelMatrix);
 }
@@ -262,6 +264,20 @@ void GLWindowInput(const GLWindow *window)
 	if (InputIsKeyPressed(VK_ESCAPE))
 		GLWindowDestroy();
 
+	if (InputIsKeyPressed(VK_SPACE))
+		icd().set_rotation_animation(!icd().rotation_animation());
+
+	if (InputIsKeyPressed(VK_RIGHT))
+	{
+		icd().set_rotate_animation_screen_axis(1, false);
+		icd().set_rotation_animation(true);
+	}
+	if (InputIsKeyPressed(VK_LEFT))
+	{
+		icd().set_rotate_animation_screen_axis(1, true);
+		icd().set_rotation_animation(true);
+	}
+
 	// переключение между оконным и полноэкранным режимом
 	// осуществляется по нажатию комбинации Alt+Enter
 	if (InputIsKeyDown(VK_MENU) && InputIsKeyPressed(VK_RETURN))
@@ -272,7 +288,7 @@ int ic_draw(const IcosamateInSpace& ic)
 {
 	int result = -1;
 
-	if (!GLWindowCreate("icosomate draw", 1600, 1200, false))
+	if (!GLWindowCreate("icosomate draw", 1200, 800, false))
 		return 1;
 
 	icd().set_icosomate(ic);
