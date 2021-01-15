@@ -124,8 +124,6 @@ void test(std::ostream& log)
 	test_move(ic, ic0);
 
 	log << "Icosamate test OK\n";
-
-	ic_draw(log);
 }
 
 typedef std::map<std::string, std::string> Args;

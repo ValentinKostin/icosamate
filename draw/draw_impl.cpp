@@ -57,21 +57,35 @@ void IcosamateDrawing::fill_one_color_buffer()
 	fill_one_color_buffer_faces_subtriangles();
 }
 
-void IcosamateDrawing::fill_multi_colors_buffer()
+void IcosamateDrawing::fill_multi_colors_buffer(bool colors_only)
 {
 	size_t n = IcosamateInSpace::FACE_COUNT;
-	multi_colors_buffer_.reserve(n * 4 * 3 * 7);
+	if (!colors_only)
+		multi_colors_buffer_.resize(n * 4 * 3 * 7);
+	size_t buf_ind = 0;
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
+		AxisId ax_id[3] = { t.vert_coords(0).ax_id_, t.vert_coords(1).ax_id_, t.vert_coords(2).ax_id_ };
+		const Face& f = ic_.face_by_axis(ax_id[0], ax_id[1], ax_id[2]);
+
 		for (size_t j = 0; j < 4; j++) // перебор треугольничков - элементов
 		{
+			Color col = j < 3 ? ic_.elem_color(f, ax_id[j]) : f.center_col_;
+
 			for (size_t k = 0; k < 3; k++) // перебор вершин в треугольничках
 			{
 				const float* crd_buf = &one_color_buffer_[id * 4 * 3 * 3 + j * 3 * 3 + k * 3];
-				multi_colors_buffer_.insert(multi_colors_buffer_.end(), crd_buf, crd_buf + 3);
-				const float* color_buf = &gl_face_colors_[4 * id];
-				multi_colors_buffer_.insert(multi_colors_buffer_.end(), color_buf, color_buf + 4);
+				if (!colors_only)
+				{
+					for (size_t w = 0; w < 3; ++w)
+						multi_colors_buffer_[buf_ind++] = crd_buf[w];
+				}
+				else
+					buf_ind += 3;
+				const float* color_buf = &gl_face_colors_[4 * col];
+				for (size_t w = 0; w < 4; ++w)
+					multi_colors_buffer_[buf_ind++] = color_buf[w];
 			}
 		}
 	}

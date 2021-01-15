@@ -165,5 +165,8 @@ public:
 
 	static IcosamateDifference difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2); // икосаэдры не поворачиваются, смотрится сравнение как есть
 	static IcosamateDifference solving_difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2);  // сравнение без учёта ориентации в пространстве
+
+	const Face& face_by_axis(AxisId ax_id_1, AxisId ax_id_2, AxisId ax_id_3) const;
+	Color elem_color(const Face& f, AxisId ax_id) const; // номер цвета треугольничка при вершине у указанной оси
 };
 

@@ -1,5 +1,6 @@
 #include <sstream>
 #include "explorer.h"
+#include "draw/draw.h"
 
 char axis_char(AxisId id)
 {
@@ -161,8 +162,11 @@ void IcosamateExplorer::process_actions(const ActionS& aa, size_t mul)
 
 void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
 {
-	if (mul>0)
-		return process_actions(aa, mul);
+	if (mul > 0)
+	{
+		process_actions(aa, mul);
+		ic_draw(ic_);
+	}
 
 	size_t period = IcosamateInSpace::period(aa);
 	std::vector<size_t> nn = multiplyers(period);

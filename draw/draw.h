@@ -4,4 +4,6 @@
 #include <sstream>
 #include <ostream>
 
-int ic_draw(std::ostream& log);
+#include "../icosamate.h"
+
+int ic_draw(const IcosamateInSpace& ic);

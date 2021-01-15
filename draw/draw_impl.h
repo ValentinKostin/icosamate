@@ -31,6 +31,8 @@ typedef int DrawColor;
 
 class IcosamateDrawing
 {
+	IcosamateInSpace ic_;
+
 	std::vector<float> one_color_buffer_; // координаты вершин треугольников, отрисовываемые sketch_color_
 	void add_to_one_color_buffer(const Coord& c);
 	void fill_one_color_buffer_faces(); // треугольники граней икосаэдра
@@ -39,7 +41,7 @@ class IcosamateDrawing
 	float sketch_color_[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	std::vector<float> multi_colors_buffer_;  // координаты вершин	треугольников вместе с цветом, после каждой вершины
-	void fill_multi_colors_buffer();
+	void fill_multi_colors_buffer(bool colors_only=false);
 
 	std::vector<DrawColor> draw_colors_;
 	std::vector<float> gl_face_colors_;
@@ -47,6 +49,12 @@ class IcosamateDrawing
 
 public:
 	IcosamateDrawing();
+
+	void set_icosomate(const IcosamateInSpace& ic) 
+	{
+		ic_ = ic; 
+		fill_multi_colors_buffer(true);
+	}
 
 	const float* one_color_buffer() const { return &one_color_buffer_[0]; }
 	size_t one_color_buffer_coords_count() const { return one_color_buffer_.size() / 3; }

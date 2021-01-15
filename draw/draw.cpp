@@ -268,12 +268,14 @@ void GLWindowInput(const GLWindow *window)
 		GLWindowSetSize(window->width, window->height, !window->fullScreen);
 }
 
-int ic_draw(std::ostream& log)
+int ic_draw(const IcosamateInSpace& ic)
 {
 	int result = -1;
 
-	if (!GLWindowCreate("icosomate draw", 800, 600, false))
+	if (!GLWindowCreate("icosomate draw", 1600, 1200, false))
 		return 1;
+
+	icd().set_icosomate(ic);
 
 	result = GLWindowMainLoop();
 	GLWindowDestroy();

@@ -452,3 +452,20 @@ IcosamateDifference IcosamateInSpace::solving_difference(const IcosamateInSpace&
 	}
 	return r;
 }
+
+const Face& IcosamateInSpace::face_by_axis(AxisId ax_id_1, AxisId ax_id_2, AxisId ax_id_3) const
+{
+	VertexId v1 = vert_elem_by_axis_[ax_id_1];
+	VertexId v2 = vert_elem_by_axis_[ax_id_2];
+	VertexId v3 = vert_elem_by_axis_[ax_id_3];
+	return face(v1, v2, v3);
+}
+
+Color IcosamateInSpace::elem_color(const Face& f, AxisId ax_id) const
+{
+	VertexId v1 = vert_elem_by_axis_[ax_id];
+	size_t index = f.index(v1);
+	const VertexElem& ve = *f.vert_elems_[index];
+	VertexElemColorIndex cind = f.vert_elems_colors_inds_[index];
+	return ve.colors_[cind];
+}
