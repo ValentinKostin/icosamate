@@ -213,6 +213,7 @@ void GLWindowRender(const GLWindow *window)
 	glBindVertexArray(vertVAO);
 	glDrawArrays(GL_TRIANGLES, 0, GLsizei(icd().multi_colors_buffer_coords_count()));
 
+#if 0
  	// рисовка каркаса
 	ShaderProgramBind(shaderProgram_one_color);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -222,6 +223,7 @@ void GLWindowRender(const GLWindow *window)
 
 	glBindVertexArray(vertVAO_one_color);
 	glDrawArrays(GL_TRIANGLES, 0, GLsizei(icd().one_color_buffer_coords_count()));
+#endif
 
 	// проверка на ошибки
 	OPENGL_CHECK_FOR_ERRORS();

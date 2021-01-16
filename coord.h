@@ -57,10 +57,14 @@ inline bool operator<(const VertTriangle& t1, const VertTriangle& t2)
 
 class FaceTriangle	: protected VertTriangle
 {
+	FaceTriangleId id_ = 20;
+
 	std::vector<Coord> subtriangle_coords_;
 	void fill_subtriangle_coords();
 
-	FaceTriangleId id_ = 20;
+	std::vector<Coord> sticker_coords_;
+	void fill_sticker_coords();
+
 public:
 	FaceTriangle(FaceTriangleId id, const VertTriangle& t);
 
@@ -68,7 +72,9 @@ public:
 	const VertCoord& vert_coords(size_t index) const { check(index <= 2); return *coords_[index]; }
 	const Coord& vertex_subtriangle_coord(size_t subt_index, size_t pt_index) const { check(subt_index <= 2 && pt_index <= 2);  return subtriangle_coords_[subt_index * 3 + pt_index]; }
 	const Coord& center_subtriangle_coord(size_t pt_index) const { check(pt_index <= 2);  return subtriangle_coords_[9 + pt_index]; }
+
 	const Coord& subtriangle_coord(size_t subt_index, size_t pt_index) const;
+	const Coord& sticker_coord(size_t subt_index, size_t pt_index) const;
 };
 
 

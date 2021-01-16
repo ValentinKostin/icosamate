@@ -7,6 +7,7 @@
 FaceTriangle::FaceTriangle(FaceTriangleId id, const VertTriangle& t) : VertTriangle(t), id_(id)
 {
 	fill_subtriangle_coords();
+	fill_sticker_coords();
 }
 
 const Coord& FaceTriangle::subtriangle_coord(size_t subt_index, size_t pt_index) const
@@ -15,12 +16,33 @@ const Coord& FaceTriangle::subtriangle_coord(size_t subt_index, size_t pt_index)
 	return subt_index==3 ? center_subtriangle_coord(pt_index) : vertex_subtriangle_coord(subt_index, pt_index);
 }
 
+const Coord& FaceTriangle::sticker_coord(size_t subt_index, size_t pt_index) const
+{
+	check(subt_index <= 3);
+	check(pt_index <= 2);
+	return sticker_coords_[subt_index*3 + pt_index];
+}
+
 void FaceTriangle::fill_subtriangle_coords()
 {
 	Coord p01 = (*coords_[0] + *coords_[1]) * 0.5;
 	Coord p12 = (*coords_[1] + *coords_[2]) * 0.5;
 	Coord p20 = (*coords_[2] + *coords_[0]) * 0.5;
 	subtriangle_coords_ = { *coords_[0], p01, p20, *coords_[1], p12, p01, *coords_[2], p20, p12, p12, p20, p01 };
+}
+
+void FaceTriangle::fill_sticker_coords()
+{
+	sticker_coords_.reserve(subtriangle_coords_.size());
+	for (size_t subt_index = 0; subt_index < 4; ++subt_index)
+	{
+		const Coord* c = &subtriangle_coords_[3 * subt_index];
+		Coord center = (c[0] + c[1] + c[2]) / 3.0;
+
+		const double STICKER_SIZE_PART = 0.95;
+		for (size_t pt_index = 0; pt_index < 3; ++pt_index)
+			sticker_coords_.push_back(center * (1.0 - STICKER_SIZE_PART) + c[pt_index] * STICKER_SIZE_PART);
+	}
 }
 
 IcosomateCoords::IcosomateCoords(double radius) : radius_(radius)

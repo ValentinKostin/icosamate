@@ -38,7 +38,7 @@ void IcosamateDrawing::fill_one_color_buffer_faces_subtriangles()
 		const FaceTriangle& t = gic.face_triangle(id);
 		for (size_t subt_index = 0; subt_index < 4; ++subt_index)
 			for (size_t pt_index = 0; pt_index < 3; ++pt_index)
-				add_to_one_color_buffer(t.subtriangle_coord(subt_index, pt_index));
+				add_to_one_color_buffer(t.sticker_coord(subt_index, pt_index));
 	}
 }
 
