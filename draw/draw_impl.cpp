@@ -36,18 +36,9 @@ void IcosamateDrawing::fill_one_color_buffer_faces_subtriangles()
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
-		add_to_one_color_buffer(t.vertex_subtriangle_coord(0, 0));
-		add_to_one_color_buffer(t.vertex_subtriangle_coord(0, 1));
-		add_to_one_color_buffer(t.vertex_subtriangle_coord(0, 2));
-		add_to_one_color_buffer(t.vertex_subtriangle_coord(1, 0));
-		add_to_one_color_buffer(t.vertex_subtriangle_coord(1, 1));
-		add_to_one_color_buffer(t.vertex_subtriangle_coord(1, 2));
-		add_to_one_color_buffer(t.vertex_subtriangle_coord(2, 0));
-		add_to_one_color_buffer(t.vertex_subtriangle_coord(2, 1));
-		add_to_one_color_buffer(t.vertex_subtriangle_coord(2, 2));
-		add_to_one_color_buffer(t.center_subtriangle_coord(0));
-		add_to_one_color_buffer(t.center_subtriangle_coord(1));
-		add_to_one_color_buffer(t.center_subtriangle_coord(2));
+		for (size_t subt_index = 0; subt_index < 4; ++subt_index)
+			for (size_t pt_index = 0; pt_index < 3; ++pt_index)
+				add_to_one_color_buffer(t.subtriangle_coord(subt_index, pt_index));
 	}
 }
 

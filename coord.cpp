@@ -9,6 +9,12 @@ FaceTriangle::FaceTriangle(FaceTriangleId id, const VertTriangle& t) : VertTrian
 	fill_subtriangle_coords();
 }
 
+const Coord& FaceTriangle::subtriangle_coord(size_t subt_index, size_t pt_index) const
+{
+	check(subt_index <= 3);
+	return subt_index==3 ? center_subtriangle_coord(pt_index) : vertex_subtriangle_coord(subt_index, pt_index);
+}
+
 void FaceTriangle::fill_subtriangle_coords()
 {
 	Coord p01 = (*coords_[0] + *coords_[1]) * 0.5;
