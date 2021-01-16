@@ -15,24 +15,18 @@ void add(std::vector<float>& buf, const Coord& c)
 	buf.push_back(float(c.y_));
 	buf.push_back(float(c.z_));
 }
+void add(std::vector<float>& buf, const Coord& c0, const Coord& c1, const Coord& c2)
+{
+	add(buf, c0);
+	add(buf, c1);
+	add(buf, c2);
+}
 
 void assign(std::vector<float>& buf, size_t i, const Coord& c)
 {
 	buf[i] = (float(c.x_));
 	buf[i+1] = (float(c.y_));
 	buf[i+2] = (float(c.z_));
-}
-
-void IcosamateDrawing::add_to_one_color_buffer(const Coord& c)
-{
-	add(one_color_buffer_, c);
-}
-
-void IcosamateDrawing::add_to_one_color_buffer(const Coord& c0, const Coord& c1, const Coord& c2)
-{
-	add_to_one_color_buffer(c0);
-	add_to_one_color_buffer(c1);
-	add_to_one_color_buffer(c2);
 }
 
 void IcosamateDrawing::fill_one_color_buffer_faces()
@@ -42,7 +36,7 @@ void IcosamateDrawing::fill_one_color_buffer_faces()
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
-		add_to_one_color_buffer(t.vert_coords(0), t.vert_coords(1), t.vert_coords(2));
+		add(one_color_buffer_, t.vert_coords(0), t.vert_coords(1), t.vert_coords(2));
 	}
 }
 
@@ -55,7 +49,7 @@ void IcosamateDrawing::fill_one_color_buffer_faces_subtriangles()
 		const FaceTriangle& t = gic.face_triangle(id);
 		for (size_t subt_index = 0; subt_index < 4; ++subt_index)
 			for (size_t pt_index = 0; pt_index < 3; ++pt_index)
-				add_to_one_color_buffer(t.sticker_coord(subt_index, pt_index));
+				add(one_color_buffer_, t.sticker_coord(subt_index, pt_index));
 	}
 }
 
@@ -73,8 +67,8 @@ void IcosamateDrawing::fill_one_color_buffer_not_stickered()
 				const Coord& s = t.sticker_coord(subt_index, pt_index);
 				const Coord& cn = t.subtriangle_coord(subt_index, (pt_index + 1) % 3);
 				const Coord& sn = t.sticker_coord(subt_index, (pt_index + 1) % 3);
-				add_to_one_color_buffer(c, sn, s);
-				add_to_one_color_buffer(c, cn, sn);
+				add(one_color_buffer_, c, sn, s);
+				add(one_color_buffer_, c, cn, sn);
 			}				
 	}
 }

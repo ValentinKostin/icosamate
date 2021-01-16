@@ -34,8 +34,6 @@ class IcosamateDrawing
 	IcosamateInSpace ic_;
 
 	std::vector<float> one_color_buffer_; // координаты вершин треугольников, отрисовываемые sketch_color_
-	void add_to_one_color_buffer(const Coord& c);
-	void add_to_one_color_buffer(const Coord& c0, const Coord& c1, const Coord& c2);
 	void fill_one_color_buffer_faces(); // треугольники граней икосаэдра
 	void fill_one_color_buffer_faces_subtriangles(); // каждая грань икосаэдра делится на четыре элемента-треугольничка
 	void fill_one_color_buffer_not_stickered(); // на каждом элементе-треугольничке рисуется окантовка вокруг стикера
