@@ -39,7 +39,7 @@ void FaceTriangle::fill_sticker_coords()
 		const Coord* c = &subtriangle_coords_[3 * subt_index];
 		Coord center = (c[0] + c[1] + c[2]) / 3.0;
 
-		const double STICKER_SIZE_PART = 0.95;
+		const double STICKER_SIZE_PART = 0.9;
 		for (size_t pt_index = 0; pt_index < 3; ++pt_index)
 			sticker_coords_.push_back(center * (1.0 - STICKER_SIZE_PART) + c[pt_index] * STICKER_SIZE_PART);
 	}

@@ -9,11 +9,30 @@ IcosamateDrawing& icd()
 	return icd;
 }
 
+void add(std::vector<float>& buf, const Coord& c)
+{
+	buf.push_back(float(c.x_));
+	buf.push_back(float(c.y_));
+	buf.push_back(float(c.z_));
+}
+
+void assign(std::vector<float>& buf, size_t i, const Coord& c)
+{
+	buf[i] = (float(c.x_));
+	buf[i+1] = (float(c.y_));
+	buf[i+2] = (float(c.z_));
+}
+
 void IcosamateDrawing::add_to_one_color_buffer(const Coord& c)
 {
-	one_color_buffer_.push_back(float(c.x_));
-	one_color_buffer_.push_back(float(c.y_));
-	one_color_buffer_.push_back(float(c.z_));
+	add(one_color_buffer_, c);
+}
+
+void IcosamateDrawing::add_to_one_color_buffer(const Coord& c0, const Coord& c1, const Coord& c2)
+{
+	add_to_one_color_buffer(c0);
+	add_to_one_color_buffer(c1);
+	add_to_one_color_buffer(c2);
 }
 
 void IcosamateDrawing::fill_one_color_buffer_faces()
@@ -23,9 +42,7 @@ void IcosamateDrawing::fill_one_color_buffer_faces()
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
-		add_to_one_color_buffer(t.vert_coords(0));
-		add_to_one_color_buffer(t.vert_coords(1));
-		add_to_one_color_buffer(t.vert_coords(2));
+		add_to_one_color_buffer(t.vert_coords(0), t.vert_coords(1), t.vert_coords(2));
 	}
 }
 
@@ -42,10 +59,29 @@ void IcosamateDrawing::fill_one_color_buffer_faces_subtriangles()
 	}
 }
 
+void IcosamateDrawing::fill_one_color_buffer_not_stickered()
+{
+	size_t n = IcosamateInSpace::FACE_COUNT;
+	one_color_buffer_.reserve(n * 4 * 6 * 3 * 3);
+	for (FaceTriangleId id = 0; id < n; id++)
+	{
+		const FaceTriangle& t = gic.face_triangle(id);
+		for (size_t subt_index = 0; subt_index < 4; ++subt_index)
+			for (size_t pt_index = 0; pt_index < 3; ++pt_index)
+			{
+				const Coord& c = t.subtriangle_coord(subt_index, pt_index);
+				const Coord& s = t.sticker_coord(subt_index, pt_index);
+				const Coord& cn = t.subtriangle_coord(subt_index, (pt_index + 1) % 3);
+				const Coord& sn = t.sticker_coord(subt_index, (pt_index + 1) % 3);
+				add_to_one_color_buffer(c, sn, s);
+				add_to_one_color_buffer(c, cn, sn);
+			}				
+	}
+}
+
 void IcosamateDrawing::fill_one_color_buffer()
 {
-	//fill_one_color_buffer_faces();
-	fill_one_color_buffer_faces_subtriangles();
+	fill_one_color_buffer_not_stickered();
 }
 
 void IcosamateDrawing::fill_multi_colors_buffer(bool colors_only)
@@ -66,14 +102,10 @@ void IcosamateDrawing::fill_multi_colors_buffer(bool colors_only)
 
 			for (size_t k = 0; k < 3; k++) // перебор вершин в треугольничках
 			{
-				const float* crd_buf = &one_color_buffer_[id * 4 * 3 * 3 + j * 3 * 3 + k * 3];
 				if (!colors_only)
-				{
-					for (size_t w = 0; w < 3; ++w)
-						multi_colors_buffer_[buf_ind++] = crd_buf[w];
-				}
-				else
-					buf_ind += 3;
+					assign(multi_colors_buffer_, buf_ind, t.sticker_coord(j, k));
+				
+				buf_ind += 3;
 				const float* color_buf = &gl_face_colors_[4 * col];
 				for (size_t w = 0; w < 4; ++w)
 					multi_colors_buffer_[buf_ind++] = color_buf[w];

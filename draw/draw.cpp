@@ -78,6 +78,7 @@ bool GLWindowInit(const GLWindow *window)
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_MULTISAMPLE);
 
 	// создадим и загрузим шейдерные программы
 	shaderProgram_colors = OpenShaderProgram("color_poly");
@@ -201,6 +202,7 @@ void GLWindowRender(const GLWindow *window)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+#if 1
 	// рисовка цветов треугольничков
 	ShaderProgramBind(shaderProgram_colors);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -212,11 +214,12 @@ void GLWindowRender(const GLWindow *window)
 	// выводим на экран все что относится к VAO
 	glBindVertexArray(vertVAO);
 	glDrawArrays(GL_TRIANGLES, 0, GLsizei(icd().multi_colors_buffer_coords_count()));
+#endif
 
-#if 0
+#if 1
  	// рисовка каркаса
 	ShaderProgramBind(shaderProgram_one_color);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	if (modelViewProjectionMatrixLocation_one_color != -1)
 		glUniformMatrix4fv(modelViewProjectionMatrixLocation_one_color, 1, GL_TRUE, modelViewProjectionMatrix);
