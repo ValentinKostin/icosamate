@@ -1,5 +1,6 @@
 #include "draw_impl.h"
 #include "../coord.h"
+#include "Shader.h"
 
 IcosomateCoords gic;
 
@@ -148,4 +149,205 @@ IcosamateDrawing::IcosamateDrawing()
 
 	fill_one_color_buffer();
 	fill_multi_colors_buffer();
+}
+
+bool IcosamateDrawing::opengl_init(int w_width, int w_height)
+{
+	// устанавливаем вьюпорт на все окно
+	glViewport(0, 0, w_width, w_height);
+
+	// параметры OpenGL
+	const float* cc = clear_color();
+	glClearColor(cc[0], cc[1], cc[2], cc[3]);
+	glClearDepth(1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_MULTISAMPLE);
+
+	// создадим и загрузим шейдерные программы
+	shaderProgram_colors = OpenShaderProgram("color_poly");
+	if (shaderProgram_colors <= 0)
+		return false;
+
+	shaderProgram_one_color = OpenShaderProgram("one_color_poly");
+	if (shaderProgram_one_color <= 0)
+		return false;
+
+	// создадим перспективную матрицу
+	const float aspectRatio = (float)w_width / (float)w_height;
+	Matrix4Perspective(projectionMatrix, 45.0f, aspectRatio, 1.0f, 10.0f);
+
+	// с помощью видовой матрицы отодвинем сцену назад
+	Matrix4Translation(viewMatrix, 0.0f, 0.0f, -4.0f);
+
+	Matrix4Mul(viewProjectionMatrix, projectionMatrix, viewMatrix);
+
+	// запросим у OpenGL свободный индекс VAO
+	glGenVertexArrays(1, &vertVAO);
+	// сделаем VAO активным
+	glBindVertexArray(vertVAO);
+
+	// создадим VBO для данных вершин
+	glGenBuffers(1, &vertVBO);
+	// начинаем работу с буфером для вершин
+	glBindBuffer(GL_ARRAY_BUFFER, vertVBO);
+	// поместим в буфер координаты вершин куба
+	glBufferData(GL_ARRAY_BUFFER, multi_colors_buffer_bytes_count(), multi_colors_buffer(), GL_STATIC_DRAW);
+
+	// сделаем шейдерную программу активной
+	glUseProgram(shaderProgram_colors);
+	// получим индекс матрицы из шейдерной программы
+	modelViewProjectionMatrixLocation_colors = glGetUniformLocation(shaderProgram_colors, "modelViewProjectionMatrix");
+
+	char* offset = 0;
+	// получим индекс вершинного атрибута 'position' из шейдерной программы
+	positionLocation_colors = glGetAttribLocation(shaderProgram_colors, "position");
+	if (positionLocation_colors != -1)
+	{
+		// укажем параметры вершинного атрибута для текущего активного VBO
+		glVertexAttribPointer(positionLocation_colors, 3, GL_FLOAT, GL_FALSE, GLsizei(multi_colors_buffer_coord_byte_size()), offset);
+		// разрешим использование вершинного атрибута
+		glEnableVertexAttribArray(positionLocation_colors);
+	}
+
+	offset += 3 * sizeof(GLfloat);
+	// получим индекс вершинного атрибута 'color' из шейдерной программы
+	colorLocation = glGetAttribLocation(shaderProgram_colors, "color");
+	if (colorLocation != -1)
+	{
+		// укажем параметры вершинного атрибута для текущего активного VBO
+		glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, GLsizei(multi_colors_buffer_coord_byte_size()), offset);
+		// разрешим использование вершинного атрибута
+		glEnableVertexAttribArray(colorLocation);
+	}
+
+	glUseProgram(shaderProgram_one_color);
+
+	// запросим у OpenGL свободный индекс VAO
+	glGenVertexArrays(1, &vertVAO_one_color);
+	// сделаем VAO активным
+	glBindVertexArray(vertVAO_one_color);
+	// создадим VBO для данных вершин
+	glGenBuffers(1, &vertVBO_one_color);
+	// начинаем работу с буфером для вершин
+	glBindBuffer(GL_ARRAY_BUFFER, vertVBO_one_color);
+	// поместим в буфер координаты вершин куба
+	glBufferData(GL_ARRAY_BUFFER, one_color_buffer_bytes_count(), one_color_buffer(), GL_STATIC_DRAW);
+
+	// получим индекс матрицы из шейдерной программы
+	modelViewProjectionMatrixLocation_one_color = glGetUniformLocation(shaderProgram_one_color, "modelViewProjectionMatrix");
+
+	sketchColorLocation = glGetUniformLocation(shaderProgram_one_color, "sketchColor");
+	if (sketchColorLocation != -1)
+		glUniform4fv(sketchColorLocation, 1, sketch_color());
+	sketchColorLocation = glGetUniformLocation(shaderProgram_one_color, "sketchColor");
+	if (sketchColorLocation != -1)
+		glUniform4fv(sketchColorLocation, 1, sketch_color());
+
+	// получим индекс вершинного атрибута 'position' из шейдерной программы
+	positionLocation_one_color = glGetAttribLocation(shaderProgram_one_color, "position");
+	if (positionLocation_one_color != -1)
+	{
+		// укажем параметры вершинного атрибута для текущего активного VBO
+		glVertexAttribPointer(positionLocation_one_color, 3, GL_FLOAT, GL_FALSE, GLsizei(one_color_buffer_coord_byte_size()), 0);
+		// разрешим использование вершинного атрибута
+		glEnableVertexAttribArray(positionLocation_one_color);
+	}
+
+	//glLineWidth(2.0);
+
+	// проверим не было ли ошибок
+	OPENGL_CHECK_FOR_ERRORS();
+
+	return true;
+}
+
+void IcosamateDrawing::opengl_clear()
+{
+	// ZAGL недописано
+
+	// делаем текущие VBO неактивными
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// удаляем VBO
+	glDeleteBuffers(1, &vertVBO);
+
+	// далаем текущий VAO неактивным
+	glBindVertexArray(0);
+	// удаляем VAO
+	glDeleteVertexArrays(1, &vertVAO);
+
+	// удаляем шейдерную программу
+	ShaderProgramDestroy(shaderProgram_colors);
+}
+
+void IcosamateDrawing::render()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+#if 1
+	// рисовка цветов треугольничков
+	glUseProgram(shaderProgram_colors);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	// передаем в шейдер матрицу преобразования координат вершин
+	if (modelViewProjectionMatrixLocation_colors != -1)
+		glUniformMatrix4fv(modelViewProjectionMatrixLocation_colors, 1, GL_TRUE, modelViewProjectionMatrix);
+
+	// выводим на экран все что относится к VAO
+	glBindVertexArray(vertVAO);
+	glDrawArrays(GL_TRIANGLES, 0, GLsizei(multi_colors_buffer_coords_count()));
+#endif
+
+#if 1
+	// рисовка каркаса
+	glUseProgram(shaderProgram_one_color);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	if (modelViewProjectionMatrixLocation_one_color != -1)
+		glUniformMatrix4fv(modelViewProjectionMatrixLocation_one_color, 1, GL_TRUE, modelViewProjectionMatrix);
+
+	glBindVertexArray(vertVAO_one_color);
+	glDrawArrays(GL_TRIANGLES, 0, GLsizei(one_color_buffer_coords_count()));
+#endif
+
+	// проверка на ошибки
+	OPENGL_CHECK_FOR_ERRORS();
+}
+
+void rotation_angle_change(float* cubeRotation, int scr_ax_num, bool increase, double deltaTime)
+{
+	float d = 5.0f * (float)deltaTime;
+	float n = cubeRotation[scr_ax_num] + (float)(increase ? d : -d);
+	if (n > 360.0f)
+		n -= 360.0f;
+	if (n < -360.0f)
+		n += 360.0f;
+	cubeRotation[scr_ax_num] = n;
+}
+
+void IcosamateDrawing::update(double deltaTime)
+{
+	if (!rotation_animation())
+		return;
+
+	ASSERT(deltaTime >= 0.0); // проверка на возможность бага
+
+	rotation_angle_change(cubeRotation, rotate_animation_screen_axis(), rotation_animation_angle_increase(), deltaTime);
+
+	// рассчитаем матрицу преобразования координат вершин куба	
+	Matrix4 modelMatrix; // матрица вращения кубика
+	Matrix4Rotation(modelMatrix, cubeRotation[0], cubeRotation[1], cubeRotation[2]);
+	Matrix4Mul(modelViewProjectionMatrix, viewProjectionMatrix, modelMatrix);
+}
+
+void IcosamateDrawing::set_mode(DrawMode ddm)
+{
+	draw_mode_ = ddm;
+	const float* cc = clear_color();
+	glClearColor(cc[0], cc[1], cc[2], cc[3]);
+	glUseProgram(shaderProgram_one_color);
+	//sketchColorLocation = glGetUniformLocation(shaderProgram_one_color, "sketchColor");
+	if (sketchColorLocation != -1)
+		glUniform4fv(sketchColorLocation, 1, sketch_color());
 }

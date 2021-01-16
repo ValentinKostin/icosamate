@@ -1,9 +1,10 @@
 #version 330 core
 
-in vec4 fragColor;
 out vec4 resColor;
+
+uniform vec4 sketchColor;
 
 void main(void)
 {
-	resColor = fragColor;
+	resColor = sketchColor;
 }
