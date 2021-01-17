@@ -323,6 +323,16 @@ void IcosamateDrawing::render()
 	OPENGL_CHECK_FOR_ERRORS();
 }
 
+void change_angle(float& v, float dv)
+{
+	v += dv;
+	const float two_pi = float(2.0 * M_PI);
+	if (v >= two_pi)
+		v -= two_pi;
+	if (v<0)
+		v += two_pi;
+}
+
 void IcosamateDrawing::update()
 {
 	if (rotation_animation())
@@ -335,7 +345,7 @@ void IcosamateDrawing::update()
 		const size_t FULL_ROTATION_MS = 10000;
 		time_ms = time_ms % FULL_ROTATION_MS;
 		float angle = float((time_ms * 2.0 * M_PI) / FULL_ROTATION_MS);
-		cubeRotation[axis] += rotation_animation_angle_increase() ? angle : -angle;
+		change_angle(cubeRotation[axis], rotation_animation_angle_increase() ? angle : -angle);
 		start_tick_count_ = r;
 	}
 
