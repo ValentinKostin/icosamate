@@ -111,12 +111,28 @@ void GLWindowInput(const GLWindow *window)
 
 	if (InputIsKeyPressed(VK_RIGHT))
 	{
-		icd().set_rotate_animation_screen_axis(1, false);
+		icd().set_rotate_animation_screen_axis(1, true);
 		icd().set_rotation_animation(true);
 	}
 	if (InputIsKeyPressed(VK_LEFT))
 	{
-		icd().set_rotate_animation_screen_axis(1, true);
+		icd().set_rotate_animation_screen_axis(1, false);
+		icd().set_rotation_animation(true);
+	}
+	if (InputIsKeyPressed(VK_UP))
+	{
+		if (InputIsKeyDown(VK_SHIFT))
+			icd().set_rotate_animation_screen_axis(2, false);
+		else
+			icd().set_rotate_animation_screen_axis(0, false);
+		icd().set_rotation_animation(true);
+	}
+	if (InputIsKeyPressed(VK_DOWN))
+	{
+		if (InputIsKeyDown(VK_SHIFT))
+			icd().set_rotate_animation_screen_axis(2, true);
+		else
+			icd().set_rotate_animation_screen_axis(0, true);
 		icd().set_rotation_animation(true);
 	}
 

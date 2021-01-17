@@ -152,6 +152,9 @@ IcosamateDrawing::IcosamateDrawing()
 
 	fill_one_color_buffer();
 	fill_multi_colors_buffer();
+
+//	Matrix4Rotation(model_matrix_, float(M_PI_2), 0, 0);
+	Matrix4Rotation(model_matrix_, 0, 0, 0);
 }
 
 double deg_to_rad(double rad)
@@ -335,6 +338,7 @@ void change_angle(float& v, float dv)
 
 void IcosamateDrawing::update()
 {
+	float rotation[3] = { 0,0,0 };
 	if (rotation_animation())
 	{
 		int axis = rotate_animation_screen_axis();
@@ -345,14 +349,16 @@ void IcosamateDrawing::update()
 		const size_t FULL_ROTATION_MS = 10000;
 		time_ms = time_ms % FULL_ROTATION_MS;
 		float angle = float((time_ms * 2.0 * M_PI) / FULL_ROTATION_MS);
-		change_angle(cubeRotation[axis], rotation_animation_angle_increase() ? angle : -angle);
+		rotation[axis] = rotation_animation_angle_increase() ? angle : -angle;
 		start_tick_count_ = r;
 	}
 
-	// рассчитаем матрицу преобразования координат вершин куба	
-	Matrix4 modelMatrix; // матрица вращения кубика
-	Matrix4Rotation(modelMatrix, cubeRotation[0], cubeRotation[1], cubeRotation[2]);
-	Matrix4Mul(modelViewProjectionMatrix, viewProjectionMatrix, modelMatrix);
+	Matrix4 rot_matrix;
+	Matrix4Rotation(rot_matrix, rotation[0], rotation[1], rotation[2]);
+	Matrix4 mod_matrix;
+	memcpy(mod_matrix, model_matrix_, sizeof(Matrix4));
+	Matrix4Mul(model_matrix_, rot_matrix, mod_matrix);
+	Matrix4Mul(modelViewProjectionMatrix, viewProjectionMatrix, mod_matrix);
 }
 
 void IcosamateDrawing::set_mode(DrawMode ddm)

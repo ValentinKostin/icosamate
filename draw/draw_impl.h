@@ -20,13 +20,10 @@ enum class DrawMode { DARK = 0, LIGHT = 1 };
 class IcosamateDrawing
 {
 	// пременные для хранения идентификаторов шейдерной программы и текстуры
-	GLuint shaderProgram_colors = 0, shaderProgram_one_color = 0, colorTexture = 0;
-
-	// для хранения двух углов поворота куба
-	float  cubeRotation[3] = { 0.0f, 0.0f, 0.0f };
+	GLuint shaderProgram_colors = 0, shaderProgram_one_color = 0;
 
 	// матрицы преобразования
-	Matrix4 modelViewProjectionMatrix = { 0.0f }, viewMatrix = { 0.0f },
+	Matrix4 model_matrix_ = { 0.0f }, modelViewProjectionMatrix = { 0.0f }, viewMatrix = { 0.0f },
 		projectionMatrix = { 0.0f }, viewProjectionMatrix = { 0.0f };
 
 	// индексы полученный из шейдерной программы
