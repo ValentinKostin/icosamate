@@ -65,7 +65,7 @@ class IcosamateDrawing
 	std::vector<float> gl_face_colors_;
 	void fill_gl_face_colors();
 
-	bool rotation_animation_ = true;
+	bool rotation_animation_ = false;
 	int rotate_animation_screen_axis_ = 1;
 	bool rotation_animation_angle_increase_ = true;
 

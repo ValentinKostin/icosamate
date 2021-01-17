@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+
+#include <cmath>
 #include "draw_impl.h"
 #include "../coord.h"
 #include "Shader.h"
@@ -50,7 +53,7 @@ void IcosamateDrawing::fill_one_color_buffer_faces_subtriangles()
 		const FaceTriangle& t = gic.face_triangle(id);
 		for (size_t subt_index = 0; subt_index < 4; ++subt_index)
 			for (size_t pt_index = 0; pt_index < 3; ++pt_index)
-				add(one_color_buffer_, t.sticker_coord(subt_index, pt_index));
+				add(one_color_buffer_, t.subtriangle_coord(subt_index, pt_index));
 	}
 }
 
@@ -68,8 +71,8 @@ void IcosamateDrawing::fill_one_color_buffer_not_stickered()
 				const Coord& s = t.sticker_coord(subt_index, pt_index);
 				const Coord& cn = t.subtriangle_coord(subt_index, (pt_index + 1) % 3);
 				const Coord& sn = t.sticker_coord(subt_index, (pt_index + 1) % 3);
-				add(one_color_buffer_, c, sn, s);
-				add(one_color_buffer_, c, cn, sn);
+				add(one_color_buffer_, c, s, sn);
+				add(one_color_buffer_, c, sn, cn);
 			}				
 	}
 }
@@ -98,7 +101,7 @@ void IcosamateDrawing::fill_multi_colors_buffer(bool colors_only)
 			for (size_t k = 0; k < 3; k++) // перебор вершин в треугольничках
 			{
 				if (!colors_only)
-					assign(multi_colors_buffer_, buf_ind, t.sticker_coord(j, k));
+					assign(multi_colors_buffer_, buf_ind, t.sticker_coord(j, 2-k));
 				
 				buf_ind += 3;
 				const float* color_buf = &gl_face_colors_[4 * col];
@@ -151,6 +154,11 @@ IcosamateDrawing::IcosamateDrawing()
 	fill_multi_colors_buffer();
 }
 
+double deg_to_rad(double rad)
+{
+	return rad / 180.0 * M_PI;
+}
+
 bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 {
 	// устанавливаем вьюпорт на все окно
@@ -175,10 +183,10 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 
 	// создадим перспективную матрицу
 	const float aspectRatio = (float)w_width / (float)w_height;
-	Matrix4Perspective(projectionMatrix, 45.0f, aspectRatio, 1.0f, 10.0f);
+	Matrix4Perspective(projectionMatrix, (float)deg_to_rad(22.5), aspectRatio, 0.1f, 100.0f);
 
 	// с помощью видовой матрицы отодвинем сцену назад
-	Matrix4Translation(viewMatrix, 0.0f, 0.0f, -4.0f);
+	Matrix4Translation(viewMatrix, 0.0f, 0.0f, -8.0f);
 
 	Matrix4Mul(viewProjectionMatrix, projectionMatrix, viewMatrix);
 
@@ -319,21 +327,20 @@ void rotation_angle_change(float* cubeRotation, int scr_ax_num, bool increase, d
 {
 	float d = 5.0f * (float)deltaTime;
 	float n = cubeRotation[scr_ax_num] + (float)(increase ? d : -d);
-	if (n > 360.0f)
-		n -= 360.0f;
-	if (n < -360.0f)
-		n += 360.0f;
+	float period = 360.0f;
+	if (n > period)
+		n -= period;
+	if (n < -period)
+		n += period;
 	cubeRotation[scr_ax_num] = n;
 }
 
 void IcosamateDrawing::update(double deltaTime)
 {
-	if (!rotation_animation())
-		return;
-
 	ASSERT(deltaTime >= 0.0); // проверка на возможность бага
 
-	rotation_angle_change(cubeRotation, rotate_animation_screen_axis(), rotation_animation_angle_increase(), deltaTime);
+	if (rotation_animation())
+		rotation_angle_change(cubeRotation, rotate_animation_screen_axis(), rotation_animation_angle_increase(), deltaTime);
 
 	// рассчитаем матрицу преобразования координат вершин куба	
 	Matrix4 modelMatrix; // матрица вращения кубика

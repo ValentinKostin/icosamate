@@ -130,7 +130,7 @@ int ic_draw(const IcosamateInSpace& ic)
 {
 	int result = -1;
 
-	if (!GLWindowCreate("icosomate draw", 1200, 800, false))
+	if (!GLWindowCreate("icosomate draw", 1200, 1000, false))
 		return 1;
 
 	icd().set_icosomate(ic);
