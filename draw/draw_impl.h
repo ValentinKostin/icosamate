@@ -71,12 +71,14 @@ class IcosamateDrawing
 
 	DrawMode draw_mode_ = DrawMode::DARK;
 
+	size_t start_tick_count_ = 0;
+
 public:
 	IcosamateDrawing();
 	bool opengl_init(int w_width, int w_height);
 	void opengl_clear();
 	void render();
-	void update(double deltaTime);
+	void update();
 
 	const float* clear_color() const { return draw_mode_== DrawMode::LIGHT ? clear_color_ : sketch_color_; }
 	const float* sketch_color() const { return draw_mode_ == DrawMode::LIGHT ? sketch_color_ : clear_color_; }
@@ -90,7 +92,7 @@ public:
 		fill_multi_colors_buffer(true);
 	}
 	bool rotation_animation() const { return rotation_animation_; }
-	void set_rotation_animation(bool r) { rotation_animation_ = r; }
+	void set_rotation_animation(bool r);
 	int rotate_animation_screen_axis() const { return rotate_animation_screen_axis_; }
 	bool rotation_animation_angle_increase() const { return rotation_animation_angle_increase_; }
 	void set_rotate_animation_screen_axis(int r, bool i) { rotate_animation_screen_axis_ = r; rotation_animation_angle_increase_ = i; }

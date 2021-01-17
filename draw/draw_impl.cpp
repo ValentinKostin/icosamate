@@ -323,24 +323,21 @@ void IcosamateDrawing::render()
 	OPENGL_CHECK_FOR_ERRORS();
 }
 
-void rotation_angle_change(float* cubeRotation, int scr_ax_num, bool increase, double deltaTime)
+void IcosamateDrawing::update()
 {
-	float d = 5.0f * (float)deltaTime;
-	float n = cubeRotation[scr_ax_num] + (float)(increase ? d : -d);
-	float period = 360.0f;
-	if (n > period)
-		n -= period;
-	if (n < -period)
-		n += period;
-	cubeRotation[scr_ax_num] = n;
-}
-
-void IcosamateDrawing::update(double deltaTime)
-{
-	ASSERT(deltaTime >= 0.0); // проверка на возможность бага
-
 	if (rotation_animation())
-		rotation_angle_change(cubeRotation, rotate_animation_screen_axis(), rotation_animation_angle_increase(), deltaTime);
+	{
+		int axis = rotate_animation_screen_axis();
+		size_t r = GetTickCount64();
+		if (start_tick_count_ == 0)
+			start_tick_count_ = r;
+		size_t time_ms = r - start_tick_count_;
+		const size_t FULL_ROTATION_MS = 10000;
+		time_ms = time_ms % FULL_ROTATION_MS;
+		float angle = float((time_ms * 2.0 * M_PI) / FULL_ROTATION_MS);
+		cubeRotation[axis] += rotation_animation_angle_increase() ? angle : -angle;
+		start_tick_count_ = r;
+	}
 
 	// рассчитаем матрицу преобразования координат вершин куба	
 	Matrix4 modelMatrix; // матрица вращения кубика
@@ -357,4 +354,11 @@ void IcosamateDrawing::set_mode(DrawMode ddm)
 	//sketchColorLocation = glGetUniformLocation(shaderProgram_one_color, "sketchColor");
 	if (sketchColorLocation != -1)
 		glUniform4fv(sketchColorLocation, 1, sketch_color());
+}
+
+void IcosamateDrawing::set_rotation_animation(bool r)
+{
+	rotation_animation_ = r; 
+	if (!rotation_animation_)
+		start_tick_count_ = 0;
 }

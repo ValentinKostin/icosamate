@@ -91,7 +91,7 @@ void GLWindowUpdate(const GLWindow *window, double deltaTime)
 {
 	ASSERT(window);
 
-	icd().update(deltaTime);
+	icd().update();
 }
 
 // функция обработки ввода с клавиатуры и мыши
