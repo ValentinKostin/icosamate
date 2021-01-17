@@ -153,8 +153,10 @@ IcosamateDrawing::IcosamateDrawing()
 	fill_one_color_buffer();
 	fill_multi_colors_buffer();
 
-//	Matrix4Rotation(model_matrix_, float(M_PI_2), 0, 0);
-	Matrix4Rotation(model_matrix_, 0, 0, 0);
+	Matrix4 m1, m2;
+	Matrix4Rotation(m1, -float(M_PI_2), 0, 0);
+	Matrix4Rotation(m2, 0, float(M_PI), 0);
+	Matrix4Mul(model_matrix_, m2, m1);
 }
 
 double deg_to_rad(double rad)
