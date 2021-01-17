@@ -107,34 +107,44 @@ void GLWindowInput(const GLWindow *window)
 		icd().set_mode(icd().mode() == DrawMode::DARK ? DrawMode::LIGHT : DrawMode::DARK);
 
 	if (InputIsKeyPressed(VK_SPACE))
-		icd().set_rotation_animation(!icd().rotation_animation());
+		icd().set_autorotation(!icd().autorotation());
 
-	if (InputIsKeyPressed(VK_RIGHT))
+	icd().set_rotation_animation(true);
+
+	if (InputIsKeyDown(VK_RIGHT))
 	{
-		icd().set_rotate_animation_screen_axis(1, true);
-		icd().set_rotation_animation(true);
+		if (InputIsKeyDown(VK_SHIFT))
+			icd().set_rotate_animation_screen_axis(2, false);
+		else
+			icd().set_rotate_animation_screen_axis(1, true);
+		icd().set_autorotation(false);
 	}
-	if (InputIsKeyPressed(VK_LEFT))
+	else if (InputIsKeyDown(VK_LEFT))
 	{
-		icd().set_rotate_animation_screen_axis(1, false);
-		icd().set_rotation_animation(true);
+		if (InputIsKeyDown(VK_SHIFT))
+			icd().set_rotate_animation_screen_axis(2, true);
+		else
+			icd().set_rotate_animation_screen_axis(1, false);
+		icd().set_autorotation(false);
 	}
-	if (InputIsKeyPressed(VK_UP))
+	else if (InputIsKeyDown(VK_UP))
 	{
 		if (InputIsKeyDown(VK_SHIFT))
 			icd().set_rotate_animation_screen_axis(2, false);
 		else
 			icd().set_rotate_animation_screen_axis(0, false);
-		icd().set_rotation_animation(true);
+		icd().set_autorotation(false);
 	}
-	if (InputIsKeyPressed(VK_DOWN))
+	else if (InputIsKeyDown(VK_DOWN))
 	{
 		if (InputIsKeyDown(VK_SHIFT))
 			icd().set_rotate_animation_screen_axis(2, true);
 		else
 			icd().set_rotate_animation_screen_axis(0, true);
-		icd().set_rotation_animation(true);
+		icd().set_autorotation(false);
 	}
+	else if (!icd().autorotation())
+		icd().set_rotation_animation(false);
 
 	// переключение между оконным и полноэкранным режимом
 	// осуществляется по нажатию комбинации Alt+Enter

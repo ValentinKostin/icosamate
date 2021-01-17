@@ -62,6 +62,7 @@ class IcosamateDrawing
 	std::vector<float> gl_face_colors_;
 	void fill_gl_face_colors();
 
+	bool autorotation_ = false;
 	bool rotation_animation_ = false;
 	int rotate_animation_screen_axis_ = 1;
 	bool rotation_animation_angle_increase_ = true;
@@ -88,6 +89,8 @@ public:
 		ic_ = ic; 
 		fill_multi_colors_buffer(true);
 	}
+	bool autorotation() const { return autorotation_; }
+	void set_autorotation(bool r) { autorotation_ = r; }
 	bool rotation_animation() const { return rotation_animation_; }
 	void set_rotation_animation(bool r);
 	int rotate_animation_screen_axis() const { return rotate_animation_screen_axis_; }
