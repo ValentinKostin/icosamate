@@ -64,6 +64,8 @@ class IcosamateDrawing
 
 	size_t start_tick_count_ = 0;
 
+	class TextDrawing* text_drawing_ = nullptr;
+
 public:
 	IcosamateDrawing();
 	bool opengl_init(int w_width, int w_height);

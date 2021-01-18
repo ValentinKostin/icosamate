@@ -148,7 +148,12 @@
     <ClCompile Include="coord.cpp" />
     <ClCompile Include="draw\common.cpp" />
     <ClCompile Include="draw\draw.cpp" />
-    <ClCompile Include="draw\draw_impl.cpp" />
+    <ClCompile Include="draw\draw_impl.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">draw/freetype/include/;draw/freetype/include/freetype/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">draw/freetype/include/;draw/freetype/include/freetype/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">draw/freetype/include/;draw/freetype/include/freetype/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">draw/freetype/include/;draw/freetype/include/freetype/</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="draw\GLWindow.cpp" />
     <ClCompile Include="draw\matrix.cpp" />
     <ClCompile Include="draw\OpenGL.cpp" />

@@ -2,20 +2,33 @@
 #include "text.h"
 #include "ft2build.h"
 #include "opengl.h"
+#include "Shader.h"
 #include FT_FREETYPE_H
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
-TextDrawing::TextDrawing()
+#undef max
+
+TextDrawing::TextDrawing(int w_width, int w_height) : w_width_(w_width), w_height_(w_height)
 {
 	check(FT_Init_FreeType(&ft_) == 0);
 
-    check(FT_New_Face(ft_, "fonts/arial.ttf", 0, &face_) == 0); // ZAGL
+    check(FT_New_Face(ft_, get_data_full_path("DejaVuSans.ttf").c_str(), 0, &face_) == 0);
+    FT_Set_Pixel_Sizes(face_, 0, 48);
 
     fill_characters();
 
-    //glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);  // ZAGL
-
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    gl_program_ = OpenShaderProgram("text");
+	check(gl_program_ > 0);
+	glUseProgram(gl_program_);
+
+	GLint projectionId = glGetUniformLocation(gl_program_, "projection");
+	projection_ = glm::ortho(0.0f, (float)w_width_, 0.0f, (float)w_height_);
+    glUniformMatrix4fv(projectionId, 1, GL_FALSE, glm::value_ptr(projection_));
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -26,8 +39,6 @@ TextDrawing::TextDrawing()
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-    // ZAGL загрузка шейдеров
 }
 
 TextDrawing::~TextDrawing()
@@ -40,10 +51,12 @@ void TextDrawing::fill_characters()
 {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // отключаем ограничение выравнивания байтов
 
-    for (unsigned int c = 0; c < 256; c++)
+    for (unsigned int cc = 0; cc<256; cc++)
     {
+        char c = (char)cc;
         // Загружаем глифы символов 
-        check(FT_Load_Char(face_, c, FT_LOAD_RENDER) == 0);
+        if (FT_Load_Char(face_, c, FT_LOAD_RENDER) != 0)
+            continue;
 
         // Генерируем текстуру
         unsigned int texture;
@@ -90,9 +103,9 @@ void TextDrawing::render(std::string text, float x, float y, float scale)
     glBindVertexArray(VAO);
 
     // Перебираем все символы
-    for (auto c = text.begin(); c != text.end(); c++)
+    for (char c : text)
     {
-        Character ch = characters_[*c];
+        const Character& ch = characters_.at(c);
 
         float xpos = x + ch.width_ * scale;
         float ypos = y - (ch.height_ - ch.top_) * scale;
@@ -124,13 +137,13 @@ void TextDrawing::render(std::string text, float x, float y, float scale)
 
         // Теперь производим смещение для отображения следующего глифа (обратите внимание, что данное смещение измеряется в единицах, составляющих 1/64 пикселя)
         x += ((unsigned int)(ch.advance_) >> 6) * scale; // побитовый сдвиг на 6, чтобы получить значение в пикселях (2^6 = 64)
-    }
+	}
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-TextDrawing& text_drawing()
+TextDrawing& text_drawing(int w_width, int w_height)
 {
-	static TextDrawing td;
+	static TextDrawing td(w_width, w_height);
 	return td;
 }

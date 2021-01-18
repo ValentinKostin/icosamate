@@ -4,6 +4,7 @@
 #include "draw_impl.h"
 #include "../coord.h"
 #include "Shader.h"
+#include "text.h"
 
 IcosomateCoords gic;
 
@@ -269,6 +270,8 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 
 	//glLineWidth(2.0);
 
+	text_drawing_ = &text_drawing(w_width, w_height);
+
 	// проверим не было ли ошибок
 	OPENGL_CHECK_FOR_ERRORS();
 
@@ -322,6 +325,10 @@ void IcosamateDrawing::render()
 
 	glBindVertexArray(vertVAO_one_color);
 	glDrawArrays(GL_TRIANGLES, 0, GLsizei(one_color_buffer_coords_count()));
+#endif
+
+#if 1
+	text_drawing_->render("Icosamate", 100.0f, 100.0f, 1.0f);
 #endif
 
 	// проверка на ошибки
