@@ -38,7 +38,7 @@ class TextDrawing
 public:
 	TextDrawing(int w_width, int w_height);
     ~TextDrawing();
-    void render(std::string text, float x, float y, float scale);
+    void render(const std::string& text, float pix_x, float pix_y, float scale);
 };
 
 TextDrawing* create_text_drawing(int w_width, int w_height);

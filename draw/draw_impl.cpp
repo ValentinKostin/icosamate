@@ -333,7 +333,7 @@ void IcosamateDrawing::render()
 #endif
 
 #if 1
-	text_drawing_->render("Icosamate", 100.0f, 100.0f, 1.0f);
+	text_drawing_->render(turnig_algorithm_, 50.0f, 50.0f, 1.0f);
 #endif
 
 	// проверка на ошибки

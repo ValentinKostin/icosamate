@@ -165,7 +165,7 @@ void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
 	if (mul > 0)
 	{
 		process_actions(aa, mul);
-		ic_draw(ic_);
+		ic_draw(ic_, mul_str(aa, mul));
 	}
 
 	size_t period = IcosamateInSpace::period(aa);

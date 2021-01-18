@@ -45,7 +45,7 @@ class IcosamateDrawing
 	size_t one_color_buffer_coord_byte_size() const { return 3 * sizeof(float); }
 
 	std::vector<float> multi_colors_buffer_;  // координаты вершин	треугольников вместе с цветом, после каждой вершины
-	void fill_multi_colors_buffer(bool colors_only=false);
+	void fill_multi_colors_buffer(bool colors_only = false);
 	const float* multi_colors_buffer() const { return &multi_colors_buffer_[0]; }
 	size_t multi_colors_buffer_coords_count() const { return multi_colors_buffer_.size() / 7; }
 	size_t multi_colors_buffer_bytes_count() const { return multi_colors_buffer_.size() * sizeof(float); }
@@ -66,6 +66,8 @@ class IcosamateDrawing
 
 	class TextDrawing* text_drawing_ = nullptr;
 
+	std::string turnig_algorithm_;
+
 public:
 	IcosamateDrawing();
 	~IcosamateDrawing();
@@ -74,17 +76,19 @@ public:
 	void render();
 	void update();
 
-	const float* clear_color() const { return draw_mode_== DrawMode::LIGHT ? clear_color_ : sketch_color_; }
+	const float* clear_color() const { return draw_mode_ == DrawMode::LIGHT ? clear_color_ : sketch_color_; }
 	const float* sketch_color() const { return draw_mode_ == DrawMode::LIGHT ? sketch_color_ : clear_color_; }
-	
-	void set_mode(DrawMode ddm);
-	DrawMode mode() const { return draw_mode_; }	
 
-	void set_icosomate(const IcosamateInSpace& ic) 
+	void set_mode(DrawMode ddm);
+	DrawMode mode() const { return draw_mode_; }
+
+	void set_icosomate(const IcosamateInSpace& ic)
 	{
-		ic_ = ic; 
+		ic_ = ic;
 		fill_multi_colors_buffer(true);
 	}
+	void set_turnig_algorithm(const std::string& turnig_algorithm) { turnig_algorithm_ = turnig_algorithm; }
+
 	bool autorotation() const { return autorotation_; }
 	void set_autorotation(bool r) { autorotation_ = r; }
 	bool rotation_animation() const { return rotation_animation_; }

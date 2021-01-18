@@ -96,7 +96,7 @@ void GLWindowInput(const GLWindow *window)
 		GLWindowSetSize(window->width, window->height, !window->fullScreen);
 }
 
-int ic_draw(const IcosamateInSpace& ic)
+int ic_draw(const IcosamateInSpace& ic, const std::string& turnig_algorithm)
 {
 	int result = -1;
 
@@ -104,6 +104,7 @@ int ic_draw(const IcosamateInSpace& ic)
 		return 1;
 
 	icd().set_icosomate(ic);
+	icd().set_turnig_algorithm(turnig_algorithm);
 
 	result = GLWindowMainLoop();
 	GLWindowDestroy();

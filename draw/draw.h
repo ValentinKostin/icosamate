@@ -6,4 +6,4 @@
 
 #include "../icosamate.h"
 
-int ic_draw(const IcosamateInSpace& ic);
+int ic_draw(const IcosamateInSpace& ic, const std::string&  turnig_algorithm);

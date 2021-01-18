@@ -92,7 +92,7 @@ void TextDrawing::fill_characters()
     }
 }
 
-void TextDrawing::render(std::string text, float x, float y, float scale)
+void TextDrawing::render(const std::string& text, float x, float y, float scale)
 {
     float color[3] = {1.0f,0.0f,0.0f}; // ZAGL
 
@@ -107,7 +107,7 @@ void TextDrawing::render(std::string text, float x, float y, float scale)
     {
         const Character& ch = characters_.at(c);
 
-        float xpos = x + ch.width_ * scale;
+        float xpos = x + ch.left_ * scale;
         float ypos = y - (ch.height_ - ch.top_) * scale;
 
         float w = ch.width_ * scale;
@@ -136,7 +136,7 @@ void TextDrawing::render(std::string text, float x, float y, float scale)
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         // Теперь производим смещение для отображения следующего глифа (обратите внимание, что данное смещение измеряется в единицах, составляющих 1/64 пикселя)
-        x += ((unsigned int)(ch.advance_) >> 6) * scale; // побитовый сдвиг на 6, чтобы получить значение в пикселях (2^6 = 64)
+        x += ch.advance_ * (scale/64.0f);
 	}
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
