@@ -41,4 +41,4 @@ public:
     void render(std::string text, float x, float y, float scale);
 };
 
-TextDrawing& text_drawing(int w_width, int w_height);
+TextDrawing* create_text_drawing(int w_width, int w_height);

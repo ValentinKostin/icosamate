@@ -160,6 +160,11 @@ IcosamateDrawing::IcosamateDrawing()
 	Matrix4Mul(model_matrix_, m2, m1);
 }
 
+IcosamateDrawing::~IcosamateDrawing()
+{
+	delete text_drawing_;
+}
+
 double deg_to_rad(double rad)
 {
 	return rad / 180.0 * M_PI;
@@ -270,7 +275,7 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 
 	//glLineWidth(2.0);
 
-	text_drawing_ = &text_drawing(w_width, w_height);
+	text_drawing_ = create_text_drawing(w_width, w_height);
 
 	// проверим не было ли ошибок
 	OPENGL_CHECK_FOR_ERRORS();

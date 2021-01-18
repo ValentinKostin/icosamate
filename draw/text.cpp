@@ -142,8 +142,7 @@ void TextDrawing::render(std::string text, float x, float y, float scale)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-TextDrawing& text_drawing(int w_width, int w_height)
+TextDrawing* create_text_drawing(int w_width, int w_height)
 {
-	static TextDrawing td(w_width, w_height);
-	return td;
+	return new TextDrawing(w_width, w_height);
 }

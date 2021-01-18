@@ -68,6 +68,7 @@ class IcosamateDrawing
 
 public:
 	IcosamateDrawing();
+	~IcosamateDrawing();
 	bool opengl_init(int w_width, int w_height);
 	void opengl_clear();
 	void render();
