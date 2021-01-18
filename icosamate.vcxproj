@@ -150,6 +150,7 @@
     <ClCompile Include="draw\draw.cpp" />
     <ClCompile Include="draw\draw_impl.cpp" />
     <ClCompile Include="draw\GLWindow.cpp" />
+    <ClCompile Include="draw\matrix.cpp" />
     <ClCompile Include="draw\OpenGL.cpp" />
     <ClCompile Include="draw\Shader.cpp" />
     <ClCompile Include="draw\text.cpp">
@@ -172,6 +173,7 @@
     <ClInclude Include="draw\GLWindow.h" />
     <ClInclude Include="draw\GL\glext.h" />
     <ClInclude Include="draw\GL\wglext.h" />
+    <ClInclude Include="draw\matrix.h" />
     <ClInclude Include="draw\OpenGL.h" />
     <ClInclude Include="draw\Shader.h" />
     <ClInclude Include="draw\text.h" />

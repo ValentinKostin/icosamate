@@ -8,9 +8,26 @@ TextDrawing::TextDrawing()
 {
 	check(FT_Init_FreeType(&ft_) == 0);
 
-    check(FT_New_Face(ft_, "fonts/arial.ttf", 0, &face_) == 0);
+    check(FT_New_Face(ft_, "fonts/arial.ttf", 0, &face_) == 0); // ZAGL
 
     fill_characters();
+
+    //glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);  // ZAGL
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    // ZAGL загрузка шейдеров
 }
 
 TextDrawing::~TextDrawing()
@@ -58,8 +75,58 @@ void TextDrawing::fill_characters()
             face_->glyph->bitmap_left, face_->glyph->bitmap_top,
             face_->glyph->advance.x
         };
-        Characters.insert({ c, character });
+        characters_.insert({ c, character });
     }
+}
+
+void TextDrawing::render(std::string text, float x, float y, float scale)
+{
+    float color[3] = {1.0f,0.0f,0.0f}; // ZAGL
+
+    // Активируем соответствующее состояние рендеринга	
+    glUseProgram(gl_program_);
+    glUniform3f(glGetUniformLocation(gl_program_, "textColor"), color[0], color[1], color[2]);
+    glActiveTexture(GL_TEXTURE0);
+    glBindVertexArray(VAO);
+
+    // Перебираем все символы
+    for (auto c = text.begin(); c != text.end(); c++)
+    {
+        Character ch = characters_[*c];
+
+        float xpos = x + ch.width_ * scale;
+        float ypos = y - (ch.height_ - ch.top_) * scale;
+
+        float w = ch.width_ * scale;
+        float h = ch.height_ * scale;
+
+        // Обновляем VBO для каждого символа
+        float vertices[6][4] = {
+            { xpos, ypos + h, 0.0f, 0.0f },
+            { xpos, ypos, 0.0f, 1.0f },
+            { xpos + w, ypos, 1.0f, 1.0f },
+
+            { xpos, ypos + h, 0.0f, 0.0f },
+            { xpos + w, ypos, 1.0f, 1.0f },
+            { xpos + w, ypos + h, 1.0f, 0.0f }
+        };
+
+        // Визуализируем текстуру глифа поверх прямоугольника
+        glBindTexture(GL_TEXTURE_2D, ch.texture_id_);
+
+        // Обновляем содержимое памяти VBO
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        // Рендерим прямоугольник
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // Теперь производим смещение для отображения следующего глифа (обратите внимание, что данное смещение измеряется в единицах, составляющих 1/64 пикселя)
+        x += ((unsigned int)(ch.advance_) >> 6) * scale; // побитовый сдвиг на 6, чтобы получить значение в пикселях (2^6 = 64)
+    }
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 TextDrawing& text_drawing()
