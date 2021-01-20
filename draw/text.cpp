@@ -1,3 +1,4 @@
+#include <codecvt>
 #include "../def.h"
 #include "text.h"
 #include "ft2build.h"
@@ -47,15 +48,32 @@ TextDrawing::~TextDrawing()
     FT_Done_FreeType(ft_);
 }
 
+struct widen : std::unary_function<char, wchar_t>
+{
+	widen(const std::ctype<wchar_t>& ct)
+		: charType(ct)
+	{}
+	wchar_t operator()(char c)
+	{
+		return charType.widen(c);
+	}
+private:
+	const std::ctype<wchar_t>& charType;
+};
+
 void TextDrawing::fill_characters()
 {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // отключаем ограничение выравнивания байтов
+    
+    std::locale cur_loc(".1251");
+    widen w(std::use_facet<std::ctype<wchar_t> >(cur_loc));
 
     for (unsigned int cc = 0; cc<256; cc++)
     {
         char c = (char)cc;
+        wchar_t wc = w(c);
         // Загружаем глифы символов 
-        if (FT_Load_Char(face_, c, FT_LOAD_RENDER) != 0)
+        if (FT_Load_Char(face_, wc, FT_LOAD_RENDER) != 0)
             continue;
 
         // Генерируем текстуру
