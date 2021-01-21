@@ -1,15 +1,10 @@
 #pragma once
 #include<map>
 #include "matrix.h"
-#include "ft2build.h"
-#include FT_FREETYPE_H
 #include "glm/glm.hpp"
 
 class TextDrawing
 {
-    FT_Library ft_;
-    FT_Face face_;
-
     struct Character
     {
         unsigned int texture_id_ = -1; // ID текстуры глифа
@@ -22,7 +17,7 @@ class TextDrawing
         int left_;
         int top_;
 
-        FT_Pos advance_; // смещение до следующего глифа
+        int advance_; // смещение до следующего глифа
     };
 
     std::map<char, Character> characters_;
@@ -37,7 +32,6 @@ class TextDrawing
 
 public:
 	TextDrawing(int w_width, int w_height);
-    ~TextDrawing();
     void render(const std::string& text, float pix_x, float pix_y, float scale);
 };
 

@@ -13,11 +13,6 @@
 
 TextDrawing::TextDrawing(int w_width, int w_height) : w_width_(w_width), w_height_(w_height)
 {
-	check(FT_Init_FreeType(&ft_) == 0);
-
-    check(FT_New_Face(ft_, get_data_full_path("DejaVuSans.ttf").c_str(), 0, &face_) == 0);
-    FT_Set_Pixel_Sizes(face_, 0, 48);
-
     fill_characters();
 
     glEnable(GL_BLEND);
@@ -42,12 +37,6 @@ TextDrawing::TextDrawing(int w_width, int w_height) : w_width_(w_width), w_heigh
     glBindVertexArray(0);
 }
 
-TextDrawing::~TextDrawing()
-{
-    FT_Done_Face(face_);
-    FT_Done_FreeType(ft_);
-}
-
 struct widen : std::unary_function<char, wchar_t>
 {
 	widen(const std::ctype<wchar_t>& ct)
@@ -63,6 +52,14 @@ private:
 
 void TextDrawing::fill_characters()
 {
+	FT_Library ft;
+	FT_Face face;
+
+	check(FT_Init_FreeType(&ft) == 0);
+
+	check(FT_New_Face(ft, get_data_full_path("DejaVuSans.ttf").c_str(), 0, &face) == 0);
+	FT_Set_Pixel_Sizes(face, 0, 48);
+
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // отключаем ограничение выравнивания байтов
     
     std::locale cur_loc(".1251");
@@ -73,7 +70,7 @@ void TextDrawing::fill_characters()
         char c = (char)cc;
         wchar_t wc = w(c);
         // Загружаем глифы символов 
-        if (FT_Load_Char(face_, wc, FT_LOAD_RENDER) != 0)
+        if (FT_Load_Char(face, wc, FT_LOAD_RENDER) != 0)
             continue;
 
         // Генерируем текстуру
@@ -84,12 +81,12 @@ void TextDrawing::fill_characters()
             GL_TEXTURE_2D,
             0,
             GL_RED,
-            face_->glyph->bitmap.width,
-            face_->glyph->bitmap.rows,
+            face->glyph->bitmap.width,
+            face->glyph->bitmap.rows,
             0,
             GL_RED,
             GL_UNSIGNED_BYTE,
-            face_->glyph->bitmap.buffer
+            face->glyph->bitmap.buffer
         );
 
         // Задаем для текстуры необходимые опции
@@ -102,12 +99,15 @@ void TextDrawing::fill_characters()
         Character character = 
         {
             texture,
-            face_->glyph->bitmap.width, face_->glyph->bitmap.rows,
-            face_->glyph->bitmap_left, face_->glyph->bitmap_top,
-            face_->glyph->advance.x
+            (int)face->glyph->bitmap.width, (int)face->glyph->bitmap.rows,
+            face->glyph->bitmap_left, face->glyph->bitmap_top,
+            face->glyph->advance.x
         };
         characters_.insert({ c, character });
     }
+
+	FT_Done_Face(face);
+	FT_Done_FreeType(ft);
 }
 
 void TextDrawing::render(const std::string& text, float x, float y, float scale)
