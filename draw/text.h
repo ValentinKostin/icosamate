@@ -15,8 +15,8 @@ class TextDrawing
         unsigned int texture_id_ = -1; // ID текстуры глифа
 
         // размер глифа
-        unsigned int width_;
-        unsigned int height_;
+        int width_;
+        int height_;
 
         // смещение от линии шрифта до верхнего/левого угла глифа
         int left_;
