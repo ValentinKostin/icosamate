@@ -131,21 +131,6 @@ void Icosamate::turn(VertexId vid, VertexId near_vid[5], VertexId op_vid, Vertex
 	half_turn(op_vid, near_op_vid, n);
 }
 
-//void Icosamate::fill_vertices()
-//{
-//	for (size_t i = 0; i < vert_elems_.size(); ++i)
-//	{
-//		const VertexElem& ve = vert_elems_[i];
-//		Vertex v(i);
-//		for (Color c : ve.colors_)
-//			v.faces_.push_back(&faces_.at(c));
-//		vertices_.push_back(v);
-//	}
-//
-//	for (const Vertex& v : vertices_)
-//		check(v.invariant());
-//}
-
 const std::vector<VertexElem> Icosamate::make_vert_elems()
 {
 	return 
@@ -161,7 +146,6 @@ const std::vector<VertexElem> Icosamate::vert_elems_ = Icosamate::make_vert_elem
 Icosamate::Icosamate()
 {
 	fill_faces();
-//	fill_vertices();
 
 	if (!solved())
 		raise("Bad icosamate init");

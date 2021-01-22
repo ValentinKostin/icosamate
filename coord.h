@@ -7,7 +7,6 @@ struct Coord
 	double x_ = 0;
 	double y_ = 0;
 	double z_ = 0;
-
 };
 
 inline Coord operator+(const Coord& c1, const Coord& c2)

@@ -53,6 +53,9 @@ void GLWindowInput(const GLWindow *window)
 	if (InputIsKeyPressed(VK_SPACE))
 		icd().set_autorotation(!icd().autorotation());
 
+	if (InputIsKeyPressed('Q'))
+		icd().set_draw_axes(!icd().draw_axes());
+
 	icd().set_rotation_animation(true);
 
 	if (InputIsKeyDown(VK_RIGHT))

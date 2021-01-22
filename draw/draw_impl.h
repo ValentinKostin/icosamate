@@ -10,24 +10,24 @@ typedef int DrawColor;
 
 enum class DrawMode { DARK = 0, LIGHT = 1 };
 
+struct OGLObjs
+{
+	GLuint vbo_ = -1;
+	GLuint vao_ = -1;
+	GLuint program_ = 0;
+
+	GLint model_view_projection_matrix_location_ = -1;
+	GLint position_location_ = -1;
+	GLint color_location_ = -1;
+};
+
 class IcosamateDrawing
 {
-	// пременные для хранения идентификаторов шейдерной программы и текстуры
-	GLuint shaderProgram_colors = 0, shaderProgram_one_color = 0;
-
 	// матрицы преобразования
 	Matrix4 model_matrix_ = { 0.0f }, modelViewProjectionMatrix = { 0.0f }, viewMatrix = { 0.0f },
 		projectionMatrix = { 0.0f }, viewProjectionMatrix = { 0.0f };
 
-	// индексы полученный из шейдерной программы
-	GLint modelViewProjectionMatrixLocation_colors = -1, positionLocation_colors = -1, colorLocation = -1,
-		modelViewProjectionMatrixLocation_one_color = -1, positionLocation_one_color = -1, sketchColorLocation = -1;
-
-	// для хранения VAO и VBO связанных вершинами
-	GLuint vertVBO = -1;
-	GLuint vertVBO_one_color = -1;
-	GLuint vertVAO = -1;
-	GLuint vertVAO_one_color = -1;
+	OGLObjs glo_vert_one_color_, glo_multi_colors_, glo_axis_;
 
 	float clear_color_[4] = { 255.0f / 255.0f, 245.0f / 255.0f, 213.0f / 255.0f, 1.0f };
 
@@ -50,6 +50,15 @@ class IcosamateDrawing
 	size_t multi_colors_buffer_coords_count() const { return multi_colors_buffer_.size() / 7; }
 	size_t multi_colors_buffer_bytes_count() const { return multi_colors_buffer_.size() * sizeof(float); }
 	size_t multi_colors_buffer_coord_byte_size() const { return 7 * sizeof(float); }
+
+	bool draw_axes_ = true;
+	std::vector<float> axis_coords_buffer_;
+	void fill_axis_coords_buffer();
+	float axis_color_[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+	const float* axis_coords_buffer() const { return &axis_coords_buffer_[0]; }
+	size_t axis_coords_buffer_coords_count() const { return axis_coords_buffer_.size() / 3; }
+	size_t axis_coords_buffer_bytes_count() const { return axis_coords_buffer_.size() * sizeof(float); }
+	size_t axis_coords_buffer_coord_byte_size() const { return 3 * sizeof(float); }
 
 	std::vector<DrawColor> draw_colors_;
 	std::vector<float> gl_face_colors_;
@@ -78,6 +87,7 @@ public:
 
 	const float* clear_color() const { return draw_mode_ == DrawMode::LIGHT ? clear_color_ : sketch_color_; }
 	const float* sketch_color() const { return draw_mode_ == DrawMode::LIGHT ? sketch_color_ : clear_color_; }
+	const float* axis_color() const { return axis_color_; }
 
 	void set_mode(DrawMode ddm);
 	DrawMode mode() const { return draw_mode_; }
@@ -96,6 +106,8 @@ public:
 	int rotate_animation_screen_axis() const { return rotate_animation_screen_axis_; }
 	bool rotation_animation_angle_increase() const { return rotation_animation_angle_increase_; }
 	void set_rotate_animation_screen_axis(int r, bool i) { rotate_animation_screen_axis_ = r; rotation_animation_angle_increase_ = i; }
+	bool draw_axes() const { return draw_axes_; }
+	void set_draw_axes(bool r) { draw_axes_ = r; }
 };
 
 IcosamateDrawing& icd();

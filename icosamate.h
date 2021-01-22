@@ -36,28 +36,14 @@ struct Face
 	size_t index(VertexId id) const;
 };
 
-//struct Vertex
-//{
-//	VertexId id_;
-//	std::vector < Face* > faces_;  // по часовой стрелке
-//	static const size_t FACE_COUNT = 5;
-//	bool invariant() const
-//	{
-//		return faces_.size() == FACE_COUNT;
-//	}
-//	Vertex(VertexId id) : id_(id) {}
-//};
-
 class Icosamate
 {
 protected:
 	static const std::vector<VertexElem> make_vert_elems();
 	static const std::vector<VertexElem> vert_elems_;
 	std::vector<Face> faces_;
-//	std::vector<Vertex> vertices_;
 	void fill_faces();
 	static const size_t COLORS_COUNT = 20;
-//	void fill_vertices();
 	static const size_t VERTICES_COUNT = 12;
 	void half_turn(VertexId vid, VertexId near_vid[5], size_t n);
 
