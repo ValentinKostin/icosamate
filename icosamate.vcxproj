@@ -150,7 +150,6 @@
     <ClCompile Include="draw\draw.cpp" />
     <ClCompile Include="draw\draw_impl.cpp" />
     <ClCompile Include="draw\GLWindow.cpp" />
-    <ClCompile Include="draw\matrix.cpp" />
     <ClCompile Include="draw\OpenGL.cpp" />
     <ClCompile Include="draw\Shader.cpp" />
     <ClCompile Include="draw\text.cpp">

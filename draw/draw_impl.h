@@ -24,8 +24,7 @@ struct OGLObjs
 class IcosamateDrawing
 {
 	// матрицы преобразования
-	Matrix4 model_matrix_ = { 0.0f }, modelViewProjectionMatrix = { 0.0f }, viewMatrix = { 0.0f },
-		projectionMatrix = { 0.0f }, viewProjectionMatrix = { 0.0f };
+	glm::mat4 model_matrix_, model_view_projection_matrix_, view_matrix_, projection_matrix_, view_projection_matrix_;
 
 	OGLObjs glo_vert_one_color_, glo_multi_colors_, glo_axis_;
 

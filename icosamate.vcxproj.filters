@@ -60,9 +60,6 @@
     <ClCompile Include="draw\text.cpp">
       <Filter>draw</Filter>
     </ClCompile>
-    <ClCompile Include="draw\matrix.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="def.h">

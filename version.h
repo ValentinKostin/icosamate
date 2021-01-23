@@ -1,5 +1,5 @@
 #pragma once
 
-#define PROGR_VERSION "3.11.1"
+#define PROGR_VERSION "3.12.0"
 #define PROGR_NAME "Icosamate"
 

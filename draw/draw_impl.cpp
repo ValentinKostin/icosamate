@@ -5,6 +5,7 @@
 #include "../coord.h"
 #include "Shader.h"
 #include "text.h"
+#include "matrix.h"
 
 IcosomateCoords gic;
 
@@ -168,10 +169,8 @@ IcosamateDrawing::IcosamateDrawing()
 	fill_multi_colors_buffer();
 	fill_axis_coords_buffer();
 
-	Matrix4 m1, m2;
-	Matrix4Rotation(m1, -float(M_PI_2), 0, 0);
-	Matrix4Rotation(m2, 0, float(M_PI), 0);
-	Matrix4Mul(model_matrix_, m2, m1);
+	glm::mat4 rm = glm::rotate(glm::mat4(1.0f), float(M_PI_2), glm::vec3(1.0, 0.0, 0.0));
+	model_matrix_ = glm::rotate(rm, -float(M_PI), glm::vec3(0.0, 1.0, 0.0));
 }
 
 IcosamateDrawing::~IcosamateDrawing()
@@ -294,12 +293,11 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 
 	// создадим перспективную матрицу
 	const float aspectRatio = (float)w_width / (float)w_height;
-	Matrix4Perspective(projectionMatrix, (float)deg_to_rad(22.5), aspectRatio, 0.1f, 100.0f);
+	projection_matrix_ = glm::perspective((float)deg_to_rad(22.5), aspectRatio, 0.1f, 100.0f);
 
 	// с помощью видовой матрицы отодвинем сцену назад
-	Matrix4Translation(viewMatrix, 0.0f, 0.0f, -8.0f);
-
-	Matrix4Mul(viewProjectionMatrix, projectionMatrix, viewMatrix);
+	view_matrix_ = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -8.0f));
+	view_projection_matrix_ = projection_matrix_ * view_matrix_;
 
 	prepare_multi_color_drawing(glo_multi_colors_, multi_colors_buffer(), multi_colors_buffer_bytes_count(), multi_colors_buffer_coord_byte_size());
 	prepare_one_color_drawing(glo_vert_one_color_, one_color_buffer(), one_color_buffer_bytes_count(), one_color_buffer_coord_byte_size(), sketch_color());
@@ -344,10 +342,10 @@ void IcosamateDrawing::opengl_clear()
 	clear(glo_vert_one_color_);
 }
 
-void set(OGLObjs& glo, Matrix4 model_view_projection_matrix)
+void set(OGLObjs& glo, const glm::mat4& model_view_projection_matrix)
 {
-	if (glo.model_view_projection_matrix_location_!=-1)
-		glUniformMatrix4fv(glo.model_view_projection_matrix_location_, 1, GL_TRUE, model_view_projection_matrix);
+	if (glo.model_view_projection_matrix_location_ != -1)
+		glUniformMatrix4fv(glo.model_view_projection_matrix_location_, 1, GL_FALSE, glm::value_ptr(model_view_projection_matrix));
 }
 
 void IcosamateDrawing::render()
@@ -359,7 +357,7 @@ void IcosamateDrawing::render()
 	glUseProgram(glo_multi_colors_.program_);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	set(glo_multi_colors_, modelViewProjectionMatrix);
+	set(glo_multi_colors_, model_view_projection_matrix_);
 
 	// выводим на экран все что относится к VAO
 	glBindVertexArray(glo_multi_colors_.vao_);
@@ -371,7 +369,7 @@ void IcosamateDrawing::render()
 	glUseProgram(glo_vert_one_color_.program_);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	set(glo_vert_one_color_, modelViewProjectionMatrix);
+	set(glo_vert_one_color_, model_view_projection_matrix_);
 
 	glBindVertexArray(glo_vert_one_color_.vao_);
 	glDrawArrays(GL_TRIANGLES, 0, GLsizei(one_color_buffer_coords_count()));
@@ -380,7 +378,7 @@ void IcosamateDrawing::render()
 	if (draw_axes())
 	{
 		glUseProgram(glo_axis_.program_);
-		set(glo_axis_, modelViewProjectionMatrix);
+		set(glo_axis_, model_view_projection_matrix_);
 		glBindVertexArray(glo_axis_.vao_);
 		glDrawArrays(GL_LINES, 0, GLsizei(axis_coords_buffer_coords_count()));
 	}
@@ -405,10 +403,8 @@ void change_angle(float& v, float dv)
 
 void IcosamateDrawing::update()
 {
-	float rotation[3] = { 0,0,0 };
 	if (rotation_animation())
 	{
-		int axis = rotate_animation_screen_axis();
 		size_t r = GetTickCount64();
 		if (start_tick_count_ == 0)
 			start_tick_count_ = r;
@@ -416,16 +412,16 @@ void IcosamateDrawing::update()
 		const size_t FULL_ROTATION_MS = 10000;
 		time_ms = time_ms % FULL_ROTATION_MS;
 		float angle = float((time_ms * 2.0 * M_PI) / FULL_ROTATION_MS);
-		rotation[axis] = rotation_animation_angle_increase() ? angle : -angle;
+		float rotation_angle = rotation_animation_angle_increase() ? angle : -angle;
 		start_tick_count_ = r;
-	}
 
-	Matrix4 rot_matrix;
-	Matrix4Rotation(rot_matrix, rotation[0], rotation[1], rotation[2]);
-	Matrix4 mod_matrix;
-	memcpy(mod_matrix, model_matrix_, sizeof(Matrix4));
-	Matrix4Mul(model_matrix_, rot_matrix, mod_matrix);
-	Matrix4Mul(modelViewProjectionMatrix, viewProjectionMatrix, mod_matrix);
+		int axis = rotate_animation_screen_axis();
+		glm::vec3 ax(0);
+		ax[axis] = 1.0;
+		glm::mat4 rot_matrix = glm::rotate(glm::mat4(1.0f), rotation_angle, ax);
+		model_matrix_ = rot_matrix * model_matrix_;
+	}
+	model_view_projection_matrix_ = view_projection_matrix_ * model_matrix_;
 }
 
 void IcosamateDrawing::set_mode(DrawMode ddm)

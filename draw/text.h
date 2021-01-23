@@ -1,7 +1,6 @@
 #pragma once
 #include<map>
 #include "matrix.h"
-#include "glm/glm.hpp"
 
 class TextDrawing
 {
