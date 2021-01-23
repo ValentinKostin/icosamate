@@ -18,7 +18,7 @@ IcosamateDrawing& icd()
 Coord outer_axis_end(AxisId ax_id)
 {
 	Coord bc = gic.vertex(ax_id);
-	return bc * 1.75;
+	return bc * 1.7;
 }
 
 void add(std::vector<float>& buf, const Coord& c)
@@ -148,11 +148,11 @@ void IcosamateDrawing::render_axis_texts()
 	size_t n = axes().count();
 	for (AxisId ax_id = 0; ax_id < n; ++ax_id)
 	{
-		Coord c = outer_axis_end(ax_id);
+		Coord c = outer_axis_end(ax_id)*1.03;
 		auto pix = to_pix(c);
-		float pix_x = float(pix.x_); // -bps * 0.4f;
-		float pix_y = float(pix.y_); // - bps * 0.5f;
-		float scale = 0.5;
+		float scale = 0.67f;
+		float pix_x = float(pix.x_) - bps * 0.35f * scale;
+		float pix_y = float(pix.y_) - bps * 0.5f * scale;
 		text_drawing_->render(std::to_string(ax_id), pix_x, pix_y, scale, axis_color());
 	}
 }
@@ -329,7 +329,7 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 	projection_matrix_ = glm::perspective((float)deg_to_rad(22.5), aspectRatio, 0.1f, 100.0f);
 
 	// с помощью видовой матрицы отодвинем сцену назад
-	view_matrix_ = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -8.0f));
+	view_matrix_ = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -9.0f));
 	view_projection_matrix_ = projection_matrix_ * view_matrix_;
 
 	prepare_multi_color_drawing(glo_multi_colors_, multi_colors_buffer(), multi_colors_buffer_bytes_count(), multi_colors_buffer_coord_byte_size());
