@@ -18,7 +18,7 @@ IcosamateDrawing& icd()
 Coord outer_axis_end(AxisId ax_id)
 {
 	Coord bc = gic.vertex(ax_id);
-	return bc * 1.7;
+	return bc * 1.68;
 }
 
 void add(std::vector<float>& buf, const Coord& c)
@@ -145,7 +145,8 @@ void IcosamateDrawing::fill_gl_face_colors()
 void IcosamateDrawing::render_axis_texts()
 {
 	auto bps = text_drawing_->base_pix_size();
-	size_t n = axes().count();
+	const Axes& aa = axes();
+	size_t n = aa.count();
 	for (AxisId ax_id = 0; ax_id < n; ++ax_id)
 	{
 		Coord c = outer_axis_end(ax_id)*1.03;
@@ -153,7 +154,8 @@ void IcosamateDrawing::render_axis_texts()
 		float scale = 0.67f;
 		float pix_x = float(pix.x_) - bps * 0.35f * scale;
 		float pix_y = float(pix.y_) - bps * 0.5f * scale;
-		text_drawing_->render(std::to_string(ax_id), pix_x, pix_y, scale, axis_color());
+		std::string text { aa.get_char(ax_id) };
+		text_drawing_->render(text, pix_x, pix_y, scale, axis_color());
 	}
 }
 

@@ -2,29 +2,9 @@
 #include "explorer.h"
 #include "draw/draw.h"
 
-char axis_char(AxisId id)
-{
-	switch (id)
-	{
-	case 1: return '1';
-	case 2: return '2';
-	case 3: return '3';
-	case 4: return '4';
-	case 5: return '5';
-	case 6: return '6';
-	case 7: return '7';
-	case 8: return '8';
-	case 9: return '9';
-	case 10: return 'A';
-	case 11: return 'B';
-	case 0: return 'C';
-	}
-	raise("Bad axis id");
-	return 0;
-}
-
 std::string to_str(const ActionS& acts)
 {
+	const Axes& aa = axes();
 	std::string r;
 	for (const Action& a : acts)
 	{
@@ -33,36 +13,16 @@ std::string to_str(const ActionS& acts)
 		if (a >= A_1_MOVE_CW)
 			r.push_back('M');
 		AxisId ax_id = a % 12;
-		r.push_back(axis_char(ax_id));
+		r.push_back(aa.get_char(ax_id));
 		if (a >= A_1_MOVE_CCW || a >= A_1_TURN_CCW && a <= A_12_TURN_CCW)
 			r.push_back('\'');
 	}
 	return r;
 }
 
-AxisId get_axis(char a)
-{
-	switch (a)
-	{
-	case '1': return 1;
-	case '2': return 2;
-	case '3': return 3;
-	case '4': return 4;
-	case '5': return 5;
-	case '6': return 6;
-	case '7': return 7;
-	case '8': return 8;
-	case '9': return 9;
-	case 'A': return 10;
-	case 'B': return 11;
-	case 'C': return 0;
-	}
-	raise("Bad axis symbol");
-	return 0;
-}
-
 ActionS from_str(const std::string& s)
 {
+	const Axes& aa = axes();
 	ActionS r;
 	Action act_delta = 0;
 	for (size_t i = 0; i < s.size(); i++)
@@ -73,7 +33,7 @@ ActionS from_str(const std::string& s)
 			act_delta = 24;
 			continue;
 		}
-		AxisId ax_id = get_axis(b);
+		AxisId ax_id = aa.get_axis(b);
 		Action ax_delta = ax_id > 0 ? Action(ax_id) : 12;
 		Action cw_delta = 0;
 		if (i+1<s.size() && s[i+1]=='\'')
