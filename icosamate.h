@@ -3,7 +3,7 @@
 
 #include "def.h"
 
-typedef int Color;
+typedef int ColorNum;
 typedef size_t VertexId;
 typedef size_t AxisId;
 
@@ -13,10 +13,10 @@ class BadFaceInit {};
 struct VertexElem
 {
 	VertexId id_;  // совпадает с индексом в наборе вершин
-	std::vector<Color> colors_; // обход по часовой стрелке
+	std::vector<ColorNum> colors_; // обход по часовой стрелке
 	static const size_t COLORS_COUNT = 5;
 
-	size_t color_index(Color c) const;
+	size_t color_index(ColorNum c) const;	// индекс в наборе цветов в вершинном элементе
 };
 
 typedef size_t VertexElemColorIndex;
@@ -26,13 +26,13 @@ struct Face
 	std::vector<const VertexElem*> vert_elems_;
 	std::vector<VertexElemColorIndex> vert_elems_colors_inds_; // описывают, как повёрнуты соотв. вершинные элементы
 	static const size_t VERTEX_ELEM_COUNT = 3;
-	Color center_col_;
+	ColorNum center_col_;
 	bool invariant() const 
 	{
 		return vert_elems_.size() == VERTEX_ELEM_COUNT && vert_elems_colors_inds_.size() == VERTEX_ELEM_COUNT;
 	}
 	bool is_one_color() const;
-	Face(Color center_col) : center_col_(center_col) {}
+	Face(ColorNum center_col) : center_col_(center_col) {}
 	size_t index(VertexId id) const;
 };
 
@@ -153,6 +153,6 @@ public:
 	static IcosamateDifference solving_difference(const IcosamateInSpace& i1, const IcosamateInSpace& i2);  // сравнение без учёта ориентации в пространстве
 
 	const Face& face_by_axis(AxisId ax_id_1, AxisId ax_id_2, AxisId ax_id_3) const;
-	Color elem_color(const Face& f, AxisId ax_id) const; // номер цвета треугольничка при вершине у указанной оси
+	ColorNum elem_color(const Face& f, AxisId ax_id) const; // номер цвета треугольничка при вершине у указанной оси
 };
 

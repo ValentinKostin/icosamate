@@ -21,6 +21,8 @@ struct OGLObjs
 	GLint color_location_ = -1;
 };
 
+typedef Coord GLPix;
+
 class IcosamateDrawing
 {
 	// матрицы преобразования
@@ -75,6 +77,13 @@ class IcosamateDrawing
 	class TextDrawing* text_drawing_ = nullptr;
 
 	std::string turnig_algorithm_;
+
+	void render_axis_texts();
+
+	int w_width_ = 0, w_height_ = 0;
+
+	// преобразование координаты -> пиксели экрана
+	GLPix to_pix(const Coord& c) const;
 
 public:
 	IcosamateDrawing();

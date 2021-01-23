@@ -2,7 +2,7 @@
 
 #include "icosamate.h"
 
-size_t VertexElem::color_index(Color c) const
+size_t VertexElem::color_index(ColorNum c) const
 {
 	for (size_t i = 0; i < COLORS_COUNT; i++)
 	{
@@ -37,14 +37,14 @@ size_t Face::index(VertexId id) const
 
 void Icosamate::fill_faces()
 {
-	for (Color c = 0; c < COLORS_COUNT; c++)
+	for (ColorNum c = 0; c < COLORS_COUNT; c++)
 		faces_.push_back(Face(c));
 
 	for (const VertexElem& ve : vert_elems_)
 	{
 		for (size_t i=0; i< VertexElem::COLORS_COUNT; ++i)
 		{
-			Color c = ve.colors_[i];
+			ColorNum c = ve.colors_[i];
 			Face& f = faces_.at(c);
 			f.vert_elems_.push_back(&ve);
 			f.vert_elems_colors_inds_.push_back(i);
@@ -445,7 +445,7 @@ const Face& IcosamateInSpace::face_by_axis(AxisId ax_id_1, AxisId ax_id_2, AxisI
 	return face(v1, v2, v3);
 }
 
-Color IcosamateInSpace::elem_color(const Face& f, AxisId ax_id) const
+ColorNum IcosamateInSpace::elem_color(const Face& f, AxisId ax_id) const
 {
 	VertexId v1 = vert_elem_by_axis_[ax_id];
 	size_t index = f.index(v1);

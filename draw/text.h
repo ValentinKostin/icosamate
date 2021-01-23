@@ -29,9 +29,12 @@ class TextDrawing
     unsigned int gl_program_ = -1;
     unsigned int VAO = -1, VBO = -1;
 
+    const size_t base_pix_size_ = 48;
+
 public:
 	TextDrawing(int w_width, int w_height);
-    void render(const std::string& text, float pix_x, float pix_y, float scale);
+    void render(const std::string& text, float pix_x, float pix_y, float scale, const float color[4]);
+    size_t base_pix_size() const { return base_pix_size_; }
 };
 
 TextDrawing* create_text_drawing(int w_width, int w_height);

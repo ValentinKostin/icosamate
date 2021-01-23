@@ -55,7 +55,7 @@ void TextDrawing::fill_characters()
 	check(FT_Init_FreeType(&ft) == 0);
 
 	check(FT_New_Face(ft, get_data_full_path("DejaVuSans.ttf").c_str(), 0, &face) == 0);
-	FT_Set_Pixel_Sizes(face, 0, 48);
+	FT_Set_Pixel_Sizes(face, 0, FT_UInt(base_pix_size_));
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // отключаем ограничение выравнивания байтов
     
@@ -107,10 +107,8 @@ void TextDrawing::fill_characters()
 	FT_Done_FreeType(ft);
 }
 
-void TextDrawing::render(const std::string& text, float x, float y, float scale)
+void TextDrawing::render(const std::string& text, float x, float y, float scale, const float color[4])
 {
-    float color[3] = {1.0f,0.0f,0.0f}; // ZAGL
-
     // Активируем соответствующее состояние рендеринга	
     glUseProgram(gl_program_);
     glUniform3f(glGetUniformLocation(gl_program_, "textColor"), color[0], color[1], color[2]);

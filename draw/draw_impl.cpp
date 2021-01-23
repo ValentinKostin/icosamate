@@ -15,6 +15,12 @@ IcosamateDrawing& icd()
 	return icd;
 }
 
+Coord outer_axis_end(AxisId ax_id)
+{
+	Coord bc = gic.vertex(ax_id);
+	return bc * 1.75;
+}
+
 void add(std::vector<float>& buf, const Coord& c)
 {
 	buf.push_back(float(c.x_));
@@ -98,7 +104,7 @@ void IcosamateDrawing::fill_multi_colors_buffer(bool colors_only)
 
 		for (size_t j = 0; j < 4; j++) // перебор треугольничков - элементов
 		{
-			Color col = j < 3 ? ic_.elem_color(f, ax_id[j]) : f.center_col_;
+			ColorNum col = j < 3 ? ic_.elem_color(f, ax_id[j]) : f.center_col_;
 
 			for (size_t k = 0; k < 3; k++) // перебор вершин в треугольничках
 			{
@@ -120,10 +126,8 @@ void IcosamateDrawing::fill_axis_coords_buffer()
 	axis_coords_buffer_.reserve(n * 2 * 3);
 	for (AxisId ax_id = 0; ax_id<n; ++ax_id)
 	{
-		Coord bc = gic.vertex(ax_id);
-		add(axis_coords_buffer_, bc);
-		Coord ec = bc * 2.0;
-		add(axis_coords_buffer_, ec);
+		add(axis_coords_buffer_, gic.vertex(ax_id));
+		add(axis_coords_buffer_, outer_axis_end(ax_id));
 	}
 }
 
@@ -136,6 +140,34 @@ void IcosamateDrawing::fill_gl_face_colors()
 		gl_face_colors_.push_back(float(((c & 0x0000FF)) / 255.0));
 		gl_face_colors_.push_back(1.0f);
 	}
+}
+
+void IcosamateDrawing::render_axis_texts()
+{
+	auto bps = text_drawing_->base_pix_size();
+	size_t n = axes().count();
+	for (AxisId ax_id = 0; ax_id < n; ++ax_id)
+	{
+		Coord c = outer_axis_end(ax_id);
+		auto pix = to_pix(c);
+		float pix_x = float(pix.x_); // -bps * 0.4f;
+		float pix_y = float(pix.y_); // - bps * 0.5f;
+		float scale = 0.5;
+		text_drawing_->render(std::to_string(ax_id), pix_x, pix_y, scale, axis_color());
+	}
+}
+
+GLPix IcosamateDrawing::to_pix(const Coord& c) const
+{
+	glm::vec4 v(c.x_, c.y_, c.z_, 1.0f);
+	auto v2 = model_view_projection_matrix_ * v;
+
+	return
+	{
+	   (w_width_ *  (v2[0] / v2[3] + 1))/2.0,
+	   (w_height_ * (v2[1] / v2[3] + 1)) / 2.0,
+	   ((v2[2] / v2[3]) + 1) / 2.0,
+	};
 }
 
 IcosamateDrawing::IcosamateDrawing()
@@ -280,6 +312,7 @@ void prepare_one_color_drawing(OGLObjs& glo, const float* buf, size_t buffer_byt
 
 bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 {
+	w_width_ = w_width; w_height_ = w_height;
 	// устанавливаем вьюпорт на все окно
 	glViewport(0, 0, w_width, w_height);
 
@@ -381,10 +414,13 @@ void IcosamateDrawing::render()
 		set(glo_axis_, model_view_projection_matrix_);
 		glBindVertexArray(glo_axis_.vao_);
 		glDrawArrays(GL_LINES, 0, GLsizei(axis_coords_buffer_coords_count()));
+
+		render_axis_texts();
 	}
 
 #if 1
-	text_drawing_->render(turnig_algorithm_, 50.0f, 50.0f, 1.0f);
+	const float turnig_algorithm_color[4] = {1.0f, 0.0f, 0.0f, 1.0f };
+	text_drawing_->render(turnig_algorithm_, 50.0f, 50.0f, 1.0f, turnig_algorithm_color);
 #endif
 
 	// проверка на ошибки
