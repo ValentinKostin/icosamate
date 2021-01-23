@@ -51,7 +51,7 @@ class IcosamateDrawing
 	size_t multi_colors_buffer_bytes_count() const { return multi_colors_buffer_.size() * sizeof(float); }
 	size_t multi_colors_buffer_coord_byte_size() const { return 7 * sizeof(float); }
 
-	bool draw_axes_ = true;
+	bool draw_axes_ = false;
 	std::vector<float> axis_coords_buffer_;
 	void fill_axis_coords_buffer();
 	float axis_color_[4] = { 0.0f, 0.0f, 1.0f, 1.0f };

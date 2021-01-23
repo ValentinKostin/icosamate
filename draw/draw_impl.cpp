@@ -186,7 +186,22 @@ double deg_to_rad(double rad)
 
 bool open_program(GLuint& pr, const char* sh_fname)
 {
-	pr = OpenShaderProgram("color_poly");
+	pr = OpenShaderProgram(sh_fname);
+
+#if 0
+	GLint num_uniforms = 0;
+	glGetProgramiv(pr, GL_ACTIVE_UNIFORMS, &num_uniforms);
+	GLchar uniform_name[256];
+	GLsizei length;
+	GLint size;
+	GLenum type;
+	for (int i = 0; i < num_uniforms; i++)
+	{
+		glGetActiveUniform(pr, i, sizeof(uniform_name), &length, &size, &type, uniform_name);
+		// ...
+	}
+#endif
+
 	return pr > 0;
 }
 
@@ -275,11 +290,6 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
 
-	// создадим и загрузим шейдерные программы
-	check(open_program(glo_multi_colors_.program_, "color_poly"));
-	check(open_program(glo_vert_one_color_.program_, "one_color_poly"));
-	check(open_program(glo_axis_.program_, "one_color_poly"));
-
 	// создадим перспективную матрицу
 	const float aspectRatio = (float)w_width / (float)w_height;
 	Matrix4Perspective(projectionMatrix, (float)deg_to_rad(22.5), aspectRatio, 0.1f, 100.0f);
@@ -289,8 +299,12 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 
 	Matrix4Mul(viewProjectionMatrix, projectionMatrix, viewMatrix);
 
+	// создадим и загрузим шейдерные программы
+	check(open_program(glo_multi_colors_.program_, "color_poly"));
 	prepare_multi_color_drawing(glo_multi_colors_, multi_colors_buffer(), multi_colors_buffer_bytes_count(), multi_colors_buffer_coord_byte_size());
+	check(open_program(glo_vert_one_color_.program_, "one_color_poly"));
 	prepare_one_color_drawing(glo_vert_one_color_, one_color_buffer(), one_color_buffer_bytes_count(), one_color_buffer_coord_byte_size(), sketch_color());
+	check(open_program(glo_axis_.program_, "one_color_poly"));
 	prepare_one_color_drawing(glo_axis_, axis_coords_buffer(), axis_coords_buffer_bytes_count(), axis_coords_buffer_coord_byte_size(), axis_color());
 
 	text_drawing_ = create_text_drawing(w_width, w_height);
