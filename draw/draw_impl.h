@@ -23,6 +23,19 @@ struct OGLObjs
 
 typedef Coord GLPix;
 
+// буфер, где каждый элемент состоит из подряд идущих N примитивов типа F
+template<class F, size_t N> struct DBuffer
+{
+	std::vector<F> buf_;
+	bool empty() const { return buf_.empty(); }
+	const F* ptr() const { return &buf_[0]; }
+	size_t prim_byte_size() const { return sizeof(F); }
+	size_t elem_size() const { return N; }
+	size_t elem_byte_size() const { return N * sizeof(F); }
+	size_t elems_count() const { return buf_.size() / N; }
+	size_t bytes_count() const { return buf_.size() * sizeof(F); }
+};
+
 class IcosamateDrawing
 {
 	// матрицы преобразования
@@ -34,32 +47,20 @@ class IcosamateDrawing
 
 	IcosamateInSpace ic_;
 
-	std::vector<float> one_color_buffer_; // координаты вершин треугольников, отрисовываемые sketch_color_
+	DBuffer<float, 3> one_color_buffer_; // координаты вершин треугольников, отрисовываемые sketch_color_
 	void fill_one_color_buffer_faces(); // треугольники граней икосаэдра
 	void fill_one_color_buffer_faces_subtriangles(); // каждая грань икосаэдра делится на четыре элемента-треугольничка
 	void fill_one_color_buffer_not_stickered(); // на каждом элементе-треугольничке рисуется окантовка вокруг стикера
 	void fill_one_color_buffer();
 	float sketch_color_[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	const float* one_color_buffer() const { return &one_color_buffer_[0]; }
-	size_t one_color_buffer_coords_count() const { return one_color_buffer_.size() / 3; }
-	size_t one_color_buffer_bytes_count() const { return one_color_buffer_.size() * sizeof(float); }
-	size_t one_color_buffer_coord_byte_size() const { return 3 * sizeof(float); }
 
-	std::vector<float> multi_colors_buffer_;  // координаты вершин	треугольников вместе с цветом, после каждой вершины
+	DBuffer<float, 7> multi_colors_buffer_;  // координаты вершин	треугольников вместе с цветом, после каждой вершины
 	void fill_multi_colors_buffer(bool colors_only = false);
-	const float* multi_colors_buffer() const { return &multi_colors_buffer_[0]; }
-	size_t multi_colors_buffer_coords_count() const { return multi_colors_buffer_.size() / 7; }
-	size_t multi_colors_buffer_bytes_count() const { return multi_colors_buffer_.size() * sizeof(float); }
-	size_t multi_colors_buffer_coord_byte_size() const { return 7 * sizeof(float); }
 
 	bool draw_axes_ = false;
-	std::vector<float> axis_coords_buffer_;
+	DBuffer<float, 3> axis_coords_buffer_;
 	void fill_axis_coords_buffer();
 	float axis_color_[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	const float* axis_coords_buffer() const { return &axis_coords_buffer_[0]; }
-	size_t axis_coords_buffer_coords_count() const { return axis_coords_buffer_.size() / 3; }
-	size_t axis_coords_buffer_bytes_count() const { return axis_coords_buffer_.size() * sizeof(float); }
-	size_t axis_coords_buffer_coord_byte_size() const { return 3 * sizeof(float); }
 
 	std::vector<DrawColor> draw_colors_;
 	std::vector<float> gl_face_colors_;

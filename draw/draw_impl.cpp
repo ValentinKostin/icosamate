@@ -44,31 +44,34 @@ void assign(std::vector<float>& buf, size_t i, const Coord& c)
 void IcosamateDrawing::fill_one_color_buffer_faces()
 {
 	size_t n = IcosamateInSpace::FACE_COUNT;
-	one_color_buffer_.reserve(n * 3 * 3);
+	std::vector<float>& buf = one_color_buffer_.buf_;
+	buf.reserve(n * 3 * 3);
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
-		add(one_color_buffer_, t.vert_coords(0), t.vert_coords(1), t.vert_coords(2));
+		add(buf, t.vert_coords(0), t.vert_coords(1), t.vert_coords(2));
 	}
 }
 
 void IcosamateDrawing::fill_one_color_buffer_faces_subtriangles()
 {
 	size_t n = IcosamateInSpace::FACE_COUNT;
-	one_color_buffer_.reserve(n * 4 * 3 * 3);
+	std::vector<float>& buf = one_color_buffer_.buf_;
+	buf.reserve(n * 4 * 3 * 3);
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
 		for (size_t subt_index = 0; subt_index < 4; ++subt_index)
 			for (size_t pt_index = 0; pt_index < 3; ++pt_index)
-				add(one_color_buffer_, t.subtriangle_coord(subt_index, pt_index));
+				add(buf, t.subtriangle_coord(subt_index, pt_index));
 	}
 }
 
 void IcosamateDrawing::fill_one_color_buffer_not_stickered()
 {
 	size_t n = IcosamateInSpace::FACE_COUNT;
-	one_color_buffer_.reserve(n * 4 * 6 * 3 * 3);
+	std::vector<float>& buf = one_color_buffer_.buf_;
+	buf.reserve(n * 4 * 6 * 3 * 3);
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
 		const FaceTriangle& t = gic.face_triangle(id);
@@ -79,8 +82,8 @@ void IcosamateDrawing::fill_one_color_buffer_not_stickered()
 				const Coord& s = t.sticker_coord(subt_index, pt_index);
 				const Coord& cn = t.subtriangle_coord(subt_index, (pt_index + 1) % 3);
 				const Coord& sn = t.sticker_coord(subt_index, (pt_index + 1) % 3);
-				add(one_color_buffer_, c, s, sn);
-				add(one_color_buffer_, c, sn, cn);
+				add(buf, c, s, sn);
+				add(buf, c, sn, cn);
 			}				
 	}
 }
@@ -93,8 +96,9 @@ void IcosamateDrawing::fill_one_color_buffer()
 void IcosamateDrawing::fill_multi_colors_buffer(bool colors_only)
 {
 	size_t n = IcosamateInSpace::FACE_COUNT;
+	std::vector<float>& buf = multi_colors_buffer_.buf_;
 	if (!colors_only)
-		multi_colors_buffer_.resize(n * 4 * 3 * 7);
+		buf.resize(n * 4 * 3 * 7);
 	size_t buf_ind = 0;
 	for (FaceTriangleId id = 0; id < n; id++)
 	{
@@ -109,12 +113,12 @@ void IcosamateDrawing::fill_multi_colors_buffer(bool colors_only)
 			for (size_t k = 0; k < 3; k++) // перебор вершин в треугольничках
 			{
 				if (!colors_only)
-					assign(multi_colors_buffer_, buf_ind, t.sticker_coord(j, 2-k));
+					assign(buf, buf_ind, t.sticker_coord(j, 2-k));
 				
 				buf_ind += 3;
 				const float* color_buf = &gl_face_colors_[4 * col];
 				for (size_t w = 0; w < 4; ++w)
-					multi_colors_buffer_[buf_ind++] = color_buf[w];
+					buf[buf_ind++] = color_buf[w];
 			}
 		}
 	}
@@ -123,11 +127,12 @@ void IcosamateDrawing::fill_multi_colors_buffer(bool colors_only)
 void IcosamateDrawing::fill_axis_coords_buffer()
 {
 	size_t n = axes().count();
-	axis_coords_buffer_.reserve(n * 2 * 3);
+	std::vector<float>& buf = axis_coords_buffer_.buf_;
+	buf.reserve(n * 2 * 3);
 	for (AxisId ax_id = 0; ax_id<n; ++ax_id)
 	{
-		add(axis_coords_buffer_, gic.vertex(ax_id));
-		add(axis_coords_buffer_, outer_axis_end(ax_id));
+		add(buf, gic.vertex(ax_id));
+		add(buf, outer_axis_end(ax_id));
 	}
 }
 
@@ -334,9 +339,9 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 	view_matrix_ = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -9.0f));
 	view_projection_matrix_ = projection_matrix_ * view_matrix_;
 
-	prepare_multi_color_drawing(glo_multi_colors_, multi_colors_buffer(), multi_colors_buffer_bytes_count(), multi_colors_buffer_coord_byte_size());
-	prepare_one_color_drawing(glo_vert_one_color_, one_color_buffer(), one_color_buffer_bytes_count(), one_color_buffer_coord_byte_size(), sketch_color());
-	prepare_one_color_drawing(glo_axis_, axis_coords_buffer(), axis_coords_buffer_bytes_count(), axis_coords_buffer_coord_byte_size(), axis_color());
+	prepare_multi_color_drawing(glo_multi_colors_, multi_colors_buffer_.ptr(), multi_colors_buffer_.bytes_count(), multi_colors_buffer_.elem_byte_size());
+	prepare_one_color_drawing(glo_vert_one_color_, one_color_buffer_.ptr(), one_color_buffer_.bytes_count(), one_color_buffer_.elem_byte_size(), sketch_color());
+	prepare_one_color_drawing(glo_axis_, axis_coords_buffer_.ptr(), axis_coords_buffer_.bytes_count(), axis_coords_buffer_.elem_byte_size(), axis_color());
 
 	text_drawing_ = create_text_drawing(w_width, w_height);
 
@@ -396,7 +401,7 @@ void IcosamateDrawing::render()
 
 	// выводим на экран все что относится к VAO
 	glBindVertexArray(glo_multi_colors_.vao_);
-	glDrawArrays(GL_TRIANGLES, 0, GLsizei(multi_colors_buffer_coords_count()));
+	glDrawArrays(GL_TRIANGLES, 0, GLsizei(multi_colors_buffer_.elems_count()));
 #endif
 
 #if 1
@@ -407,7 +412,7 @@ void IcosamateDrawing::render()
 	set(glo_vert_one_color_, model_view_projection_matrix_);
 
 	glBindVertexArray(glo_vert_one_color_.vao_);
-	glDrawArrays(GL_TRIANGLES, 0, GLsizei(one_color_buffer_coords_count()));
+	glDrawArrays(GL_TRIANGLES, 0, GLsizei(one_color_buffer_.elems_count()));
 #endif
 
 	if (draw_axes())
@@ -415,7 +420,7 @@ void IcosamateDrawing::render()
 		glUseProgram(glo_axis_.program_);
 		set(glo_axis_, model_view_projection_matrix_);
 		glBindVertexArray(glo_axis_.vao_);
-		glDrawArrays(GL_LINES, 0, GLsizei(axis_coords_buffer_coords_count()));
+		glDrawArrays(GL_LINES, 0, GLsizei(axis_coords_buffer_.elems_count()));
 
 		render_axis_texts();
 	}
