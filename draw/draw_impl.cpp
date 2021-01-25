@@ -144,6 +144,7 @@ CoordS IcosamateDrawing::define_arc(AxisId ax_id_1, AxisId ax_id_2)
 
 void IcosamateDrawing::fill_ve_arrows_coords()
 {
+	ve_arrows_.clear_coords();
 	for (VertexId vid=0; vid<Icosamate::VERTICES_COUNT; ++vid)
 	{
 		AxisId ax_id_1 = ic0_.axis_by_vertex(vid);
@@ -151,6 +152,7 @@ void IcosamateDrawing::fill_ve_arrows_coords()
 		if (ax_id_1 != ax_id_2)
 			ve_arrows_.add_arrow(define_arc(ax_id_1, ax_id_2));
 	}
+	ve_arrows_.complete();
 }
 
 void IcosamateDrawing::fill_gl_face_colors()
@@ -194,7 +196,7 @@ GLPix IcosamateDrawing::to_pix(const Coord& c) const
 	};
 }
 
-IcosamateDrawing::IcosamateDrawing(): ve_arrows_(ve_arrows_color_)
+IcosamateDrawing::IcosamateDrawing()
 {
 	draw_colors_ =
 	{
@@ -220,6 +222,7 @@ IcosamateDrawing::IcosamateDrawing(): ve_arrows_(ve_arrows_color_)
 	  0x3f3f3f
 	};
 	fill_gl_face_colors();
+	ve_arrows_.set_color(ve_arrows_color_);
 
 	fill_one_color_buffer();
 	fill_multi_colors_buffer();
@@ -445,6 +448,13 @@ void IcosamateDrawing::set_mode(DrawMode ddm)
 	glUseProgram(glo_vert_one_color_.program_);
 	if (glo_vert_one_color_.color_location_ != -1)
 		glUniform4fv(glo_vert_one_color_.color_location_, 1, sketch_color());
+}
+
+void IcosamateDrawing::set_icosomate(const IcosamateInSpace& ic)
+{
+	ic_ = ic;
+	fill_multi_colors_buffer(true);
+	fill_ve_arrows_coords();
 }
 
 void IcosamateDrawing::set_rotation_animation(bool r)

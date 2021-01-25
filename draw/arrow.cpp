@@ -1,9 +1,8 @@
 #include "arrow.h"
 
-Arrows::Arrows(const float* color)
+void Arrows::set_color(const float* color)
 {
 	memcpy(color_, color, sizeof(float) * 4);
-	coords_.reserve(10);
 }
 
 void Arrows::clear_coords()
@@ -51,10 +50,10 @@ void Arrows::render(const glm::mat4& pvm)
 	set(glo_, pvm);
 	glBindVertexArray(glo_.vao_);
 
-	size_t index = 0;
+	GLint index = 0;
 	for (size_t i = 0; i < coords_.size(); i++)
 	{
-		glDrawArrays(GL_LINE_STRIP, 0, GLsizei(coords_[i].size()));
+		glDrawArrays(GL_LINE_STRIP, index, GLsizei(coords_[i].size()));
 		index += coords_[i].size();
 	}
 }

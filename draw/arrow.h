@@ -21,7 +21,7 @@ class Arrows
 	bool visible_ = true;
 
 public:
-	Arrows(const float* color);
+	void set_color(const float* color);
 	bool empty() const { return coords_.empty(); }
 	void clear_coords();
 	void clear();

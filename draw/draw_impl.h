@@ -84,11 +84,7 @@ public:
 	void set_mode(DrawMode ddm);
 	DrawMode mode() const { return draw_mode_; }
 
-	void set_icosomate(const IcosamateInSpace& ic)
-	{
-		ic_ = ic;
-		fill_multi_colors_buffer(true);
-	}
+	void set_icosomate(const IcosamateInSpace& ic);
 	void set_turnig_algorithm(const std::string& turnig_algorithm) { turnig_algorithm_ = turnig_algorithm; }
 
 	bool autorotation() const { return autorotation_; }
