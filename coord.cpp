@@ -3,6 +3,7 @@
 #include "coord.h"
 #include <cmath>
 #include <set>
+#include <list>
 
 FaceTriangle::FaceTriangle(FaceTriangleId id, const VertTriangle& t) : VertTriangle(t), id_(id)
 {
@@ -152,8 +153,17 @@ Coord sphere_middle_point(const Coord& c1, const Coord& c2, double radius)
 	return c;
 }
 
+void add_sphere_middle_points(std::list<Coord>& cs, double radius)
+{
+	check(cs.size() > 1);
+	for (auto q = cs.begin(), p = q++; q != cs.end(); p = q++)
+		cs.insert(q, sphere_middle_point(*p, *q, radius));
+}
+
 CoordS define_arc_on_sphere(const Coord& c1, const Coord& c2, double radius)
 {
-	//ZAGL
-	return { c1, sphere_middle_point(c1, c2, radius), c2 };
+	std::list<Coord> cs = {c1, c2};
+	for (size_t i = 0; i < 6; i++)
+		add_sphere_middle_points(cs, radius);
+	return CoordS(cs.begin(), cs.end());
 }

@@ -54,6 +54,6 @@ void Arrows::render(const glm::mat4& pvm)
 	for (size_t i = 0; i < coords_.size(); i++)
 	{
 		glDrawArrays(GL_LINE_STRIP, index, GLsizei(coords_[i].size()));
-		index += coords_[i].size();
+		index += (GLint)coords_[i].size();
 	}
 }
