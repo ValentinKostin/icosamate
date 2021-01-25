@@ -63,6 +63,12 @@
     <ClCompile Include="axis.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="draw\arrow.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw\draw_def.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="def.h">
@@ -118,6 +124,12 @@
     </ClInclude>
     <ClInclude Include="axis.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="draw\arrow.h">
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="draw\draw_def.h">
+      <Filter>draw</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

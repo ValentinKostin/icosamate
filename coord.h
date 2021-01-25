@@ -26,6 +26,8 @@ inline Coord operator/(const Coord& c1, double a)
 	return { c1.x_ / a, c1.y_ / a, c1.z_ / a };
 }
 
+typedef std::vector<Coord> CoordS;
+
 
 struct VertCoord : public Coord
 {

@@ -21,26 +21,6 @@ Coord outer_axis_end(AxisId ax_id)
 	return bc * 1.68;
 }
 
-void add(std::vector<float>& buf, const Coord& c)
-{
-	buf.push_back(float(c.x_));
-	buf.push_back(float(c.y_));
-	buf.push_back(float(c.z_));
-}
-void add(std::vector<float>& buf, const Coord& c0, const Coord& c1, const Coord& c2)
-{
-	add(buf, c0);
-	add(buf, c1);
-	add(buf, c2);
-}
-
-void assign(std::vector<float>& buf, size_t i, const Coord& c)
-{
-	buf[i] = (float(c.x_));
-	buf[i+1] = (float(c.y_));
-	buf[i+2] = (float(c.z_));
-}
-
 void IcosamateDrawing::fill_one_color_buffer_faces()
 {
 	size_t n = IcosamateInSpace::FACE_COUNT;
@@ -221,28 +201,6 @@ double deg_to_rad(double rad)
 {
 	return rad / 180.0 * M_PI;
 }
-
-bool open_program(GLuint& pr, const char* sh_fname)
-{
-	pr = OpenShaderProgram(sh_fname);
-
-#if 0
-	GLint num_uniforms = 0;
-	glGetProgramiv(pr, GL_ACTIVE_UNIFORMS, &num_uniforms);
-	GLchar uniform_name[256];
-	GLsizei length;
-	GLint size;
-	GLenum type;
-	for (int i = 0; i < num_uniforms; i++)
-	{
-		glGetActiveUniform(pr, i, sizeof(uniform_name), &length, &size, &type, uniform_name);
-		// ...
-	}
-#endif
-
-	return pr > 0;
-}
-
 void prepare_multi_color_drawing(OGLObjs& glo, const float* buf, size_t buffer_bytes_count, size_t one_elem_byte_size)
 {
 	check(open_program(glo.program_, "color_poly"));
@@ -281,39 +239,6 @@ void prepare_multi_color_drawing(OGLObjs& glo, const float* buf, size_t buffer_b
 		glVertexAttribPointer(glo.color_location_, 4, GL_FLOAT, GL_FALSE, GLsizei(one_elem_byte_size), offset);
 		// разрешим использование вершинного атрибута
 		glEnableVertexAttribArray(glo.color_location_);
-	}
-}
-
-void prepare_one_color_drawing(OGLObjs& glo, const float* buf, size_t buffer_bytes_count, size_t one_elem_byte_size, const float* col)
-{
-	check(open_program(glo.program_, "one_color_poly"));
-	glUseProgram(glo.program_);
-
-	// запросим у OpenGL свободный индекс VAO
-	glGenVertexArrays(1, &glo.vao_);
-	// сделаем VAO активным
-	glBindVertexArray(glo.vao_);
-	// создадим VBO для данных вершин
-	glGenBuffers(1, &glo.vbo_);
-	// начинаем работу с буфером для вершин
-	glBindBuffer(GL_ARRAY_BUFFER, glo.vbo_);
-	glBufferData(GL_ARRAY_BUFFER, buffer_bytes_count, buf, GL_STATIC_DRAW);
-
-	// получим индекс матрицы из шейдерной программы
-	glo.model_view_projection_matrix_location_ = glGetUniformLocation(glo.program_, "modelViewProjectionMatrix");
-
-	glo.color_location_ = glGetUniformLocation(glo.program_, "sketchColor");
-	if (glo.color_location_ != -1)
-		glUniform4fv(glo.color_location_, 1, col);
-
-	// получим индекс вершинного атрибута 'position' из шейдерной программы
-	glo.position_location_ = glGetAttribLocation(glo.program_, "position");
-	if (glo.position_location_ != -1)
-	{
-		// укажем параметры вершинного атрибута для текущего активного VBO
-		glVertexAttribPointer(glo.position_location_, 3, GL_FLOAT, GL_FALSE, GLsizei(one_elem_byte_size), 0);
-		// разрешим использование вершинного атрибута
-		glEnableVertexAttribArray(glo.position_location_);
 	}
 }
 
@@ -357,17 +282,20 @@ void clear(OGLObjs& glo)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	// удаляем VBO
-	glDeleteBuffers(1, &glo.vbo_);
+	if (glo.vbo_!=-1)
+		glDeleteBuffers(1, &glo.vbo_);
 	glo.vbo_ = -1;
 
 	// далаем текущий VAO неактивным
 	glBindVertexArray(0);
 	// удаляем VAO
-	glDeleteVertexArrays(1, &glo.vao_);
+	if (glo.vao_ != -1)
+		glDeleteVertexArrays(1, &glo.vao_);
 	glo.vao_ = -1;
 
 	// удаляем шейдерную программу
-	ShaderProgramDestroy(glo.program_);
+	if (glo.program_ > 0)
+		ShaderProgramDestroy(glo.program_);
 	glo.program_ = -1;
 
 	glo.model_view_projection_matrix_location_ = -1;
@@ -375,11 +303,19 @@ void clear(OGLObjs& glo)
 	glo.color_location_ = -1;
 }
 
+OGLObjs::~OGLObjs()
+{
+	clear(*this);
+}
+
 void IcosamateDrawing::opengl_clear()
 {
 	clear(glo_axis_);
 	clear(glo_multi_colors_);
 	clear(glo_vert_one_color_);
+
+	delete text_drawing_;
+	text_drawing_ = nullptr;
 }
 
 void set(OGLObjs& glo, const glm::mat4& model_view_projection_matrix)
@@ -432,16 +368,6 @@ void IcosamateDrawing::render()
 
 	// проверка на ошибки
 	OPENGL_CHECK_FOR_ERRORS();
-}
-
-void change_angle(float& v, float dv)
-{
-	v += dv;
-	const float two_pi = float(2.0 * M_PI);
-	if (v >= two_pi)
-		v -= two_pi;
-	if (v<0)
-		v += two_pi;
 }
 
 void IcosamateDrawing::update()

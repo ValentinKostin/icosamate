@@ -3,38 +3,15 @@
 #include <vector>
 #include "OpenGL.h"
 #include "../coord.h"
+#include "draw_def.h"
 #include "matrix.h"
-
+#include "arrow.h"
 
 typedef int DrawColor;
 
 enum class DrawMode { DARK = 0, LIGHT = 1 };
 
-struct OGLObjs
-{
-	GLuint vbo_ = -1;
-	GLuint vao_ = -1;
-	GLuint program_ = 0;
-
-	GLint model_view_projection_matrix_location_ = -1;
-	GLint position_location_ = -1;
-	GLint color_location_ = -1;
-};
-
 typedef Coord GLPix;
-
-// буфер, где каждый элемент состоит из подряд идущих N примитивов типа F
-template<class F, size_t N> struct DBuffer
-{
-	std::vector<F> buf_;
-	bool empty() const { return buf_.empty(); }
-	const F* ptr() const { return &buf_[0]; }
-	size_t prim_byte_size() const { return sizeof(F); }
-	size_t elem_size() const { return N; }
-	size_t elem_byte_size() const { return N * sizeof(F); }
-	size_t elems_count() const { return buf_.size() / N; }
-	size_t bytes_count() const { return buf_.size() * sizeof(F); }
-};
 
 class IcosamateDrawing
 {
