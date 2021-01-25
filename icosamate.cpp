@@ -421,3 +421,9 @@ ColorNum IcosamateInSpace::elem_color(const Face& f, AxisId ax_id) const
 	VertexElemColorIndex cind = f.vert_elems_colors_inds_[index];
 	return ve.colors_[cind];
 }
+
+const VertexElem& IcosamateInSpace::vertex_elem_by_axis(AxisId ax_id) const
+{
+	VertexId v1 = vert_elem_by_axis_.at(ax_id);
+	return vert_elems_.at(v1);
+}

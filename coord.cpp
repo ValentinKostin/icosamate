@@ -140,4 +140,16 @@ void IcosomateCoords::fill_face_triangles()
 	check(face_triangles_.size() == IcosamateInSpace::FACE_COUNT);
 }
 
+// с1 и c2 на сфере, выдаёт промежуточную точку между ними
+// если они расположены диаметрально противоположны, то выдаёт 0
+Coord sphere_middle_point(const Coord& c1, const Coord& c2)
+{
+  //ZAGL
+	return c1 + c2;
+}
 
+CoordS define_arc_on_sphere(const Coord& c1, const Coord& c2)
+{
+	//ZAGL
+	return CoordS();
+}

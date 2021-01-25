@@ -116,6 +116,42 @@ void IcosamateDrawing::fill_axis_coords_buffer()
 	}
 }
 
+CoordS IcosamateDrawing::define_arc(AxisId ax_id_1, AxisId ax_id_2)
+{
+	const Axes& aa = axes();
+	if (ax_id_1 != ax_id_2)
+	{
+		const Axis& a1 = aa.axis(ax_id_1);
+		const Axis& a2 = aa.axis(ax_id_2);
+		if (a1.opposite_id_ != a2.id_)
+			return define_arc_on_sphere(gic.vertex(ax_id_1), gic.vertex(ax_id_2));
+
+		AxisId ax_id_pr_1 = a1.near_axes_[0];
+		const Axis& a1_pr = aa.axis(ax_id_pr_1);
+		std::vector<AxisId> cm_ax = aa.near_common_axis(ax_id_pr_1, ax_id_2);
+		check(!cm_ax.empty());
+		Coord c_mid = sphere_middle_point(gic.vertex(ax_id_pr_1), gic.vertex(cm_ax[0]));
+		CoordS cs1 = define_arc_on_sphere(gic.vertex(ax_id_1), c_mid);
+		check(!cs1.empty());
+		CoordS cs2 = define_arc_on_sphere(c_mid, gic.vertex(ax_id_2));
+		cs1.pop_back();
+		cs1.insert(cs1.end(), cs2.begin(), cs2.end());
+		return cs1;
+	}
+	return CoordS();
+}
+
+void IcosamateDrawing::fill_ve_arrows_coords()
+{
+	for (VertexId vid=0; vid<Icosamate::VERTICES_COUNT; ++vid)
+	{
+		AxisId ax_id_1 = ic0_.axis_by_vertex(vid);
+		AxisId ax_id_2 = ic_.axis_by_vertex(vid);
+		if (ax_id_1 != ax_id_2)
+			ve_arrows_.add_arrow(define_arc(ax_id_1, ax_id_2));
+	}
+}
+
 void IcosamateDrawing::fill_gl_face_colors()
 {
 	for (const DrawColor& c : draw_colors_)
@@ -187,6 +223,7 @@ IcosamateDrawing::IcosamateDrawing(): ve_arrows_(ve_arrows_color_)
 	fill_one_color_buffer();
 	fill_multi_colors_buffer();
 	fill_axis_coords_buffer();
+	fill_ve_arrows_coords();
 
 	glm::mat4 rm = glm::rotate(glm::mat4(1.0f), float(M_PI_2), glm::vec3(1.0, 0.0, 0.0));
 	model_matrix_ = glm::rotate(rm, -float(M_PI), glm::vec3(0.0, 1.0, 0.0));

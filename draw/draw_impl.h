@@ -23,6 +23,7 @@ class IcosamateDrawing
 	float clear_color_[4] = { 255.0f / 255.0f, 245.0f / 255.0f, 213.0f / 255.0f, 1.0f };
 
 	IcosamateInSpace ic_;
+	const IcosamateInSpace ic0_;
 
 	DBuffer<float, 3> one_color_buffer_; // координаты вершин треугольников, отрисовываемые sketch_color_
 	void fill_one_color_buffer_faces(); // треугольники граней икосаэдра
@@ -40,6 +41,8 @@ class IcosamateDrawing
 	float axis_color_[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
 
 	Arrows ve_arrows_;
+	CoordS define_arc(AxisId ax_id_1, AxisId ax_id_2);
+	void fill_ve_arrows_coords();
 	const float ve_arrows_color_[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 	std::vector<DrawColor> draw_colors_;

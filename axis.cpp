@@ -27,6 +27,20 @@ Axes::Axes() : axes_(make_axes())
 		check(ac == Axis::NEAR_AXIS_COUNT);
 }
 
+std::vector<AxisId> Axes::near_common_axis(AxisId id_1, AxisId id_2) const
+{
+	std::vector<AxisId> r;
+	for (AxisId t1 : axes_[id_1].near_axes_)
+	{
+		for (AxisId t2 : axes_[id_2].near_axes_)
+		{
+			if (t1 == t2)
+				r.push_back(t1);
+		}
+	}
+	return r;
+}
+
 char Axes::get_char(AxisId id) const
 {
 	switch (id)

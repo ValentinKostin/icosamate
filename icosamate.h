@@ -43,8 +43,10 @@ protected:
 	static const std::vector<VertexElem> vert_elems_;
 	std::vector<Face> faces_;
 	void fill_faces();
+public:
 	static const size_t COLORS_COUNT = 20;
 	static const size_t VERTICES_COUNT = 12;
+protected:
 	void half_turn(VertexId vid, VertexId near_vid[5], size_t n);
 
 	// вращения вокруг оси и противоположной эквивалентны с точки зрения картины
@@ -127,5 +129,8 @@ public:
 
 	const Face& face_by_axis(AxisId ax_id_1, AxisId ax_id_2, AxisId ax_id_3) const;
 	ColorNum elem_color(const Face& f, AxisId ax_id) const; // номер цвета треугольничка при вершине у указанной оси
+
+	const VertexElem& vertex_elem_by_axis(AxisId ax_id) const;
+	AxisId axis_by_vertex(VertexId vid) const { return axis_by_vert_elem_.at(vid); }
 };
 

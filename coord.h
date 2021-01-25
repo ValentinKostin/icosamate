@@ -93,3 +93,8 @@ public:
 	const VertCoord& vertex(AxisId axis_id) const { return coords_.at(axis_id); }
 	const FaceTriangle& face_triangle(FaceTriangleId id) const { return face_triangles_.at(id); }
 };
+
+// с1 и c2 на сфере, выдаёт промежуточную точку между ними
+// если они расположены диаметрально противоположны, то выдаёт 0
+Coord sphere_middle_point(const Coord& c1, const Coord& c2);
+CoordS define_arc_on_sphere(const Coord& c1, const Coord& c2);

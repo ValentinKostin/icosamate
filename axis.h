@@ -28,6 +28,8 @@ public:
 	const std::vector<Axis>& axes() const { return axes_; }
 	size_t count() const { return 12; }
 
+	std::vector<AxisId> near_common_axis(AxisId id_1, AxisId id_2) const;
+
 	// буквенные обозначения
 	char get_char(AxisId id) const;
 	AxisId get_axis(char a) const;
