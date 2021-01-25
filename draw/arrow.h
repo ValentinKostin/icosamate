@@ -4,6 +4,11 @@
 #include "../coord.h"
 #include "matrix.h"
 
+enum class ArrowsType
+{
+	VertElems
+};
+
 class Arrows
 {
 	float color_[4];
@@ -19,6 +24,7 @@ public:
 	Arrows(const float* color);
 	bool empty() const { return coords_.empty(); }
 	void clear_coords();
+	void clear();
 	void add_arrow(const CoordS& coords);
 	void complete();
 	void gl_init();

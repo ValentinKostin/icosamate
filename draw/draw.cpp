@@ -55,6 +55,8 @@ void GLWindowInput(const GLWindow *window)
 
 	if (InputIsKeyPressed('Q'))
 		icd().set_draw_axes(!icd().draw_axes());
+	if (InputIsKeyPressed('W'))
+		icd().set_arrows_visible(ArrowsType::VertElems, !icd().is_arrows_visible(ArrowsType::VertElems));
 
 	icd().set_rotation_animation(true);
 

@@ -39,6 +39,9 @@ class IcosamateDrawing
 	void fill_axis_coords_buffer();
 	float axis_color_[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
 
+	Arrows ve_arrows_;
+	const float ve_arrows_color_[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+
 	std::vector<DrawColor> draw_colors_;
 	std::vector<float> gl_face_colors_;
 	void fill_gl_face_colors();
@@ -94,6 +97,9 @@ public:
 	void set_rotate_animation_screen_axis(int r, bool i) { rotate_animation_screen_axis_ = r; rotation_animation_angle_increase_ = i; }
 	bool draw_axes() const { return draw_axes_; }
 	void set_draw_axes(bool r) { draw_axes_ = r; }
+
+	void set_arrows_visible(ArrowsType at, bool visible);
+	bool is_arrows_visible(ArrowsType at) const;
 };
 
 IcosamateDrawing& icd();

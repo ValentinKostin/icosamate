@@ -157,7 +157,7 @@ GLPix IcosamateDrawing::to_pix(const Coord& c) const
 	};
 }
 
-IcosamateDrawing::IcosamateDrawing()
+IcosamateDrawing::IcosamateDrawing(): ve_arrows_(ve_arrows_color_)
 {
 	draw_colors_ =
 	{
@@ -270,6 +270,8 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 
 	text_drawing_ = create_text_drawing(w_width, w_height);
 
+	ve_arrows_.gl_init();
+
 	// проверим не было ли ошибок
 	OPENGL_CHECK_FOR_ERRORS();
 
@@ -316,6 +318,8 @@ void IcosamateDrawing::opengl_clear()
 
 	delete text_drawing_;
 	text_drawing_ = nullptr;
+
+	ve_arrows_.clear();
 }
 
 void set(OGLObjs& glo, const glm::mat4& model_view_projection_matrix)
@@ -366,6 +370,8 @@ void IcosamateDrawing::render()
 	text_drawing_->render(turnig_algorithm_, 50.0f, 50.0f, 1.0f, turnig_algorithm_color);
 #endif
 
+	ve_arrows_.render(model_view_projection_matrix_);
+
 	// проверка на ошибки
 	OPENGL_CHECK_FOR_ERRORS();
 }
@@ -408,4 +414,14 @@ void IcosamateDrawing::set_rotation_animation(bool r)
 	rotation_animation_ = r; 
 	if (!rotation_animation_)
 		start_tick_count_ = 0;
+}
+
+void IcosamateDrawing::set_arrows_visible(ArrowsType at, bool visible)
+{
+	ve_arrows_.set_visible(visible);
+}
+
+bool IcosamateDrawing::is_arrows_visible(ArrowsType at) const
+{
+	return ve_arrows_.visible();
 }

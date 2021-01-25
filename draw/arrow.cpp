@@ -12,6 +12,12 @@ void Arrows::clear_coords()
 	buffer_.buf_.clear();
 }
 
+void Arrows::clear()
+{
+	clear_coords();
+	::clear(glo_);
+}
+
 void Arrows::add_arrow(const CoordS& coords)
 {
 	coords_.push_back(coords);
