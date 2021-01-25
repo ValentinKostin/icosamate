@@ -1,5 +1,11 @@
 #include "arrow.h"
 
+CoordS tube_coords(const Coord& c1, const Coord& c2, double r1, double r2)
+{
+	// ZAGL
+	return CoordS();
+}
+
 void Arrows::set_color(const float* color)
 {
 	memcpy(color_, color, sizeof(float) * 4);

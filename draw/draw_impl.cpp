@@ -205,7 +205,7 @@ IcosamateDrawing::IcosamateDrawing()
 	  0x0000A0,
 	  0x800000,
 	  0xFF0080,
-	  0xFF0000,
+	  0xCC0000,
 	  0x00FF00,
 	  0x008000,
 	  0x800080,

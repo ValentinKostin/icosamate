@@ -10,13 +10,22 @@ struct Coord
 
 	double norm() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_); }
 
-	inline Coord& operator*=(double t) 
+	inline Coord& operator*=(double t)
 	{
-		x_ *= t; 
+		x_ *= t;
 		y_ *= t;
 		z_ *= t;
 		return *this;
 	}
+	inline Coord& operator+=(const Coord& c)
+	{
+		x_ += c.x_;
+		y_ += c.y_;
+		z_ += c.z_;
+		return *this;
+	}
+
+	void normalize() { *this *= 1.0 / norm(); }
 };
 
 inline Coord operator+(const Coord& c1, const Coord& c2)
@@ -35,6 +44,8 @@ inline Coord operator/(const Coord& c1, double a)
 {
 	return { c1.x_ / a, c1.y_ / a, c1.z_ / a };
 }
+
+inline Coord vect_prod(const Coord& c1, const Coord& c2) { return { c1.y_ * c2.z_ - c1.z_ * c2.y_, c1.z_ * c2.x_ - c1.x_ * c2.z_, c1.x_ * c2.y_ - c1.y_ * c2.x_, }; }
 
 typedef std::vector<Coord> CoordS;
 
