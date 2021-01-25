@@ -142,14 +142,18 @@ void IcosomateCoords::fill_face_triangles()
 
 // с1 и c2 на сфере, выдаёт промежуточную точку между ними
 // если они расположены диаметрально противоположны, то выдаёт 0
-Coord sphere_middle_point(const Coord& c1, const Coord& c2)
+Coord sphere_middle_point(const Coord& c1, const Coord& c2, double radius)
 {
-  //ZAGL
-	return c1 + c2;
+	Coord c = c1 + c2;
+	double n1 = c.norm();
+	if (n1 < 1e-8)
+		return Coord();
+	c *= (radius / n1);
+	return c;
 }
 
-CoordS define_arc_on_sphere(const Coord& c1, const Coord& c2)
+CoordS define_arc_on_sphere(const Coord& c1, const Coord& c2, double radius)
 {
 	//ZAGL
-	return CoordS();
+	return { c1, sphere_middle_point(c1, c2, radius), c2 };
 }

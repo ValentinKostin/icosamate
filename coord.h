@@ -7,6 +7,16 @@ struct Coord
 	double x_ = 0;
 	double y_ = 0;
 	double z_ = 0;
+
+	double norm() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_); }
+
+	inline Coord& operator*=(double t) 
+	{
+		x_ *= t; 
+		y_ *= t;
+		z_ *= t;
+		return *this;
+	}
 };
 
 inline Coord operator+(const Coord& c1, const Coord& c2)
@@ -96,5 +106,5 @@ public:
 
 // с1 и c2 на сфере, выдаёт промежуточную точку между ними
 // если они расположены диаметрально противоположны, то выдаёт 0
-Coord sphere_middle_point(const Coord& c1, const Coord& c2);
-CoordS define_arc_on_sphere(const Coord& c1, const Coord& c2);
+Coord sphere_middle_point(const Coord& c1, const Coord& c2, double radius);
+CoordS define_arc_on_sphere(const Coord& c1, const Coord& c2, double radius);

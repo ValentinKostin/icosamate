@@ -118,22 +118,23 @@ void IcosamateDrawing::fill_axis_coords_buffer()
 
 CoordS IcosamateDrawing::define_arc(AxisId ax_id_1, AxisId ax_id_2)
 {
+	double r = gic.radius();
 	const Axes& aa = axes();
 	if (ax_id_1 != ax_id_2)
 	{
 		const Axis& a1 = aa.axis(ax_id_1);
 		const Axis& a2 = aa.axis(ax_id_2);
 		if (a1.opposite_id_ != a2.id_)
-			return define_arc_on_sphere(gic.vertex(ax_id_1), gic.vertex(ax_id_2));
+			return define_arc_on_sphere(gic.vertex(ax_id_1), gic.vertex(ax_id_2), r);
 
 		AxisId ax_id_pr_1 = a1.near_axes_[0];
 		const Axis& a1_pr = aa.axis(ax_id_pr_1);
 		std::vector<AxisId> cm_ax = aa.near_common_axis(ax_id_pr_1, ax_id_2);
 		check(!cm_ax.empty());
-		Coord c_mid = sphere_middle_point(gic.vertex(ax_id_pr_1), gic.vertex(cm_ax[0]));
-		CoordS cs1 = define_arc_on_sphere(gic.vertex(ax_id_1), c_mid);
+		Coord c_mid = sphere_middle_point(gic.vertex(ax_id_pr_1), gic.vertex(cm_ax[0]), r);
+		CoordS cs1 = define_arc_on_sphere(gic.vertex(ax_id_1), c_mid, r);
 		check(!cs1.empty());
-		CoordS cs2 = define_arc_on_sphere(c_mid, gic.vertex(ax_id_2));
+		CoordS cs2 = define_arc_on_sphere(c_mid, gic.vertex(ax_id_2), r);
 		cs1.pop_back();
 		cs1.insert(cs1.end(), cs2.begin(), cs2.end());
 		return cs1;
