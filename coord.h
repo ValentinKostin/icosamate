@@ -9,6 +9,7 @@ struct Coord
 	double z_ = 0;
 
 	double norm() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_); }
+	double norm_sq() const { return x_ * x_ + y_ * y_ + z_ * z_; }
 
 	inline Coord& operator*=(double t)
 	{
@@ -25,9 +26,17 @@ struct Coord
 		return *this;
 	}
 
-	void normalize() { *this *= 1.0 / norm(); }
+	Coord& normalize() 
+	{
+		*this *= 1.0 / norm(); 
+		return *this;
+	}
 };
 
+inline Coord operator-(const Coord& c1)
+{
+	return { -c1.x_, -c1.y_, -c1.z_ };
+}
 inline Coord operator+(const Coord& c1, const Coord& c2)
 {
 	return { c1.x_ + c2.x_, c1.y_ + c2.y_, c1.z_ + c2.z_ };
