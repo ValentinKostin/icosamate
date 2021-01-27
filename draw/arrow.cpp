@@ -57,15 +57,35 @@ void Arrows::clear()
 	::clear(glo_);
 }
 
+double arrow_tube_radius_koef(double l0, double l, double arrow_end)
+{
+	double lconst = l - arrow_end;
+	check(lconst > 0);
+	if (l0 <= lconst)
+		return 1.0;
+	if (l0 >= l)
+		return 0.1;
+	return (l0 - lconst) * (0.1) + (l - l0) * (4.0) / (l - lconst);
+}
+
 void Arrows::add_arrow(const CoordS& coords)
 {
 	const double tube_radius = 0.0075;
+	const double arrow_end = 0.2;
 
 	CoordS tub_cs;
 	check(coords.size() >= 2);
+	double l = dist(coords);
+	double l0 = 0;
+	double lconst = l - arrow_end;
+	check(lconst > 0);
 	for (size_t i = 0; i+1 < coords.size(); i++)
 	{
-		CoordS tmp_cs = tube_coords(coords[i], coords[i + 1], tube_radius, tube_radius);
+		double r1 = arrow_tube_radius_koef(l0, l, arrow_end) * tube_radius;
+		double d = dist(coords[i], coords[i + 1]);
+		double r2 = l0 < lconst ? r1 : arrow_tube_radius_koef(l0+d, l, arrow_end) * tube_radius;
+		l0 += d;
+		CoordS tmp_cs = tube_coords(coords[i], coords[i + 1], r1, r2);
 		tub_cs.insert(tub_cs.end(), tmp_cs.begin(), tmp_cs.end());
 	}
 

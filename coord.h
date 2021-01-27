@@ -55,8 +55,16 @@ inline Coord operator/(const Coord& c1, double a)
 }
 
 inline Coord vect_prod(const Coord& c1, const Coord& c2) { return { c1.y_ * c2.z_ - c1.z_ * c2.y_, c1.z_ * c2.x_ - c1.x_ * c2.z_, c1.x_ * c2.y_ - c1.y_ * c2.x_, }; }
+inline double dist(const Coord& c1, const Coord& c2) { return (c2-c1).norm(); }
 
 typedef std::vector<Coord> CoordS;
+inline double dist(const CoordS& cs) 
+{
+	double r = 0;
+	for (size_t i = 0; i + 1 < cs.size(); i++)
+		r += dist(cs[i], cs[i+1]);
+	return r;
+}
 
 
 struct VertCoord : public Coord
