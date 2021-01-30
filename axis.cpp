@@ -41,7 +41,9 @@ std::vector<AxisId> Axes::near_common_axis(AxisId id_1, AxisId id_2) const
 	return r;
 }
 
-char Axes::get_char(AxisId id) const
+////////////////////////////////////////////
+// old numeric notation
+char get_x16_natural_char_by_axis(AxisId id)
 {
 	switch (id)
 	{
@@ -62,7 +64,7 @@ char Axes::get_char(AxisId id) const
 	return 0;
 }
 
-AxisId Axes::get_axis(char a) const
+AxisId get_axis_by_x16_natural_char(char a)
 {
 	switch (a)
 	{
@@ -81,6 +83,59 @@ AxisId Axes::get_axis(char a) const
 	}
 	raise("Bad axis symbol");
 	return 0;
+}
+////////////////////////////////////////////
+char get_gelatinbrain_char_by_axis(AxisId id)
+{
+	switch (id)
+	{
+	case 1: return 'B';
+	case 2: return 'A';
+	case 3: return 'F';
+	case 4: return 'I';
+	case 5: return 'H';
+	case 6: return 'C';
+	case 7: return 'E';
+	case 8: return 'J';
+	case 9: return 'L';
+	case 10: return 'G';
+	case 11: return 'D';
+	case 0: return 'K';
+	}
+	raise("Bad axis id");
+	return 0;
+}
+
+AxisId get_axis_by_gelatinbrain_char(char a)
+{
+	switch (a)
+	{
+	case 'B': return 1;
+	case 'A': return 2;
+	case 'F': return 3;
+	case 'I': return 4;
+	case 'H': return 5;
+	case 'C': return 6;
+	case 'E': return 7;
+	case 'J': return 8;
+	case 'L': return 9;
+	case 'G': return 10;
+	case 'D': return 11;
+	case 'K': return 0;
+	}
+	raise("Bad axis symbol");
+	return 0;
+}
+////////////////////////////////////////////
+
+char Axes::get_char(AxisId id) const
+{
+	return get_gelatinbrain_char_by_axis(id);
+}
+
+AxisId Axes::get_axis(char a) const
+{
+	return get_axis_by_gelatinbrain_char(a);
 }
 
 const Axes& axes()
