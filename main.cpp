@@ -131,7 +131,7 @@ typedef std::map<std::string, std::string> Args;
 Args get_args(int argc, char* argv[])
 {
 	Args r;
-	for (int i = 2; i < argc; ++i)
+	for (int i = 1; i < argc; ++i)
 	{
 		std::string s = argv[i];
 		size_t k = s.find('=');
@@ -155,16 +155,17 @@ int main(int argc, char* argv[])
 	log << "================================================================================" << std::endl;
 	log << PROGR_NAME << " " << PROGR_VERSION << "    " << ctimebuf; // std::endl уже вписывается автоматом
 
-	if (argc < 2) usage();
-	std::string command = argv[1];
 
 	try
 	{
 		Args args = get_args(argc, argv);
+		std::string command;
+		if (args.count("command") > 0)
+			command = args.at("command");
 
 		if (command == "test")
 			test(log);
-		if (command == "explore")
+		else if (command == "explore")
 		{
 			if (args.count("actions") > 0)
 			{
@@ -184,7 +185,7 @@ int main(int argc, char* argv[])
 				ex.set_with_period(with_period);
 
 				size_t n = std::stoll(args.at("tree"));
-				bool add_cooms = args.count("add_commutators") > 0 && args.at("add_commutators") == "1";				
+				bool add_cooms = args.count("add_commutators") > 0 && args.at("add_commutators") == "1";
 
 				ex.tree(n, add_cooms);
 			}
@@ -194,6 +195,15 @@ int main(int argc, char* argv[])
 					explore_near_axis(log);
 			}
 		}
+		else if (command == "scramble" || command.empty())
+		{
+			std::string turning_algorithm;
+			if (args.count("scramble") > 0)
+				turning_algorithm = args.at("scramble");
+			ic_scramble(turning_algorithm);
+		}
+		else
+			raise(command + " - bad command");
 	}
 	catch (const std::string& err)
 	{

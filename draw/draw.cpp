@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "GLWindow.h"
+#include "../action.h"
 #include "draw.h"
 #include "draw_impl.h"
 
@@ -115,4 +116,13 @@ int ic_draw(const IcosamateInSpace& ic, const std::string& turnig_algorithm)
 	GLWindowDestroy();
 
 	return result;
+}
+
+int ic_scramble(const std::string& turnig_algorithm)
+{
+	IcosamateInSpace ic;
+	ActionS acts = from_str(turnig_algorithm);
+	ic.actions(acts);
+
+	return ic_draw(ic, turnig_algorithm);
 }

@@ -69,6 +69,9 @@
     <ClCompile Include="draw\draw_def.cpp">
       <Filter>draw</Filter>
     </ClCompile>
+    <ClCompile Include="action.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="def.h">
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="draw\draw_def.h">
       <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="action.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
