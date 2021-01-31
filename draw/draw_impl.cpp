@@ -508,3 +508,30 @@ void IcosamateDrawing::move(char ax_name, bool clockwise)
 
 	update_draw_buffers();
 }
+
+void IcosamateDrawing::undo()
+{
+	if (turnig_algorithm_.empty())
+		return;
+	std::string new_ta = turnig_algorithm_;
+	bool clockwise = new_ta.back() == '\'';
+	if (clockwise)
+		new_ta.pop_back();
+	check(!new_ta.empty());
+	const Axes& aa = axes();
+	char ac = new_ta.back();
+	if (!aa.is_axis_char(ac))
+		return;
+	AxisId ax_id = aa.get_axis(ac);
+	new_ta.pop_back();
+	size_t n = new_ta.size();
+	bool was_move = n > 0 && new_ta[n - 1] == 'M';
+	if (was_move)
+		new_ta.pop_back();
+
+	Action inv_a = was_move ? IcosamateInSpace::move_action(ax_id, clockwise) : IcosamateInSpace::turn_action(ax_id, clockwise);
+	ic_.action(inv_a);
+	turnig_algorithm_.swap(new_ta);
+
+	update_draw_buffers();
+}

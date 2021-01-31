@@ -60,14 +60,16 @@ void GLWindowInput(const GLWindow *window)
 		icd().set_arrows_visible(ArrowsType::VertElems, !icd().is_arrows_visible(ArrowsType::VertElems));
 
 	bool clockwise = !InputIsKeyDown(VK_SHIFT);
-	bool is_move = InputIsKeyDown(VK_CONTROL);
+	bool ctrl = InputIsKeyDown(VK_CONTROL);
 	typedef void(IcosamateDrawing::* ChangeFun)(char, bool);
-	ChangeFun change_fun = is_move ? &IcosamateDrawing::move : &IcosamateDrawing::turn;
+	ChangeFun change_fun = ctrl ? &IcosamateDrawing::move : &IcosamateDrawing::turn;
 	for (char c = 'A'; c <= 'L'; ++c)
 	{
 		if (InputIsKeyPressed(c))
 			(icd().*change_fun)(c, clockwise);
 	}
+	if (ctrl && InputIsKeyPressed('Z'))
+		icd().undo();
 
 	icd().set_rotation_animation(true);
 

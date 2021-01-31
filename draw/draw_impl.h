@@ -104,6 +104,7 @@ public:
 
 	void turn(char ax_name, bool clockwise);
 	void move(char ax_name, bool clockwise);
+	void undo();
 };
 
 IcosamateDrawing& icd();
