@@ -36,6 +36,17 @@ template<class F, size_t N> struct DBuffer
 	size_t bytes_count() const { return buf_.size() * sizeof(F); }
 };
 
+template<class B> void complete(const OGLObjs& glo, const B& buf)
+{
+	if (glo.inited())
+	{
+		glUseProgram(glo.program_);
+		glBindVertexArray(glo.vao_);
+		glBindBuffer(GL_ARRAY_BUFFER, glo.vbo_);
+		glBufferData(GL_ARRAY_BUFFER, buf.bytes_count(), buf.ptr(), GL_STATIC_DRAW);
+	}
+}
+
 bool open_program(GLuint& pr, const char* sh_fname);
 void prepare_one_color_drawing(OGLObjs& glo, const float* buf, size_t buffer_bytes_count, size_t one_elem_byte_size, const float* col);
 

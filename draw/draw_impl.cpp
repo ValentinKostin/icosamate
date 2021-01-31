@@ -450,11 +450,17 @@ void IcosamateDrawing::set_mode(DrawMode ddm)
 		glUniform4fv(glo_vert_one_color_.color_location_, 1, sketch_color());
 }
 
+void IcosamateDrawing::update_draw_buffers()
+{
+	fill_multi_colors_buffer(true);
+	::complete(glo_multi_colors_, multi_colors_buffer_);
+	fill_ve_arrows_coords();
+}
+
 void IcosamateDrawing::set_icosomate(const IcosamateInSpace& ic)
 {
-	ic_ = ic;
-	fill_multi_colors_buffer(true);
-	fill_ve_arrows_coords();
+	ic_ = ic; 
+	update_draw_buffers();
 }
 
 void IcosamateDrawing::set_rotation_animation(bool r)
@@ -472,4 +478,18 @@ void IcosamateDrawing::set_arrows_visible(ArrowsType at, bool visible)
 bool IcosamateDrawing::is_arrows_visible(ArrowsType at) const
 {
 	return ve_arrows_.visible();
+}
+
+void IcosamateDrawing::turn(char ax_name, bool clockwise)
+{
+	const Axes& aa = axes();
+	AxisId ax_id = aa.get_axis(ax_name);
+	Action a = ic_.turn_action(ax_id, clockwise);
+	ic_.action(a);
+
+	turnig_algorithm_.push_back(ax_name);
+	if (!clockwise)
+		turnig_algorithm_.push_back('\'');
+
+	update_draw_buffers();
 }

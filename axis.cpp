@@ -123,8 +123,7 @@ AxisId get_axis_by_gelatinbrain_char(char a)
 	case 'D': return 11;
 	case 'K': return 0;
 	}
-	raise("Bad axis symbol");
-	return 0;
+	return 12;
 }
 ////////////////////////////////////////////
 
@@ -135,7 +134,17 @@ char Axes::get_char(AxisId id) const
 
 AxisId Axes::get_axis(char a) const
 {
-	return get_axis_by_gelatinbrain_char(a);
+	AxisId ax_id = get_axis_by_gelatinbrain_char(a);
+	if (ax_id==12)
+		raise("Bad axis symbol");
+
+	return ax_id;
+}
+
+bool Axes::is_axis_char(char a) const
+{
+	AxisId ax_id = get_axis_by_gelatinbrain_char(a);
+	return  ax_id != 12;
 }
 
 const Axes& axes()

@@ -45,6 +45,8 @@ class IcosamateDrawing
 	void fill_ve_arrows_coords();
 	const float ve_arrows_color_[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 
+	void update_draw_buffers();
+
 	std::vector<DrawColor> draw_colors_;
 	std::vector<float> gl_face_colors_;
 	void fill_gl_face_colors();
@@ -99,6 +101,8 @@ public:
 
 	void set_arrows_visible(ArrowsType at, bool visible);
 	bool is_arrows_visible(ArrowsType at) const;
+
+	void turn(char ax_name, bool clockwise);
 };
 
 IcosamateDrawing& icd();

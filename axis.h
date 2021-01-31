@@ -33,6 +33,8 @@ public:
 	// буквенные обозначения
 	char get_char(AxisId id) const;
 	AxisId get_axis(char a) const;
+
+	bool is_axis_char(char a) const;
 };
 
 const Axes& axes();

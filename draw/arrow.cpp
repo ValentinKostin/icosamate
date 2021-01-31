@@ -95,13 +95,8 @@ void Arrows::add_arrow(const CoordS& coords)
 
 void Arrows::complete()
 {
-	if (!empty() && glo_.inited())
-	{
-		glUseProgram(glo_.program_);
-		glBindVertexArray(glo_.vao_);
-		glBindBuffer(GL_ARRAY_BUFFER, glo_.vbo_);
-		glBufferData(GL_ARRAY_BUFFER, buffer_.bytes_count(), buffer_.ptr(), GL_STATIC_DRAW);
-	}
+	if (!empty())
+		::complete(glo_, buffer_);
 }
 
 void Arrows::gl_init()

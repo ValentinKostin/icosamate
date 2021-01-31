@@ -59,6 +59,13 @@ void GLWindowInput(const GLWindow *window)
 	if (InputIsKeyPressed('W'))
 		icd().set_arrows_visible(ArrowsType::VertElems, !icd().is_arrows_visible(ArrowsType::VertElems));
 
+	for (char c='A'; c<='L'; ++c)
+	{
+		bool clockwise = !InputIsKeyDown(VK_SHIFT);
+		if (InputIsKeyPressed(c))
+			icd().turn(c, clockwise);
+	}
+
 	icd().set_rotation_animation(true);
 
 	if (InputIsKeyDown(VK_RIGHT))
