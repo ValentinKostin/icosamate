@@ -103,6 +103,7 @@ public:
 	bool is_arrows_visible(ArrowsType at) const;
 
 	void turn(char ax_name, bool clockwise);
+	void move(char ax_name, bool clockwise);
 };
 
 IcosamateDrawing& icd();

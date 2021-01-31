@@ -493,3 +493,18 @@ void IcosamateDrawing::turn(char ax_name, bool clockwise)
 
 	update_draw_buffers();
 }
+
+void IcosamateDrawing::move(char ax_name, bool clockwise)
+{
+	const Axes& aa = axes();
+	AxisId ax_id = aa.get_axis(ax_name);
+	Action a = ic_.move_action(ax_id, clockwise);
+	ic_.action(a);
+
+	turnig_algorithm_.push_back('M');
+	turnig_algorithm_.push_back(ax_name);
+	if (!clockwise)
+		turnig_algorithm_.push_back('\'');
+
+	update_draw_buffers();
+}
