@@ -32,7 +32,7 @@ void save_picture(IcosamateDrawing& icd, const std::string& fname)
 	{
 		for (PixCoord i = 0; i < w; ++i)
 		{
-			RGBQUAD* pcolor = reinterpret_cast<RGBQUAD*>(&buf[w * j + i]);
+			RGBQUAD* pcolor = reinterpret_cast<RGBQUAD*>(&buf[(w * j + i)*4]);
 			check(FreeImage_SetPixelColor(dib, i, h - 1 - j, pcolor));
 		}
 	}
