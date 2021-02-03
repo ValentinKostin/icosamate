@@ -24,7 +24,7 @@ void save_picture(IcosamateDrawing& icd, const std::string& fname)
 
 	std::vector<uint8_t> buf (w * h * 4);
 	check(!buf.empty());
-	glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, &buf[0]);
+	glReadPixels(0, 0, w, h, GL_BGRA, GL_UNSIGNED_BYTE, &buf[0]);
 
 	auto dib = FreeImage_Allocate(w, h, 24);
 	check(dib);
@@ -33,7 +33,7 @@ void save_picture(IcosamateDrawing& icd, const std::string& fname)
 		for (PixCoord i = 0; i < w; ++i)
 		{
 			RGBQUAD* pcolor = reinterpret_cast<RGBQUAD*>(&buf[(w * j + i)*4]);
-			check(FreeImage_SetPixelColor(dib, i, h - 1 - j, pcolor));
+			check(FreeImage_SetPixelColor(dib, i, j, pcolor));
 		}
 	}
 
