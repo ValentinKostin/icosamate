@@ -8,4 +8,5 @@ inline void raise(const std::string& a) { throw a; }
 
 typedef std::string FnameStr;
 
-std::string get_data_full_path(const char* sh_fname);
+std::string get_data_full_path(const char* sh_fname); 
+std::string get_library_default_path();

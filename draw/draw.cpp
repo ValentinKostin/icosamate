@@ -6,6 +6,7 @@
 #include "../action.h"
 #include "draw.h"
 #include "draw_impl.h"
+#include "../library.h"
 
 // инициализаця OpenGL
 bool GLWindowInit(const GLWindow *window)
@@ -70,6 +71,8 @@ void GLWindowInput(const GLWindow *window)
 	}
 	if (ctrl && InputIsKeyPressed('Z'))
 		icd().undo();
+	if (ctrl && InputIsKeyPressed('S'))
+		library().save(icd());
 
 	icd().set_rotation_animation(true);
 

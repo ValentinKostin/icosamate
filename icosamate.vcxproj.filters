@@ -22,6 +22,9 @@
     <Filter Include="draw\GL">
       <UniqueIdentifier>{b31754fc-2d0b-48ff-839b-3b59332b5145}</UniqueIdentifier>
     </Filter>
+    <Filter Include="draw\freeimage">
+      <UniqueIdentifier>{d8eb087d-6e6d-4adc-a88c-1904dac98a1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="icosamate.cpp">
@@ -70,6 +73,9 @@
       <Filter>draw</Filter>
     </ClCompile>
     <ClCompile Include="action.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="library.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -136,6 +142,12 @@
     </ClInclude>
     <ClInclude Include="action.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="library.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="draw\freeimage\FreeImage.h">
+      <Filter>draw\freeimage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

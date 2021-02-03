@@ -79,6 +79,9 @@ public:
 	void render();
 	void update();
 
+	int width() const { return w_width_; }
+	int height() const { return w_height_; }
+
 	const float* clear_color() const { return draw_mode_ == DrawMode::LIGHT ? clear_color_ : sketch_color_; }
 	const float* sketch_color() const { return draw_mode_ == DrawMode::LIGHT ? sketch_color_ : clear_color_; }
 	const float* axis_color() const { return axis_color_; }
@@ -88,6 +91,7 @@ public:
 
 	void set_icosomate(const IcosamateInSpace& ic);
 	void set_turnig_algorithm(const std::string& turnig_algorithm) { turnig_algorithm_ = turnig_algorithm; }
+	std::string turnig_algorithm() const { return turnig_algorithm_; }
 
 	bool autorotation() const { return autorotation_; }
 	void set_autorotation(bool r) { autorotation_ = r; }

@@ -41,6 +41,15 @@ std::string get_data_full_path(const char* sh_fname)
 	return r;
 }
 ///////////////////////////////////////////	 
+std::string get_library_default_path()
+{
+	FnameStr r = get_exe_path();
+	auto q = r.find_last_of("/\\");
+	r.resize(q);
+	r += "/icl/";
+	return r;
+}
+///////////////////////////////////////////	 
 void usage()
 {
 	std::ostringstream oss;
