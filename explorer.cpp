@@ -50,9 +50,10 @@ ActionS mul_actions(const ActionS& a, size_t mul)
 	return r;
 }
 
-ActionResult IcosamateExplorer::calc_result(const ActionS& a) const
+ActionResult IcosamateExplorer::calc_result(const ActionS& a, bool from_0) const
 {
-	ic_ = ic0_;
+	if (from_0)
+		ic_ = ic0_;
 	ic_.actions(a);
 	return
 	{
@@ -61,32 +62,6 @@ ActionResult IcosamateExplorer::calc_result(const ActionS& a) const
 		with_period_ ? ic_.period(a) : 0,
 		with_solving_ && with_period_ ? ic_.solving_period(a) : 0
 	};
-}
-
-void IcosamateExplorer::process_actions(const ActionS& aa, size_t mul)
-{
-	log_ << mul_str(aa, mul) << ": ";
-
-	auto acts = mul_actions(aa, mul);
-
-	auto r = calc_result(acts);
-
-	log_ << r << std::endl;
-}
-
-void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
-{
-	if (mul > 0)
-	{
-		process_actions(aa, mul);
-		ic_draw(ic_, mul_str(aa, mul));
-	}
-
-	size_t period = IcosamateInSpace::period(aa);
-	std::vector<size_t> nn = multiplyers(period);
-	process_actions(aa, 1);
-	for (auto n : nn)
-		process_actions(aa, n);
 }
 
 template<class M, class R> void add_action_res(M& m, const R& r, const ActionS& a)
@@ -98,18 +73,64 @@ template<class M, class R> void add_action_res(M& m, const R& r, const ActionS& 
 		m[r] = a;
 }
 
-void IcosamateExplorer::process_elem(const ActionS& a)
+void IcosamateExplorer::process_actions(const ActionS& aa, size_t mul, size_t total_mul, bool update_maps)
 {
-	log_ << to_str(a) << ": ";
+	log_ << mul_str(aa, total_mul) << ": ";
 
-	auto r = calc_result(a);
+	auto acts = mul_actions(aa, mul);
 
-	add_action_res(actmap_, r.diff_, a);
-	add_action_res(solving_actmap_, r.solved_diff_, a);
-	add_action_res(per_map_, r.period_, a);
-	add_action_res(solving_per_map_, r.solved_period_, a);
+	bool from_0 = mul == total_mul;
+	auto r = calc_result(acts, from_0);
+
+	if (update_maps)
+	{
+		auto a = mul_actions(aa, total_mul);
+		add_action_res(actmap_, r.diff_, a);
+		add_action_res(solving_actmap_, r.solved_diff_, a);
+		add_action_res(per_map_, r.period_, a);
+		add_action_res(solving_per_map_, r.solved_period_, a);
+	}
 
 	log_ << r << std::endl;
+}
+
+void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
+{
+	if (mul > 0)
+	{
+		process_actions(aa, mul, mul);
+		ic_draw(ic_, mul_str(aa, mul));
+	}
+
+	process_actions(aa, 1, 1);
+	if (!with_mults_)
+		return;
+
+	size_t period = IcosamateInSpace::period(aa);
+	std::vector<size_t> nn = multiplyers(period);
+	size_t prev_n = 1;
+	for (auto n : nn)
+	{
+		process_actions(aa, n-prev_n, n);
+		prev_n = n;
+	}
+}
+
+void IcosamateExplorer::process_elem(const ActionS& a)
+{
+	process_actions(a, 1, 1, true);
+
+	if (!with_mults_)
+		return;
+
+	size_t period = IcosamateInSpace::period(a);
+	std::vector<size_t> nn = multiplyers(period);
+	size_t prev_n = 1;
+	for (auto n : nn)
+	{
+		process_actions(a, n - prev_n, n, true);
+		prev_n = n;
+	}
 }
 
 void IcosamateExplorer::tree_step(const ActionS& a, bool add_commutators)

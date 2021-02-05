@@ -192,6 +192,8 @@ int main(int argc, char* argv[])
 				ex.set_with_solving(with_solving);
 				bool with_period = args.count("with_period") == 0 || args.at("with_period") != "0";
 				ex.set_with_period(with_period);
+				bool with_mults = args.count("with_mults") == 0 || args.at("with_mults") != "0";
+				ex.set_with_mults(with_mults);
 
 				size_t n = std::stoll(args.at("tree"));
 				bool add_cooms = args.count("add_commutators") > 0 && args.at("add_commutators") == "1";

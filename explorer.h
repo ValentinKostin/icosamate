@@ -49,19 +49,21 @@ class IcosamateExplorer
 
 	void process_elem(const ActionS& a);
 
-	ActionResult calc_result(const ActionS& aa) const;
+	ActionResult calc_result(const ActionS& aa, bool from_0 = true) const;
 	void tree_step(const ActionS& a, bool add_commutators);
 	void tree_level(const ActionS& a, size_t max_l, bool add_commutators);
 
 	bool with_solving_ = true;
 	bool with_period_ = true;
+	bool with_mults_ = true;
 
-	void process_actions(const ActionS& a, size_t mul);
+	void process_actions(const ActionS& a, size_t mul, size_t total_mul, bool update_maps = false);
 
 public:
 	IcosamateExplorer(std::ostream& log);
 	void set_with_solving(bool w) { with_solving_ = w; }
 	void set_with_period(bool w) { with_period_ = w; }
+	void set_with_mults(bool w) { with_mults_ = w; }
 	void actions(const ActionS& a, size_t mul = 1);
 	void tree(size_t n, bool add_commutators);
 };
