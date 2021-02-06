@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
 			std::string turning_algorithm = define_if_exist<std::string>(args, "scramble");
 			ic_scramble(turning_algorithm);
 		}
-		else if (command == "fill_library" || command.empty())
+		else if (command == "fill_library")
 		{
 			std::string fname = args.at("file_name");
 			size_t max_alg_len = define_if_exist<size_t>(args, "max_alg_len");

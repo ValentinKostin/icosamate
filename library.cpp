@@ -84,7 +84,7 @@ void save_in_library(const FnameStr& file_name, size_t max_alg_len, const std::s
 {
 	IcosamateDifference d;
 	if (!string_diff.empty())
-		diff_from_str(string_diff);
+		d = diff_from_str(string_diff);
 	TurnAlgS algs = read_turn_algs_from_file(file_name, max_alg_len, string_diff.empty() ? nullptr : &d);
 	save_in_library(algs, l, subdir);
 }

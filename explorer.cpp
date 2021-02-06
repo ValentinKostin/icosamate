@@ -226,11 +226,11 @@ IcosamateDifference diff_from_str(const std::string& s)
 	IcosamateDifference d;
 	auto i = s.find_first_of(',');
 	check(i != std::string::npos && i>0);
-	d.vert_elems_count_ = std::stoi(s.substr(0, i - 1));
+	d.vert_elems_count_ = std::stoi(s.substr(0, i));
 	auto j = s.find_first_of(',', i+1);
 	check(j != std::string::npos && j > i+1);
-	d.vert_elems_diff_orient_ = std::stoi(s.substr(i + 1, j-i));
-	d.vert_elems_count_ = std::stoi(s.substr(j + 1));
+	d.vert_elems_diff_orient_ = std::stoi(s.substr(i + 1, j-i-1));
+	d.centers_count_ = std::stoi(s.substr(j + 1));
 	return d;
 }
 
