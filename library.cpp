@@ -73,6 +73,7 @@ void save_in_library(const TurnAlgS& turn_algs, Library& l, std::string subdir =
 		ic.actions(acts);
 		d.set_icosomate(ic);
 		d.set_turnig_algorithm(turnig_algorithm);
+		d.update();
 		d.render();
 		l.save(d, subdir);
 	}
