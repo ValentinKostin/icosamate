@@ -49,7 +49,7 @@ class IcosamateExplorer
 
 	void process_elem(const ActionS& a);
 
-	ActionResult calc_result(const ActionS& aa, bool from_0 = true) const;
+	ActionResult calc_result(const ActionS& a, const ActionS& total_a) const;
 	void tree_step(const ActionS& a, bool add_commutators);
 	void tree_level(const ActionS& a, size_t max_l, bool add_commutators);
 
