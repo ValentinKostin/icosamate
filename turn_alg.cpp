@@ -71,7 +71,7 @@ bool is_repetition(const TurnAlg& s, const TurnAlg& subs)
 TurnAlg set_mults(const TurnAlg& s)
 {
 	size_t n = s.size();
-	for (size_t k = 2; k <= n/2 && k<=16; k++) // слишком длинные не "заворачиваем"
+	for (size_t k = 2; k <= n/2 && k<=24; k++) // слишком длинные не "заворачиваем"
 	{
 		if (n % k != 0)
 			continue;
