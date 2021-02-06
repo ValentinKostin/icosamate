@@ -165,6 +165,10 @@ void IcosamateExplorer::tree_level(const ActionS& aa, size_t max_l, bool add_com
 	an.push_back(A_NO_ACTION);
 	for (Action a = A_1_TURN_CW; a<= A_12_TURN_CCW; ++a)
 	{
+		// симметричные относительно поворотов оси A_1 пропускаем
+		if (n==1 && (a > A_2_TURN_CW && a<A_7_TURN_CW || a>A_7_TURN_CW && a < A_12_TURN_CW || a>A_2_TURN_CCW && a<A_7_TURN_CCW || a>A_7_TURN_CCW && a < A_12_TURN_CCW))
+			continue; 
+
 		if (a == inverse_last_action)
 			continue;
 		if (a == doubling_last_action)
