@@ -49,3 +49,40 @@ size_t turn_alg_len(const TurnAlg& s)
 	ActionS acts = from_str(s);
 	return acts.size();
 }
+
+bool is_repetition(const TurnAlg& s, const TurnAlg& subs)
+{
+	size_t n = s.size();
+	size_t k = subs.size();
+	if (n % k != 0)
+		return false;
+	size_t m = n / k;
+	for (size_t i = 0; i < m; i++)
+	{
+		for (size_t j = 0; j < k; j++)
+		{
+			if (s[i * k + j] != subs[j])
+				return false;
+		}
+	}
+	return true;
+}
+
+TurnAlg set_mults(const TurnAlg& s)
+{
+	size_t n = s.size();
+	for (size_t k = 2; k <= n/2 && k<=16; k++) // слишком длинные не "заворачиваем"
+	{
+		if (n % k != 0)
+			continue;
+		if (is_repetition(s, s.substr(0, k)))
+		{
+			std::string r = "(";
+			r += s.substr(0, k) + ")x" + std::to_string(n / k);
+			return r;
+		}
+	}
+	return s;
+}
+
+

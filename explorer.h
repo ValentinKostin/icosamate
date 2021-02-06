@@ -44,7 +44,7 @@ class IcosamateExplorer
 	{
 		log_ << name << std::endl;
 		for (const auto& p : actmap)
-			log_ << with_facorization(p.first) << ": " << to_str(p.second) << std::endl;
+			log_ << with_facorization(p.first) << ": " << set_mults(to_str(p.second)) << std::endl;
 	}
 
 	void process_elem(const ActionS& a);

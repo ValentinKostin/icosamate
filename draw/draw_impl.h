@@ -35,7 +35,7 @@ class IcosamateDrawing
 	DBuffer<float, 7> multi_colors_buffer_;  // координаты вершин	треугольников вместе с цветом, после каждой вершины
 	void fill_multi_colors_buffer(bool colors_only = false);
 
-	bool draw_axes_ = false;
+	bool draw_axes_ = true;
 	DBuffer<float, 3> axis_coords_buffer_;
 	void fill_axis_coords_buffer();
 	float axis_color_[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
