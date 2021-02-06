@@ -5,6 +5,8 @@ namespace fs = std::filesystem;
 #include "def.h"
 #include "library.h"
 #include "draw/freeimage/FreeImage.h"
+#include "draw/GLWindow.h"
+#include "explorer.h"
 
 Library& library()
 {
@@ -53,4 +55,36 @@ void Library::save(IcosamateDrawing& icd, std::string subdir/*=""*/)
 
 	std::string pic_fname = subd + "/" + icd.turnig_algorithm() + ".png";
 	save_picture(icd, pic_fname);
+}
+
+void save_in_library(const TurnAlgS& turn_algs, Library& l, std::string subdir = "")
+{
+	IcosamateDrawing& d = icd();
+
+	int w = 1200, h = 1200;
+	check(GLWindowCreate("saving icosomate algorithms in library", w, h, false));
+
+	d.opengl_init(w, h);
+
+	for (const TurnAlg& turnig_algorithm : turn_algs)
+	{
+		ActionS acts = from_str(turnig_algorithm);
+		IcosamateInSpace ic;
+		ic.actions(acts);
+		d.set_icosomate(ic);
+		d.set_turnig_algorithm(turnig_algorithm);
+		d.render();
+		l.save(d, subdir);
+	}
+
+	GLWindowDestroy();
+}
+
+void save_in_library(const FnameStr& file_name, size_t max_alg_len, const std::string& string_diff, Library& l, std::string subdir = "")
+{
+	IcosamateDifference d;
+	if (!string_diff.empty())
+		diff_from_str(string_diff);
+	TurnAlgS algs = read_turn_algs_from_file(file_name, max_alg_len, string_diff.empty() ? nullptr : &d);
+	save_in_library(algs, l, subdir);
 }

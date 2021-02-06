@@ -1,4 +1,8 @@
 #include <sstream>
+#include <istream>
+#include <fstream>
+#include <ostream>
+#include "turn_alg.h"
 #include "explorer.h"
 #include "draw/draw.h"
 
@@ -215,4 +219,68 @@ void explore_near_axis(std::ostream& log)
 	explore_near_axis(log, true, false);
 	explore_near_axis(log, false, true);
 	explore_near_axis(log, false, false);
+}
+
+IcosamateDifference diff_from_str(const std::string& s)
+{
+	IcosamateDifference d;
+	auto i = s.find_first_of(',');
+	check(i != std::string::npos && i>0);
+	d.vert_elems_count_ = std::stoi(s.substr(0, i - 1));
+	auto j = s.find_first_of(',', i+1);
+	check(j != std::string::npos && j > i+1);
+	d.vert_elems_diff_orient_ = std::stoi(s.substr(i + 1, j-i));
+	d.vert_elems_count_ = std::stoi(s.substr(j + 1));
+	return d;
+}
+
+bool is_diff_str(const std::string& s)
+{
+	try
+	{
+		IcosamateDifference d = diff_from_str(s);
+		return true;
+	}
+	catch (...){}
+	return false;
+}
+
+TurnAlgS read_turn_algs_from_file(const FnameStr& file_name, size_t max_alg_len, const IcosamateDifference* diff)
+{
+	std::ifstream file(file_name.c_str());
+
+	std::multimap<size_t, TurnAlg> alg_map;
+
+	std::string s;
+	while (getline(file, s))
+	{
+	   if (s.empty()) continue;
+	   auto i = s.find_first_of(':');
+	   if (i==std::string::npos) continue;
+	   std::string r = s.substr(0, i);
+	   if (r.empty()) continue;
+	   if (!is_turn_alg(r)) continue;
+	   size_t n = turn_alg_len(r);
+	   if (max_alg_len > 0 && n > max_alg_len) continue;
+
+	   if (diff != nullptr)
+	   {
+		   auto j = s.find("d=(", i + 1);
+		   if (j == std::string::npos) continue;
+		   auto k = s.find(")", j + 3);
+		   if (k == std::string::npos) continue;
+		   std::string d_str = s.substr(j + 3, k - j - 3);
+		   if (!is_diff_str(d_str)) continue;
+		   IcosamateDifference d = diff_from_str(d_str);
+		   if (d!=*diff) continue;
+	   }
+
+	   alg_map.insert({n, r});
+	}
+
+	TurnAlgS r;
+	r.reserve(alg_map.size());
+	for (const auto& a : alg_map)
+		r.push_back(a.second);
+	return r;
 }

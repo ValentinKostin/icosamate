@@ -82,7 +82,17 @@ struct IcosamateDifference
 			return false;
 		return centers_count_ < d.centers_count_;
 	}
+	bool operator==(const IcosamateDifference& d) const
+	{
+		return !(*this < d) && !(d < *this);
+	}
+	bool operator!=(const IcosamateDifference& d) const
+	{
+		return (*this < d) || (d < *this);
+	}
 };
+bool is_diff_str(const std::string& s);
+IcosamateDifference diff_from_str(const std::string& s);
 
 // расположение относительно фиксированных осей
 class IcosamateInSpace : public Icosamate

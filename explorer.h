@@ -71,3 +71,5 @@ public:
 // проверка всевозможных действий для оси и соседних
 void explore_near_axis(std::ostream& log);
 
+TurnAlgS read_turn_algs_from_file(const FnameStr& file_name, size_t max_alg_len, const IcosamateDifference* diff = nullptr);
+

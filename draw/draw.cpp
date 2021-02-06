@@ -121,7 +121,7 @@ int ic_draw(const IcosamateInSpace& ic, const std::string& turnig_algorithm)
 {
 	int result = -1;
 
-	if (!GLWindowCreate("icosomate draw", 1200, 1200, false))
+	if (!GLWindowCreate("icosomate", 1200, 1200, false))
 		return 1;
 
 	icd().set_icosomate(ic);
