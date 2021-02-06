@@ -175,6 +175,7 @@
     <ClCompile Include="icosamate.cpp" />
     <ClCompile Include="library.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="turn_alg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="action.h" />
@@ -199,6 +200,7 @@
     <ClInclude Include="factorization.h" />
     <ClInclude Include="icosamate.h" />
     <ClInclude Include="library.h" />
+    <ClInclude Include="turn_alg.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>

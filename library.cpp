@@ -80,7 +80,7 @@ void save_in_library(const TurnAlgS& turn_algs, Library& l, std::string subdir =
 	GLWindowDestroy();
 }
 
-void save_in_library(const FnameStr& file_name, size_t max_alg_len, const std::string& string_diff, Library& l, std::string subdir = "")
+void save_in_library(const FnameStr& file_name, size_t max_alg_len, const std::string& string_diff, Library& l, std::string subdir)
 {
 	IcosamateDifference d;
 	if (!string_diff.empty())

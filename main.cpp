@@ -11,6 +11,7 @@
 #include "version.h"
 #include "icosamate.h"
 #include "explorer.h"
+#include "library.h"
 #include "draw/draw.h"
 
 /////////////////////////////////////////////
@@ -152,6 +153,21 @@ Args get_args(int argc, char* argv[])
 	return r;
 }
 
+template<class T> T define_if_exist(const Args& args, const char* arg_name);
+template<> std::string define_if_exist<std::string>(const Args& args, const char* arg_name)
+{
+	std::string r;
+	if (args.count(arg_name) > 0)
+		r = args.at(arg_name);
+	return r;
+}
+template<> size_t define_if_exist<size_t>(const Args& args, const char* arg_name)
+{
+	size_t r = 0;
+	if (args.count(arg_name) > 0)
+		r = std::stoull(args.at(arg_name));
+	return r;
+}
 
 int main(int argc, char* argv[])
 {
@@ -179,9 +195,7 @@ int main(int argc, char* argv[])
 			if (args.count("actions") > 0)
 			{
 				IcosamateExplorer ex(log);
-				size_t n = 0;
-				if (args.count("n") > 0)
-					n = std::stoull(args.at("n"));
+				size_t n = define_if_exist<size_t>(args, "n");
 				ex.actions(from_str(args.at("actions")), n);
 			}
 			else if (args.count("tree") > 0)
@@ -208,10 +222,16 @@ int main(int argc, char* argv[])
 		}
 		else if (command == "scramble" || command.empty())
 		{
-			std::string turning_algorithm;
-			if (args.count("scramble") > 0)
-				turning_algorithm = args.at("scramble");
+			std::string turning_algorithm = define_if_exist<std::string>(args, "scramble");
 			ic_scramble(turning_algorithm);
+		}
+		else if (command == "fill_library" || command.empty())
+		{
+			std::string fname = args.at("file_name");
+			size_t max_alg_len = define_if_exist<size_t>(args, "max_alg_len");
+			std::string string_diff = define_if_exist<std::string>(args, "string_diff");
+			std::string subdir = define_if_exist<std::string>(args, "subdir");
+			save_in_library(fname, max_alg_len, string_diff, library(), subdir);
 		}
 		else
 			raise(command + " - bad command");

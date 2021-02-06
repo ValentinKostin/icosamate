@@ -78,6 +78,9 @@
     <ClCompile Include="library.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="turn_alg.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="def.h">
@@ -148,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="draw\freeimage\FreeImage.h">
       <Filter>draw\freeimage</Filter>
+    </ClInclude>
+    <ClInclude Include="turn_alg.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
