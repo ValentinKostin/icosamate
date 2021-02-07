@@ -36,7 +36,7 @@ std::string mul_str(const ActionS& a, size_t mul)
 	std::string r;
 	if (mul != 1)
 		r += "(";
-	r += to_str(a);
+	r += IcosamateInSpace::to_str(a);
 	if (mul != 1)
 		r += ")x" + std::to_string(mul);
 	return r;

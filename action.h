@@ -24,7 +24,5 @@ static const Action A_7_MOVE_CCW = 43;
 static const Action A_12_MOVE_CCW = 48;
 typedef std::vector<Action>	ActionS;
 
-TurnAlg to_str(const ActionS& acts);
-ActionS from_str(const TurnAlg& s);
 
 

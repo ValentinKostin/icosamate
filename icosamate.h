@@ -4,6 +4,7 @@
 #include "def.h"
 #include "axis.h"
 #include "action.h"
+#include "turn_alg.h"
 
 typedef int ColorNum;
 typedef size_t VertexId;
@@ -121,6 +122,9 @@ public:
 	static size_t period(const ActionS& a);
 	static size_t solving_period(const ActionS& a);
 	static bool canonic(const ActionS& a);
+
+	static TurnAlg to_str(const ActionS& acts);
+	static ActionS from_str(const TurnAlg& s);
 
 	void action(Action a);
 	void actions(const ActionS& a);

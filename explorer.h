@@ -7,9 +7,6 @@
 #include "factorization.h"
 #include "icosamate.h"
 
-std::string to_str(const ActionS& acts);
-ActionS from_str(const std::string& s);
-
 std::ostream& operator<<(std::ostream& oss, const IcosamateDifference& d);
 
 struct ActionResult
@@ -44,7 +41,7 @@ class IcosamateExplorer
 	{
 		log_ << name << std::endl;
 		for (const auto& p : actmap)
-			log_ << with_facorization(p.first) << ": " << set_mults(to_str(p.second)) << std::endl;
+			log_ << with_facorization(p.first) << ": " << set_mults(IcosamateInSpace::to_str(p.second)) << std::endl;
 	}
 
 	void process_elem(const ActionS& a);

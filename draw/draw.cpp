@@ -136,7 +136,7 @@ int ic_draw(const IcosamateInSpace& ic, const std::string& turnig_algorithm)
 int ic_scramble(const std::string& turnig_algorithm)
 {
 	IcosamateInSpace ic;
-	ActionS acts = from_str(turnig_algorithm);
+	ActionS acts = IcosamateInSpace::from_str(turnig_algorithm);
 	ic.actions(acts);
 
 	return ic_draw(ic, turnig_algorithm);

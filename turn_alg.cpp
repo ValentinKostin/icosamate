@@ -1,6 +1,7 @@
 #include "def.h"
 #include "turn_alg.h"
 #include "action.h"
+#include "icosamate.h"
 
 bool is_digit(char a) { return a == '0' || a <= '9' && a >= '1'; }
 
@@ -8,7 +9,7 @@ bool is_turn_alg(const std::string& s)
 {
    try
    {
-	   ActionS acts = from_str(s);
+	   ActionS acts = IcosamateInSpace::from_str(s);
 	   return true;
    }
    catch (...){}
@@ -46,8 +47,89 @@ TurnAlg remove_mults(const TurnAlg& s)
 
 size_t turn_alg_len(const TurnAlg& s)
 {
-	ActionS acts = from_str(s);
+	ActionS acts = IcosamateInSpace::from_str(s);
 	return acts.size();
+}
+
+TurnAlg simple_inverse(const TurnAlg& s)
+{
+	typedef IcosamateInSpace I;
+	ActionS acts = I::from_str(s);
+	ActionS inv_acts;
+	for (Action a : acts)
+		inv_acts.push_back(I::inverse(a));
+	std::reverse(inv_acts.begin(), inv_acts.end());
+	return I::to_str(inv_acts);
+}
+
+TurnAlg mult_inverse(const TurnAlg& s)
+{
+	check(s[0] == '(');
+	auto i = s.find_first_of('x');
+	check(i != std::string::npos);
+	check(i > 1 && s[i - 1] == ')');
+	for (size_t k = i + 1; k < s.size(); ++k)
+		check(is_digit(s[k]));
+
+	TurnAlg r; 
+	r += s[0] + inverse(s.substr(1, i - 2)) + s.substr(i - 1);
+	return r;
+}
+
+TurnAlg inverse(const TurnAlg& s)
+{
+	struct MultAlg
+	{
+		size_t beg_;
+		size_t size_;
+	};
+
+	std::vector<MultAlg> mult_algs;
+	for (size_t k = 0; k < s.size();)
+	{
+		auto i = s.find_first_of('x', k);
+		if (i == std::string::npos)
+			break;
+
+		check(i > 1 && s[i - 1] == ')');
+		auto j = s.find_last_of('(', i - 1);
+		check(j != std::string::npos);
+
+		size_t bm = i + 1;
+		check(bm < s.size());
+		check(is_digit(s[bm]));
+		while (bm < s.size() && is_digit(s[bm]))
+			++bm;
+		mult_algs.push_back({ j, i - j + 1 });
+	}
+	size_t ma_n = mult_algs.size();
+
+	TurnAlg r;
+	for (size_t i=0; i< mult_algs.size(); ++i)
+	{
+		size_t b = i == 0 ? 0 : mult_algs[i - 1].beg_ + mult_algs[i - 1].size_;
+		TurnAlg sa = s.substr(b, mult_algs[i].beg_-b);
+		if (!sa.empty())
+		{
+			sa = simple_inverse(sa);
+			std::reverse(sa.begin(), sa.end());
+			r.insert(r.end(), sa.begin(), sa.end());
+		}
+		TurnAlg ma = s.substr(mult_algs[i].beg_, mult_algs[i].size_);
+		std::reverse(ma.begin(), ma.end());
+		r.insert(r.end(), ma.begin(), ma.end());
+	}
+	size_t b = mult_algs.empty() ? 0 : mult_algs[ma_n - 1].beg_ + mult_algs[ma_n - 1].size_;
+	if (b < s.size())
+	{
+		TurnAlg sa = s.substr(b);
+		sa = simple_inverse(sa);
+		std::reverse(sa.begin(), sa.end());
+		r.insert(r.end(), sa.begin(), sa.end());
+	}
+
+	std::reverse(r.begin(), r.end());
+	return r;
 }
 
 bool is_repetition(const TurnAlg& s, const TurnAlg& subs)

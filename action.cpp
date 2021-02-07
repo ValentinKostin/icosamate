@@ -2,8 +2,39 @@
 #include "turn_alg.h"
 #include "action.h"
 #include "axis.h"
+#include "icosamate.h"
 
-TurnAlg to_str(const ActionS& acts)
+Action IcosamateInSpace::turn_action(AxisId axis_id, bool clockwise)
+{
+	return Action((clockwise ? 0 : 12) + (axis_id == 0 ? 12 : axis_id));
+}
+
+Action IcosamateInSpace::move_action(AxisId axis_id, bool clockwise)
+{
+	return turn_action(axis_id, clockwise) + 24;
+}
+
+Action IcosamateInSpace::inverse(Action a)
+{
+	if (a > A_12_MOVE_CCW || a < 0)
+		return A_NO_ACTION;
+
+	if (a >= A_1_MOVE_CW)
+		return (a >= A_1_MOVE_CCW) ? a - 12 : a + 12;
+	else
+		return (a >= A_1_TURN_CCW) ? a - 12 : a + 12;
+}
+
+ActionS IcosamateInSpace::inverse(const ActionS& a)
+{
+	ActionS r;
+	r.reserve(a.size());
+	for (auto q = a.cbegin(); q != a.cend(); ++q)
+		r.push_back(inverse(*q));
+	return r;
+}
+
+TurnAlg IcosamateInSpace::to_str(const ActionS& acts)
 {
 	const Axes& aa = axes();
 	std::string r;
@@ -21,7 +52,7 @@ TurnAlg to_str(const ActionS& acts)
 	return r;
 }
 
-ActionS from_str(const TurnAlg& ss)
+ActionS IcosamateInSpace::from_str(const TurnAlg& ss)
 {
 	std::string s = remove_mults(ss);
 

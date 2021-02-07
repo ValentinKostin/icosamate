@@ -68,7 +68,7 @@ void save_in_library(const TurnAlgS& turn_algs, Library& l, std::string subdir =
 
 	for (const TurnAlg& turnig_algorithm : turn_algs)
 	{
-		ActionS acts = from_str(turnig_algorithm);
+		ActionS acts = IcosamateInSpace::from_str(turnig_algorithm);
 		IcosamateInSpace ic;
 		ic.actions(acts);
 		d.set_icosomate(ic);

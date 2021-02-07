@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
 			{
 				IcosamateExplorer ex(log);
 				size_t n = define_if_exist<size_t>(args, "n");
-				ex.actions(from_str(args.at("actions")), n);
+				ex.actions(IcosamateInSpace::from_str(args.at("actions")), n);
 			}
 			else if (args.count("tree") > 0)
 			{
