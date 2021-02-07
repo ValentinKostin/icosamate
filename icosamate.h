@@ -93,6 +93,8 @@ struct IcosamateDifference
 };
 bool is_diff_str(const std::string& s);
 IcosamateDifference diff_from_str(const std::string& s);
+static const int ANY_ICOSOMATE_DIFF = -1;
+IcosamateDifference diff_with_any_from_str(const std::string& s);
 
 // расположение относительно фиксированных осей
 class IcosamateInSpace : public Icosamate

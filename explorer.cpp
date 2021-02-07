@@ -230,12 +230,25 @@ IcosamateDifference diff_from_str(const std::string& s)
 {
 	IcosamateDifference d;
 	auto i = s.find_first_of(',');
-	check(i != std::string::npos && i>0);
+	check(i != std::string::npos && i > 0);
 	d.vert_elems_count_ = std::stoi(s.substr(0, i));
-	auto j = s.find_first_of(',', i+1);
-	check(j != std::string::npos && j > i+1);
-	d.vert_elems_diff_orient_ = std::stoi(s.substr(i + 1, j-i-1));
+	auto j = s.find_first_of(',', i + 1);
+	check(j != std::string::npos && j > i + 1);
+	d.vert_elems_diff_orient_ = std::stoi(s.substr(i + 1, j - i - 1));
 	d.centers_count_ = std::stoi(s.substr(j + 1));
+	return d;
+}
+
+IcosamateDifference diff_with_any_from_str(const std::string& s)
+{
+	IcosamateDifference d;
+	auto i = s.find_first_of(',');
+	check(i != std::string::npos && i > 0);
+	d.vert_elems_count_ = i==1 && s[i]=='x' ? ANY_ICOSOMATE_DIFF : std::stoi(s.substr(0, i));
+	auto j = s.find_first_of(',', i + 1);
+	check(j != std::string::npos && j > i + 1);
+	d.vert_elems_diff_orient_ = j - i == 2 && s[i + 1] == 'x'? ANY_ICOSOMATE_DIFF : std::stoi(s.substr(i + 1, j - i - 1));
+	d.centers_count_ = j+2==s.size() && s[j + 1] == 'x' ? ANY_ICOSOMATE_DIFF : std::stoi(s.substr(j + 1));
 	return d;
 }
 
@@ -248,6 +261,13 @@ bool is_diff_str(const std::string& s)
 	}
 	catch (...){}
 	return false;
+}
+
+bool diff_good(const IcosamateDifference& d_any, const IcosamateDifference& d)
+{
+	return (d_any.vert_elems_count_ == ANY_ICOSOMATE_DIFF || d_any.vert_elems_count_ == d.vert_elems_count_) &&
+		(d_any.vert_elems_diff_orient_ == ANY_ICOSOMATE_DIFF || d_any.vert_elems_diff_orient_ == d.vert_elems_diff_orient_) &&
+		(d_any.centers_count_ == ANY_ICOSOMATE_DIFF || d_any.centers_count_ == d.centers_count_);
 }
 
 TurnAlgS read_turn_algs_from_file(const FnameStr& file_name, size_t max_alg_len, const IcosamateDifference* diff)
@@ -277,7 +297,7 @@ TurnAlgS read_turn_algs_from_file(const FnameStr& file_name, size_t max_alg_len,
 		   std::string d_str = s.substr(j + 3, k - j - 3);
 		   if (!is_diff_str(d_str)) continue;
 		   IcosamateDifference d = diff_from_str(d_str);
-		   if (d!=*diff) continue;
+		   if (!diff_good(*diff, d)) continue;
 	   }
 
 	   alg_map.insert({n, r});
