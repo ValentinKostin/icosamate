@@ -56,7 +56,7 @@ class IcosamateDrawing
 	int rotate_animation_screen_axis_ = 1;
 	bool rotation_animation_angle_increase_ = true;
 
-	DrawMode draw_mode_ = DrawMode::DARK;
+	DrawMode draw_mode_ = DrawMode::LIGHT;
 
 	size_t start_tick_count_ = 0;
 

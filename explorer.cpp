@@ -152,6 +152,18 @@ void IcosamateExplorer::tree_step(const ActionS& a, bool add_commutators)
 	}
 }
 
+bool all_opers_on_1_or_12(const ActionS& aa)
+{
+	size_t n = aa.size();
+	for (size_t i = 1; i < n; i++)
+	{
+		auto s = aa[i] % 12;
+		if (s != 0 && s != 1)
+			return false;
+	}
+	return true;
+}
+
 void IcosamateExplorer::tree_level(const ActionS& aa, size_t max_l, bool add_commutators)
 {
 	tree_step(aa, add_commutators);
@@ -164,10 +176,11 @@ void IcosamateExplorer::tree_level(const ActionS& aa, size_t max_l, bool add_com
 	size_t n = an.size();
 	Action doubling_last_action = (n > 1 && an[n - 1] == an[n - 2]) ? an[n - 1] : A_NO_ACTION;  // три одинаковых эквивалентны двум обратным, а если первые единицы, то 111 эквивалентно отражённым 11
 	an.push_back(A_NO_ACTION);
+	bool all_on_1_or_12 = all_opers_on_1_or_12(aa);
 	for (Action a = A_1_TURN_CW; a<= A_12_TURN_CCW; ++a)
 	{
-		// симметричные относительно поворотов оси A_1 пропускаем
-		if (n==1 && (a > A_2_TURN_CW && a<A_7_TURN_CW || a>A_7_TURN_CW && a < A_12_TURN_CW || a>A_2_TURN_CCW && a<A_7_TURN_CCW || a>A_7_TURN_CCW && a < A_12_TURN_CCW))
+		// симметричные относительно поворотов оси A_1, A_12 пропускаем
+		if (all_on_1_or_12 && (a > A_2_TURN_CW && a<A_7_TURN_CW || a>A_7_TURN_CW && a < A_12_TURN_CW || a>A_2_TURN_CCW && a<A_7_TURN_CCW || a>A_7_TURN_CCW && a < A_12_TURN_CCW))
 			continue; 
 
 		if (a == inverse_last_action)
