@@ -93,6 +93,8 @@ public:
 	void set_turnig_algorithm(const std::string& turnig_algorithm) { turnig_algorithm_ = turnig_algorithm; }
 	std::string turnig_algorithm() const { return turnig_algorithm_; }
 
+	void inverse();
+
 	bool autorotation() const { return autorotation_; }
 	void set_autorotation(bool r) { autorotation_ = r; }
 	bool rotation_animation() const { return rotation_animation_; }

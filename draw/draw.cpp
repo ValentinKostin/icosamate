@@ -59,6 +59,8 @@ void GLWindowInput(const GLWindow *window)
 		icd().set_draw_axes(!icd().draw_axes());
 	if (InputIsKeyPressed('W'))
 		icd().set_arrows_visible(ArrowsType::VertElems, !icd().is_arrows_visible(ArrowsType::VertElems));
+	if (InputIsKeyPressed('R'))
+		icd().inverse();
 
 	bool clockwise = !InputIsKeyDown(VK_SHIFT);
 	bool ctrl = InputIsKeyDown(VK_CONTROL);

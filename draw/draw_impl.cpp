@@ -463,6 +463,15 @@ void IcosamateDrawing::set_icosomate(const IcosamateInSpace& ic)
 	update_draw_buffers();
 }
 
+void IcosamateDrawing::inverse()
+{
+	TurnAlg ta = ::inverse(turnig_algorithm_);
+	set_turnig_algorithm(ta);
+	IcosamateInSpace ic;
+	ic.actions(IcosamateInSpace::from_str(ta));
+	set_icosomate(ic);
+}
+
 void IcosamateDrawing::set_rotation_animation(bool r)
 {
 	rotation_animation_ = r; 

@@ -100,7 +100,8 @@ TurnAlg inverse(const TurnAlg& s)
 		check(is_digit(s[bm]));
 		while (bm < s.size() && is_digit(s[bm]))
 			++bm;
-		mult_algs.push_back({ j, i - j + 1 });
+		mult_algs.push_back({ j, bm - j });
+		k = bm;
 	}
 	size_t ma_n = mult_algs.size();
 
@@ -116,6 +117,7 @@ TurnAlg inverse(const TurnAlg& s)
 			r.insert(r.end(), sa.begin(), sa.end());
 		}
 		TurnAlg ma = s.substr(mult_algs[i].beg_, mult_algs[i].size_);
+		ma = mult_inverse(ma);
 		std::reverse(ma.begin(), ma.end());
 		r.insert(r.end(), ma.begin(), ma.end());
 	}
