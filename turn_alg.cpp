@@ -65,7 +65,7 @@ TurnAlg simple_inverse(const TurnAlg& s)
 TurnAlg mult_inverse(const TurnAlg& s)
 {
 	check(s[0] == '(');
-	auto i = s.find_first_of('x');
+	auto i = s.find_last_of('x');
 	check(i != std::string::npos);
 	check(i > 1 && s[i - 1] == ')');
 	for (size_t k = i + 1; k < s.size(); ++k)
@@ -74,6 +74,36 @@ TurnAlg mult_inverse(const TurnAlg& s)
 	TurnAlg r; 
 	r += s[0] + inverse(s.substr(1, i - 2)) + s.substr(i - 1);
 	return r;
+}
+
+size_t count_sym(const TurnAlg& s, size_t i, char a)
+{
+	size_t r = 0;
+	for (size_t j = 0; j < i; j++)
+		if (s[j] == a)
+			r++;
+	return r;
+}
+
+bool is_inside_mult(const TurnAlg& s, size_t i)
+{
+	return count_sym(s, i, '(') != count_sym(s, i, ')');
+}
+size_t find_first_outside_x(const TurnAlg& s, size_t b)
+{
+	for (size_t k = b; k < s.size();)
+	{
+		auto i = s.find_first_of('x', k);
+		if (i == std::string::npos)
+			return i;
+		if (is_inside_mult(s, i))
+		{
+			k = i + 1;
+			continue;
+		}
+		return i;
+	}
+	return std::string::npos;
 }
 
 TurnAlg inverse(const TurnAlg& s)
@@ -87,12 +117,12 @@ TurnAlg inverse(const TurnAlg& s)
 	std::vector<MultAlg> mult_algs;
 	for (size_t k = 0; k < s.size();)
 	{
-		auto i = s.find_first_of('x', k);
+		auto i = find_first_outside_x(s, k);
 		if (i == std::string::npos)
 			break;
 
 		check(i > 1 && s[i - 1] == ')');
-		auto j = s.find_last_of('(', i - 1);
+		auto j = s.find_first_of('(', k);
 		check(j != std::string::npos);
 
 		size_t bm = i + 1;
