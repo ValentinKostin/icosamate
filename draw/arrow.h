@@ -12,6 +12,7 @@ enum class ArrowsType
 
 class Arrows
 {
+	double arrow_end_ = 0.2;
 	float color_[4];
 
 	OGLObjs glo_;
@@ -22,6 +23,7 @@ class Arrows
 	bool visible_ = true;
 
 public:
+	void set_arrow_end(double ae) { arrow_end_ = ae; }
 	void set_color(const float* color);
 	bool empty() const { return coords_.empty(); }
 	void clear_coords();

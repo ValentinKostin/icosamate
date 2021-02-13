@@ -258,11 +258,13 @@ IcosamateDrawing::IcosamateDrawing()
 	fill_gl_face_colors();
 	ve_arrows_.set_color(ve_arrows_color_);
 	ve_rotation_arrows_.set_color(ve_rotation_arrows_color_);
+	ve_rotation_arrows_.set_arrow_end(0.1);
 
 	fill_one_color_buffer();
 	fill_multi_colors_buffer();
 	fill_axis_coords_buffer();
 	fill_ve_arrows_coords();
+	fill_ve_rotation_arrows_coords();
 
 	glm::mat4 rm = glm::rotate(glm::mat4(1.0f), float(M_PI_2), glm::vec3(1.0, 0.0, 0.0));
 	model_matrix_ = glm::rotate(rm, -float(M_PI), glm::vec3(0.0, 1.0, 0.0));
@@ -397,6 +399,7 @@ void IcosamateDrawing::opengl_clear()
 	text_drawing_ = nullptr;
 
 	ve_arrows_.clear();
+	ve_rotation_arrows_.clear();
 }
 
 void set(OGLObjs& glo, const glm::mat4& model_view_projection_matrix)
@@ -492,6 +495,7 @@ void IcosamateDrawing::update_draw_buffers()
 	fill_multi_colors_buffer(true);
 	::complete(glo_multi_colors_, multi_colors_buffer_);
 	fill_ve_arrows_coords();
+	fill_ve_rotation_arrows_coords();
 }
 
 void IcosamateDrawing::set_icosomate(const IcosamateInSpace& ic)
