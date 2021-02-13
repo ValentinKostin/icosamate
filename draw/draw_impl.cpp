@@ -219,8 +219,8 @@ void IcosamateDrawing::fill_centers_arrows_coords()
 		auto q = centers.find(color);
 		check(q != centers.end());
 		const Coord& c1 = q->second;
-		double big_radius = gic.radius() * 1.05;
-		double smooth_length = 0.25;
+		double big_radius = gic.radius() * 1.03;
+		double smooth_length = 0.3;
 		if (!opposite_coord(c0, c1))
 			centers_arrows_.add_arrow(define_smooth_arc_different_radius(c0, c1, big_radius, smooth_length));
 		else
