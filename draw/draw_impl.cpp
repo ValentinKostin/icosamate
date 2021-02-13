@@ -220,15 +220,16 @@ void IcosamateDrawing::fill_centers_arrows_coords()
 		check(q != centers.end());
 		const Coord& c1 = q->second;
 		double big_radius = gic.radius() * 1.05;
-		double smooth_length = 0.2;
+		double smooth_length = 0.25;
 		if (!opposite_coord(c0, c1))
 			centers_arrows_.add_arrow(define_smooth_arc_different_radius(c0, c1, big_radius, smooth_length));
 		else
 		{
 			Coord ez{ 0, 0, 1 };
+			double small_radius = (c0.norm() + c1.norm()) * 0.5;
 			Coord cp = vect_prod(ez, c0);
 			cp.normalize();
-			cp *= c0.norm();
+			cp *= small_radius;
 			CoordS cs = define_smooth_arc_different_radius(c0, cp, big_radius, smooth_length, TM_BEGIN);
 			check(!cs.empty());
 			CoordS cs2 = define_smooth_arc_different_radius(cp, c1, big_radius, smooth_length, TM_END);

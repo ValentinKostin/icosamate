@@ -245,8 +245,11 @@ CoordS define_smooth_arc_different_radius(const Coord& c1, const Coord& c2, doub
 {
 	double small_radius = (c1.norm() + c2.norm()) * 0.5;
 	CoordS cs = define_arc_on_sphere(c1, c2, small_radius);
-	CoordS cs_big = define_arc_on_sphere(c1, c2, big_radius);
-	check(cs.size() == cs_big.size());
+	CoordS cs_big;
+	cs_big.reserve(cs.size());
+	double k = big_radius / small_radius;
+	for (const Coord& c : cs)
+		cs_big.push_back(c * k);
 
 	CoordS r;
 	r.reserve(cs.size());
