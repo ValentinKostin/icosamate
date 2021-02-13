@@ -238,7 +238,7 @@ CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, double angle, 
 	return define_arc_around_ñ(ax_c, cr1, cr2, radius);
 }
 
-CoordS define_smooth_arc_different_radius(const Coord& c1, const Coord& c2, double big_radius, double transiton_length)
+CoordS define_smooth_arc_different_radius(const Coord& c1, const Coord& c2, double big_radius, double transiton_length, TransitionMode mode)
 {
    // ZAGL
 	return CoordS();

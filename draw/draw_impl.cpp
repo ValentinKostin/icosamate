@@ -187,6 +187,12 @@ void IcosamateDrawing::fill_ve_rotation_arrows_coords()
 	ve_rotation_arrows_.complete();
 }
 
+bool opposite_coord(const Coord& c1, const Coord& c2)
+{
+	Coord c = c1 + c2;
+	return c.norm() < 1e-4;
+}
+
 void IcosamateDrawing::fill_centers_arrows_coords()
 {
 	centers_arrows_.clear_coords();
@@ -213,7 +219,24 @@ void IcosamateDrawing::fill_centers_arrows_coords()
 		auto q = centers.find(color);
 		check(q != centers.end());
 		const Coord& c1 = q->second;
-		centers_arrows_.add_arrow(define_smooth_arc_different_radius(c0, c1, gic.radius()*1.05, 0.2));
+		double big_radius = gic.radius() * 1.05;
+		double smooth_length = 0.2;
+		if (!opposite_coord(c0, c1))
+			centers_arrows_.add_arrow(define_smooth_arc_different_radius(c0, c1, big_radius, smooth_length));
+		else
+		{
+			Coord ez{ 0, 0, 1 };
+			Coord cp = vect_prod(ez, c0);
+			cp.normalize();
+			cp *= c0.norm();
+			CoordS cs = define_smooth_arc_different_radius(c0, cp, big_radius, smooth_length, TM_BEGIN);
+			check(!cs.empty());
+			CoordS cs2 = define_smooth_arc_different_radius(cp, c1, big_radius, smooth_length, TM_END);
+			check(!cs2.empty());
+			cs.pop_back();
+			cs.insert(cs.end(), cs2.begin(), cs2.end());
+			centers_arrows_.add_arrow(cs);
+		}
 	}
 
 	centers_arrows_.complete();

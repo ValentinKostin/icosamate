@@ -146,4 +146,10 @@ CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, const Coord& c
 // c1 указывает плоскость, в которой лежит начальный радиус-вектор дуги
 CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, double angle, bool clockwise, double radius);
 
-CoordS define_smooth_arc_different_radius(const Coord& c1, const Coord& c2, double big_radius, double transiton_length);
+enum TransitionMode
+{
+	TM_BOTH = 0,
+	TM_BEGIN,
+	TM_END
+};
+CoordS define_smooth_arc_different_radius(const Coord& c1, const Coord& c2, double big_radius, double transiton_length, TransitionMode mode = TM_BOTH);
