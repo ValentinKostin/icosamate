@@ -181,7 +181,7 @@ void IcosamateDrawing::fill_ve_rotation_arrows_coords()
 					const auto& c2 = gic.vertex(a.near_axes_[1]);
 					Coord c = (c0 + c1 + c2) * (1.0 / 3.0);
 					double r = gic.radius()*0.25;
-					ve_rotation_arrows_.add_arrow(define_arc_around_axis(c0, c, angle, clockwise, r));
+					ve_rotation_arrows_.add_arrow(define_arc_around_axis(c0*0.85, c, angle, clockwise, r));
 				}
 			}
 		}
