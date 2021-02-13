@@ -45,6 +45,10 @@ class IcosamateDrawing
 	void fill_ve_arrows_coords();
 	const float ve_arrows_color_[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 
+	Arrows ve_rotation_arrows_;
+	void fill_ve_rotation_arrows_coords();
+	const float ve_rotation_arrows_color_[4] = { 1.0f, 0.5f, 0.125f, 1.0f };
+
 	void update_draw_buffers();
 
 	std::vector<DrawColor> draw_colors_;
@@ -105,7 +109,7 @@ public:
 	bool draw_axes() const { return draw_axes_; }
 	void set_draw_axes(bool r) { draw_axes_ = r; }
 
-	void set_arrows_visible(ArrowsType at, bool visible);
+	void set_all_arrows_visible(bool visible);
 	bool is_arrows_visible(ArrowsType at) const;
 
 	void turn(char ax_name, bool clockwise);

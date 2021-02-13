@@ -213,3 +213,18 @@ CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, const Coord& c
 	Coord cr2 = define_arc_around_axis_radius_vector_point(ax_c, c2, radius);
 	return define_arc_around_с(ax_c, cr1, cr2, radius);
 }
+
+// дуга строится в плоскости, перпендикулярной ax_c вокруг ax_c, 
+// c1 указывает плоскость, в которой лежит начальный радиус-вектор дуги
+CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, double angle, bool clockwise, double radius)
+{
+	Coord e1 = vect_prod(ax_c, c1);
+	e1.normalize();
+	Coord e2 = vect_prod(e1, ax_c);
+	e2.normalize();
+	double sign = clockwise ? 1.0 : -1.0;
+	Coord e = e2 * cos(angle) + e1 * sign * sin(angle);
+	Coord cr1 = ax_c + e2 * radius;
+	Coord cr2 = ax_c + e * radius;
+	return define_arc_around_с(ax_c, cr1, cr2, radius);
+}

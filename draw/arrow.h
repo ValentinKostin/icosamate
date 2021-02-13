@@ -6,7 +6,8 @@
 
 enum class ArrowsType
 {
-	VertElems
+	VertElems,
+	VertElemsRotations
 };
 
 class Arrows

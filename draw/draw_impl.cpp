@@ -155,6 +155,40 @@ void IcosamateDrawing::fill_ve_arrows_coords()
 	ve_arrows_.complete();
 }
 
+void IcosamateDrawing::fill_ve_rotation_arrows_coords()
+{
+	ve_rotation_arrows_.clear_coords();
+	for (VertexId vid = 0; vid < Icosamate::VERTICES_COUNT; ++vid)
+	{
+		for (const Axis& a : axes().axes())
+		{
+			VertexElem ve1 = ic0_.vertex_elem_by_axis(a.id_);
+			VertexElem ve2 = ic_.vertex_elem_by_axis(a.id_);
+			if (ve1.id_ == ve2.id_)
+			{
+				VertexId vid = ve1.id_;
+				const Face& f1 = ic0_.face_by_axis(a.id_, a.near_axes_[0], a.near_axes_[1]);
+				const Face& f2 = ic_.face_by_axis(a.id_, a.near_axes_[0], a.near_axes_[1]);
+				size_t ind1 = f1.vert_elems_colors_inds_[f1.index(vid)];
+				size_t ind2 = f2.vert_elems_colors_inds_[f2.index(vid)];
+				if (ind1 != ind2)
+				{
+					size_t diff = ((5 + ind2) - ind1) % 5;
+					double angle = M_PI * (2.0 / 5.0) * (diff > 2 ? 5 - diff : diff);
+					double clockwise = diff <= 2;
+					const auto& c0 = gic.vertex(a.id_);
+					const auto& c1 = gic.vertex(a.near_axes_[0]);
+					const auto& c2 = gic.vertex(a.near_axes_[1]);
+					Coord c = (c0 + c1 + c2) * (1.0 / 3.0);
+					double r = gic.radius()*0.25;
+					ve_rotation_arrows_.add_arrow(define_arc_around_axis(c0, c, angle, clockwise, r));
+				}
+			}
+		}
+	}
+	ve_rotation_arrows_.complete();
+}
+
 void IcosamateDrawing::fill_gl_face_colors()
 {
 	for (const DrawColor& c : draw_colors_)
@@ -223,6 +257,7 @@ IcosamateDrawing::IcosamateDrawing()
 	};
 	fill_gl_face_colors();
 	ve_arrows_.set_color(ve_arrows_color_);
+	ve_rotation_arrows_.set_color(ve_rotation_arrows_color_);
 
 	fill_one_color_buffer();
 	fill_multi_colors_buffer();
@@ -312,6 +347,7 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 	text_drawing_ = create_text_drawing(w_width, w_height);
 
 	ve_arrows_.gl_init();
+	ve_rotation_arrows_.gl_init();
 
 	// проверим не было ли ошибок
 	OPENGL_CHECK_FOR_ERRORS();
@@ -412,6 +448,7 @@ void IcosamateDrawing::render()
 #endif
 
 	ve_arrows_.render(model_view_projection_matrix_);
+	ve_rotation_arrows_.render(model_view_projection_matrix_);
 
 	// проверка на ошибки
 	OPENGL_CHECK_FOR_ERRORS();
@@ -479,14 +516,20 @@ void IcosamateDrawing::set_rotation_animation(bool r)
 		start_tick_count_ = 0;
 }
 
-void IcosamateDrawing::set_arrows_visible(ArrowsType at, bool visible)
+void IcosamateDrawing::set_all_arrows_visible(bool visible)
 {
 	ve_arrows_.set_visible(visible);
+	ve_rotation_arrows_.set_visible(visible);
 }
 
 bool IcosamateDrawing::is_arrows_visible(ArrowsType at) const
 {
-	return ve_arrows_.visible();
+	if (at == ArrowsType::VertElems)
+		return ve_arrows_.visible();
+	else if (at == ArrowsType::VertElemsRotations)
+		return ve_rotation_arrows_.visible();
+	else
+		return false;
 }
 
 void IcosamateDrawing::turn(char ax_name, bool clockwise)
