@@ -52,6 +52,15 @@ IcosomateCoords::IcosomateCoords(double radius) : radius_(radius)
 	fill_face_triangles();	
 }
 
+Coord IcosomateCoords::face_center(AxisId a1, AxisId a2, AxisId a3) const
+{
+	const auto& c0 = vertex(a1);
+	const auto& c1 = vertex(a2);
+	const auto& c2 = vertex(a3);
+	Coord c = (c0 + c1 + c2) * (1.0 / 3.0);
+	return c;
+}
+
 void IcosomateCoords::fill_coords()
 {
 	double m_angle = std::atan(0.5);
@@ -227,4 +236,10 @@ CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, double angle, 
 	Coord cr1 = ax_c + e2 * radius;
 	Coord cr2 = ax_c + e * radius;
 	return define_arc_around_ñ(ax_c, cr1, cr2, radius);
+}
+
+CoordS define_smooth_arc_different_radius(const Coord& c1, const Coord& c2, double big_radius, double transiton_length)
+{
+   // ZAGL
+	return CoordS();
 }

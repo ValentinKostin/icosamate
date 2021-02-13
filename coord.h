@@ -130,6 +130,7 @@ public:
 	double radius() const { return radius_; }
 	const VertCoord& vertex(AxisId axis_id) const { return coords_.at(axis_id); }
 	const FaceTriangle& face_triangle(FaceTriangleId id) const { return face_triangles_.at(id); }
+	Coord face_center(AxisId a1, AxisId a2, AxisId a3) const;
 };
 
 // с1 и c2 на сфере, выдаЄт промежуточную точку между ними
@@ -144,3 +145,5 @@ CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, const Coord& c
 // дуга строитс€ в плоскости, перпендикул€рной ax_c вокруг ax_c, 
 // c1 указывает плоскость, в которой лежит начальный радиус-вектор дуги
 CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, double angle, bool clockwise, double radius);
+
+CoordS define_smooth_arc_different_radius(const Coord& c1, const Coord& c2, double big_radius, double transiton_length);

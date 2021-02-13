@@ -137,5 +137,7 @@ public:
 
 	const VertexElem& vertex_elem_by_axis(AxisId ax_id) const;
 	AxisId axis_by_vertex(VertexId vid) const { return axis_by_vert_elem_.at(vid); }
+
+	const std::vector<Face>& faces() const { return faces_; }
 };
 

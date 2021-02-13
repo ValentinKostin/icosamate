@@ -177,9 +177,7 @@ void IcosamateDrawing::fill_ve_rotation_arrows_coords()
 					double angle = M_PI * (2.0 / 5.0) * (diff > 2 ? 5 - diff : diff);
 					double clockwise = diff <= 2;
 					const auto& c0 = gic.vertex(a.id_);
-					const auto& c1 = gic.vertex(a.near_axes_[0]);
-					const auto& c2 = gic.vertex(a.near_axes_[1]);
-					Coord c = (c0 + c1 + c2) * (1.0 / 3.0);
+					Coord c = gic.face_center(a.id_, a.near_axes_[0], a.near_axes_[1]);
 					double r = gic.radius()*0.25;
 					ve_rotation_arrows_.add_arrow(define_arc_around_axis(c0*0.85, c, angle, clockwise, r));
 				}
@@ -187,6 +185,38 @@ void IcosamateDrawing::fill_ve_rotation_arrows_coords()
 		}
 	}
 	ve_rotation_arrows_.complete();
+}
+
+void IcosamateDrawing::fill_centers_arrows_coords()
+{
+	centers_arrows_.clear_coords();
+
+	std::map<ColorNum, Coord> centers_0, centers;
+	for (const Face& f1 : ic0_.faces())
+	{
+		AxisId ax_id_0 = ic0_.axis_by_vertex(f1.vert_elems_[0]->id_);
+		AxisId ax_id_1 = ic0_.axis_by_vertex(f1.vert_elems_[1]->id_);
+		AxisId ax_id_2 = ic0_.axis_by_vertex(f1.vert_elems_[2]->id_);
+
+		const Face& f2 = ic_.face_by_axis(ax_id_0, ax_id_1, ax_id_2);
+		if (f1.center_col_ != f2.center_col_)
+		{
+			centers_0[f1.center_col_] = gic.face_center(ax_id_0, ax_id_1, ax_id_2);
+			centers[f2.center_col_] = gic.face_center(ax_id_0, ax_id_1, ax_id_2);
+		}
+	}
+
+	for (const auto& e0 : centers_0)
+	{
+		ColorNum color = e0.first;
+		const Coord& c0 = e0.second;
+		auto q = centers.find(color);
+		check(q != centers.end());
+		const Coord& c1 = q->second;
+		centers_arrows_.add_arrow(define_smooth_arc_different_radius(c0, c1, gic.radius()*1.05, 0.2));
+	}
+
+	centers_arrows_.complete();
 }
 
 void IcosamateDrawing::fill_gl_face_colors()
@@ -259,12 +289,14 @@ IcosamateDrawing::IcosamateDrawing()
 	ve_arrows_.set_color(ve_arrows_color_);
 	ve_rotation_arrows_.set_color(ve_rotation_arrows_color_);
 	ve_rotation_arrows_.set_arrow_end(0.1);
+	centers_arrows_.set_color(centers_arrows_color_);
 
 	fill_one_color_buffer();
 	fill_multi_colors_buffer();
 	fill_axis_coords_buffer();
 	fill_ve_arrows_coords();
 	fill_ve_rotation_arrows_coords();
+	fill_centers_arrows_coords();
 
 	glm::mat4 rm = glm::rotate(glm::mat4(1.0f), float(M_PI_2), glm::vec3(1.0, 0.0, 0.0));
 	model_matrix_ = glm::rotate(rm, -float(M_PI), glm::vec3(0.0, 1.0, 0.0));
@@ -350,6 +382,7 @@ bool IcosamateDrawing::opengl_init(int w_width, int w_height)
 
 	ve_arrows_.gl_init();
 	ve_rotation_arrows_.gl_init();
+	centers_arrows_.gl_init();
 
 	// проверим не было ли ошибок
 	OPENGL_CHECK_FOR_ERRORS();
@@ -400,6 +433,7 @@ void IcosamateDrawing::opengl_clear()
 
 	ve_arrows_.clear();
 	ve_rotation_arrows_.clear();
+	centers_arrows_.clear();
 }
 
 void set(OGLObjs& glo, const glm::mat4& model_view_projection_matrix)
@@ -452,6 +486,7 @@ void IcosamateDrawing::render()
 
 	ve_arrows_.render(model_view_projection_matrix_);
 	ve_rotation_arrows_.render(model_view_projection_matrix_);
+	centers_arrows_.render(model_view_projection_matrix_);
 
 	// проверка на ошибки
 	OPENGL_CHECK_FOR_ERRORS();
@@ -496,6 +531,7 @@ void IcosamateDrawing::update_draw_buffers()
 	::complete(glo_multi_colors_, multi_colors_buffer_);
 	fill_ve_arrows_coords();
 	fill_ve_rotation_arrows_coords();
+	fill_centers_arrows_coords();
 }
 
 void IcosamateDrawing::set_icosomate(const IcosamateInSpace& ic)
@@ -520,10 +556,14 @@ void IcosamateDrawing::set_rotation_animation(bool r)
 		start_tick_count_ = 0;
 }
 
-void IcosamateDrawing::set_all_arrows_visible(bool visible)
+void IcosamateDrawing::set_arrows_visible(ArrowsType at, bool visible)
 {
-	ve_arrows_.set_visible(visible);
-	ve_rotation_arrows_.set_visible(visible);
+	if (at == ArrowsType::VertElems)
+		ve_arrows_.set_visible(visible);
+	else if (at == ArrowsType::VertElemsRotations)
+		ve_rotation_arrows_.set_visible(visible);
+	else if (at == ArrowsType::Centers)
+		centers_arrows_.set_visible(visible);
 }
 
 bool IcosamateDrawing::is_arrows_visible(ArrowsType at) const
@@ -532,6 +572,8 @@ bool IcosamateDrawing::is_arrows_visible(ArrowsType at) const
 		return ve_arrows_.visible();
 	else if (at == ArrowsType::VertElemsRotations)
 		return ve_rotation_arrows_.visible();
+	else if (at == ArrowsType::Centers)
+		return centers_arrows_.visible();
 	else
 		return false;
 }
