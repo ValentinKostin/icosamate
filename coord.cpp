@@ -238,8 +238,38 @@ CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, double angle, 
 	return define_arc_around_ñ(ax_c, cr1, cr2, radius);
 }
 
+// f: [0,1] -> [0,1], f(0)=0, f(1)=1, f'(0)>0, f'(1)=0
+double smooth_fun(double x) { return 2 * x - x * x; }
+
 CoordS define_smooth_arc_different_radius(const Coord& c1, const Coord& c2, double big_radius, double transiton_length, TransitionMode mode)
 {
-   // ZAGL
-	return CoordS();
+	double small_radius = (c1.norm() + c2.norm()) * 0.5;
+	CoordS cs = define_arc_on_sphere(c1, c2, small_radius);
+	CoordS cs_big = define_arc_on_sphere(c1, c2, big_radius);
+	check(cs.size() == cs_big.size());
+
+	CoordS r;
+	r.reserve(cs.size());
+	double length = dist(cs);
+	double cur_len = 0, rest_len = length;
+	for (size_t i = 0; i < cs.size(); i++)
+	{
+		if (i > 0)
+		{
+			double d = dist(cs[i - 1], cs[i]);
+			cur_len += d;
+			rest_len -= d;
+		}
+
+		double big_koef = 1.0;
+		if ( mode!= TM_END && cur_len< transiton_length)
+			big_koef = smooth_fun(cur_len / transiton_length);
+		if (mode != TM_BEGIN && rest_len < transiton_length)
+			big_koef = smooth_fun(rest_len / transiton_length);
+
+		Coord c = cs[i] * (1.0 - big_koef) + cs_big[i] * big_koef;
+		r.push_back(c);
+	}
+
+	return r;
 }
