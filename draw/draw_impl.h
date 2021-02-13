@@ -47,7 +47,7 @@ class IcosamateDrawing
 
 	Arrows ve_rotation_arrows_;
 	void fill_ve_rotation_arrows_coords();
-	const float ve_rotation_arrows_color_[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	const float ve_rotation_arrows_color_[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
 
 	Arrows centers_arrows_;
 	void fill_centers_arrows_coords();

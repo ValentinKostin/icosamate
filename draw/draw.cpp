@@ -59,8 +59,9 @@ void GLWindowInput(const GLWindow *window)
 		icd().set_draw_axes(!icd().draw_axes());
 	if (InputIsKeyPressed('W'))
 	{
-		icd().set_arrows_visible(ArrowsType::VertElems, !icd().is_arrows_visible(ArrowsType::VertElems));
-		icd().set_arrows_visible(ArrowsType::VertElemsRotations, !icd().is_arrows_visible(ArrowsType::VertElems));
+		bool vis = !icd().is_arrows_visible(ArrowsType::VertElems);
+		icd().set_arrows_visible(ArrowsType::VertElems, vis);
+		icd().set_arrows_visible(ArrowsType::VertElemsRotations, vis);
 	}
 	if (InputIsKeyPressed('T'))
 		icd().set_arrows_visible(ArrowsType::Centers, !icd().is_arrows_visible(ArrowsType::Centers));
