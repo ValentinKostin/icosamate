@@ -136,3 +136,7 @@ public:
 // если они расположены диаметрально противоположны, то выдаёт 0
 Coord sphere_middle_point(const Coord& c1, const Coord& c2, double radius);
 CoordS define_arc_on_sphere(const Coord& c1, const Coord& c2, double radius);
+
+// дуга строится в плоскости, перпендикулярной ax_c вокруг ax_c, 
+// c1 и c2 указывают плоскости, в которых лежат начальный и конечный радиус-векторы дуги 
+CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, const Coord& c2, double radius);

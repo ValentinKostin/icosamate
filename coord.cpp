@@ -162,8 +162,54 @@ void add_sphere_middle_points(std::list<Coord>& cs, double radius)
 
 CoordS define_arc_on_sphere(const Coord& c1, const Coord& c2, double radius)
 {
-	std::list<Coord> cs = {c1, c2};
+	std::list<Coord> cs = { c1, c2 };
 	for (size_t i = 0; i < 6; i++)
 		add_sphere_middle_points(cs, radius);
 	return CoordS(cs.begin(), cs.end());
+}
+
+
+Coord around_с_middle_point(const Coord& c0, const Coord& c1, const Coord& c2, double radius)
+{
+	Coord c = (c1 - c0) + (c2 - c0);
+	double n1 = c.norm();
+	if (n1 < 1e-8)
+		return c0;
+	c *= (radius / n1);
+	return c0 + c;
+}
+
+void add_arc_around_с_middle_points(std::list<Coord>& cs, const Coord& c, double radius)
+{
+	check(cs.size() > 1);
+	for (auto q = cs.begin(), p = q++; q != cs.end(); p = q++)
+		cs.insert(q, around_с_middle_point(c, *p, *q, radius));
+}
+
+CoordS define_arc_around_с(const Coord& c, const Coord& c1, const Coord& c2, double radius)
+{
+	std::list<Coord> cs = { c1, c2 };
+	for (size_t i = 0; i < 6; i++)
+		add_arc_around_с_middle_points(cs, c, radius);
+	return CoordS(cs.begin(), cs.end());
+}
+
+Coord define_arc_around_axis_radius_vector_point(const Coord& ax_c, const Coord& c, double radius)
+{
+	Coord v = vect_prod(ax_c, c);
+	Coord rr = vect_prod(v, ax_c);
+	double n1 = c.norm();
+	if (n1 < 1e-8)
+		return ax_c;
+	rr *= (radius / n1);
+	return ax_c + rr;
+}
+
+// дуга строится в плоскости, перпендикулярной ax_c вокруг ax_c, 
+// c1 и c2 указывают плоскости, в которых лежат начальный и конечный радиус-векторы дуги 
+CoordS define_arc_around_axis(const Coord& ax_c, const Coord& c1, const Coord& c2, double radius)
+{
+	Coord cr1 = define_arc_around_axis_radius_vector_point(ax_c, c1, radius);
+	Coord cr2 = define_arc_around_axis_radius_vector_point(ax_c, c2, radius);
+	return define_arc_around_с(ax_c, cr1, cr2, radius);
 }
