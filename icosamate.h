@@ -117,7 +117,7 @@ public:
 	static Action move_action(AxisId axis_id, bool clockwise);
 	static Action inverse(Action a);
 	static ActionS inverse(const ActionS& a);
-	static ActionS reflect(AxisId axis_id_1, AxisId axis_id_2, const ActionS& a); // axis_id_1, axis_id_2 - две соседние оси, отражение происходит относительно задаваемой ими плоскости
+	static ActionS reflect(const ActionS& a, AxisId axis_id_1, AxisId axis_id_2); // axis_id_1, axis_id_2 - две соседние оси, отражение происходит относительно задаваемой ими плоскости
 	static ActionS commutator(const ActionS& a, int i); // разбить в месте i и продолжить до коммутатора
 	static ActionS commutator(const ActionS& a1, const ActionS& a2);
 	static size_t period(const ActionS& a);

@@ -106,14 +106,13 @@ size_t find_first_outside_x(const TurnAlg& s, size_t b)
 	return std::string::npos;
 }
 
-TurnAlg inverse(const TurnAlg& s)
+struct MultAlg
 {
-	struct MultAlg
-	{
-		size_t beg_;
-		size_t size_;
-	};
-
+	size_t beg_;
+	size_t size_;
+};
+std::vector<MultAlg> define_mult_algs(const TurnAlg& s)
+{
 	std::vector<MultAlg> mult_algs;
 	for (size_t k = 0; k < s.size();)
 	{
@@ -133,6 +132,12 @@ TurnAlg inverse(const TurnAlg& s)
 		mult_algs.push_back({ j, bm - j });
 		k = bm;
 	}
+	return mult_algs;
+}
+
+TurnAlg inverse(const TurnAlg& s)
+{
+	std::vector<MultAlg> mult_algs = define_mult_algs(s);
 	size_t ma_n = mult_algs.size();
 
 	TurnAlg r;
@@ -199,4 +204,60 @@ TurnAlg set_mults(const TurnAlg& s)
 	return s;
 }
 
+
+TurnAlg simple_reflect(const TurnAlg& s, char ax_1, char ax_2)
+{
+	const Axes& aa = axes();
+	AxisId ax_id_1 = aa.get_axis(ax_1);
+	AxisId ax_id_2 = aa.get_axis(ax_2);
+
+	typedef IcosamateInSpace I;
+	ActionS acts = I::from_str(s);
+	ActionS refl_acts = I::reflect(acts, ax_id_1, ax_id_2);
+	return I::to_str(refl_acts);
+}
+
+TurnAlg mult_reflect(const TurnAlg& s, char ax_1, char ax_2)
+{
+	check(s[0] == '(');
+	auto i = s.find_last_of('x');
+	check(i != std::string::npos);
+	check(i > 1 && s[i - 1] == ')');
+	for (size_t k = i + 1; k < s.size(); ++k)
+		check(is_digit(s[k]));
+
+	TurnAlg r;
+	r += s[0] + simple_reflect(s.substr(1, i - 2), ax_1, ax_2) + s.substr(i - 1);
+	return r;
+}
+
+TurnAlg reflect(const TurnAlg& s, char ax_1, char ax_2)
+{
+	std::vector<MultAlg> mult_algs = define_mult_algs(s);
+	size_t ma_n = mult_algs.size();
+
+	TurnAlg r;
+	for (size_t i = 0; i < mult_algs.size(); ++i)
+	{
+		size_t b = i == 0 ? 0 : mult_algs[i - 1].beg_ + mult_algs[i - 1].size_;
+		TurnAlg sa = s.substr(b, mult_algs[i].beg_ - b);
+		if (!sa.empty())
+		{
+			sa = simple_reflect(sa, ax_1, ax_2);
+			r.insert(r.end(), sa.begin(), sa.end());
+		}
+		TurnAlg ma = s.substr(mult_algs[i].beg_, mult_algs[i].size_);
+		ma = mult_reflect(ma, ax_1, ax_2);
+		r.insert(r.end(), ma.begin(), ma.end());
+	}
+	size_t b = mult_algs.empty() ? 0 : mult_algs[ma_n - 1].beg_ + mult_algs[ma_n - 1].size_;
+	if (b < s.size())
+	{
+		TurnAlg sa = s.substr(b);
+		sa = simple_reflect(sa, ax_1, ax_2);
+		r.insert(r.end(), sa.begin(), sa.end());
+	}
+
+	return r;
+}
 

@@ -79,7 +79,7 @@ void add_reflections(std::map<AxisId, AxisId>& rmap, AxisId id_1, AxisId id_2)
 }
 
 // axis_id_1, axis_id_2 - две соседние оси, отражение происходит относительно задаваемой ими плоскости
-ActionS IcosamateInSpace::reflect(AxisId axis_id_1, AxisId axis_id_2, const ActionS& acts)
+ActionS IcosamateInSpace::reflect(const ActionS& acts, AxisId axis_id_1, AxisId axis_id_2)
 {
 	const Axes& aa = axes();
 	check(aa.is_near(axis_id_1, axis_id_2));
