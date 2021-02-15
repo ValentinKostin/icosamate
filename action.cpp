@@ -1,3 +1,5 @@
+#include <map>
+
 #include "def.h"
 #include "turn_alg.h"
 #include "action.h"
@@ -14,9 +16,25 @@ Action IcosamateInSpace::move_action(AxisId axis_id, bool clockwise)
 	return turn_action(axis_id, clockwise) + 24;
 }
 
+AxisId IcosamateInSpace::action_axis(Action a)
+{
+	return a % 12;
+}
+
+Action IcosamateInSpace::change_axis(Action a, AxisId axis_id)
+{
+	if (a > A_12_MOVE_CCW || a <= 0)
+		return A_NO_ACTION;
+
+	int d = a % 12 == 0 ? 12 : a % 12;
+	int r = a - d;
+	r += int(axis_id == 0 ? 12 : axis_id);
+	return r;
+}
+
 Action IcosamateInSpace::inverse(Action a)
 {
-	if (a > A_12_MOVE_CCW || a < 0)
+	if (a > A_12_MOVE_CCW || a <= 0)
 		return A_NO_ACTION;
 
 	if (a >= A_1_MOVE_CW)
@@ -31,6 +49,54 @@ ActionS IcosamateInSpace::inverse(const ActionS& a)
 	r.reserve(a.size());
 	for (auto q = a.cbegin(); q != a.cend(); ++q)
 		r.push_back(inverse(*q));
+	return r;
+}
+
+void add_reflections_1_to_2(std::map<AxisId, AxisId>& rmap, AxisId id_1, AxisId id_2)
+{
+	int k = 0;
+	const Axes& aa = axes();
+	const Axis& a1 = aa.axis(id_1);
+	for (;k<5; ++k)
+	{
+		if (a1.near_axes_[k] == id_2)
+			break;
+	}
+	check(k < 5);
+
+	for (int i=0; i < 5; ++i)
+	{
+		AxisId ax_id = a1.near_axes_.at(i);
+		AxisId ref_ax_id = a1.near_axes_.at((2*k+5-i)%5);
+		rmap.insert({ ax_id, ref_ax_id });
+	}
+}
+
+void add_reflections(std::map<AxisId, AxisId>& rmap, AxisId id_1, AxisId id_2)
+{
+	add_reflections_1_to_2(rmap, id_1, id_2);
+	add_reflections_1_to_2(rmap, id_2, id_1);
+}
+
+// axis_id_1, axis_id_2 - две соседние оси, отражение происходит относительно задаваемой ими плоскости
+ActionS IcosamateInSpace::reflect(AxisId axis_id_1, AxisId axis_id_2, const ActionS& acts)
+{
+	const Axes& aa = axes();
+	check(aa.is_near(axis_id_1, axis_id_2));
+	std::map<AxisId, AxisId> rmap;
+	add_reflections(rmap, axis_id_1, axis_id_2);
+	add_reflections(rmap, aa.axis(axis_id_1).opposite_id_, aa.axis(axis_id_2).opposite_id_);
+
+	ActionS r;
+	r.reserve(acts.size());
+	for (const Action& a : acts)
+	{
+		AxisId ax_id = action_axis(a);
+		Action ra = a;
+		AxisId refl_ax_id = rmap.at(ax_id);
+		change_axis(a, refl_ax_id);
+		r.push_back(inverse(ra));
+	}
 	return r;
 }
 

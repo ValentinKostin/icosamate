@@ -62,7 +62,7 @@ void save_in_library(const TurnAlgS& turn_algs, Library& l, std::string subdir =
 	IcosamateDrawing& d = icd();
 
 	int w = 1200, h = 1200;
-	check(GLWindowCreate("saving icosomate algorithms in library", w, h, false));
+	check(GLWindowCreate("saving icosamate algorithms in library", w, h, false));
 
 	d.opengl_init(w, h);
 

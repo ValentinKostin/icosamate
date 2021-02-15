@@ -30,6 +30,8 @@ public:
 
 	std::vector<AxisId> near_common_axis(AxisId id_1, AxisId id_2) const;
 
+	bool is_near(AxisId id_1, AxisId id_2) const;
+
 	// буквенные обозначения
 	char get_char(AxisId id) const;
 	AxisId get_axis(char a) const;

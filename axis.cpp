@@ -41,6 +41,16 @@ std::vector<AxisId> Axes::near_common_axis(AxisId id_1, AxisId id_2) const
 	return r;
 }
 
+bool Axes::is_near(AxisId id_1, AxisId id_2) const
+{
+	for (AxisId t1 : axes_[id_1].near_axes_)
+	{
+		if (t1 == id_2)
+			return true;
+	}
+	return false;
+}
+
 ////////////////////////////////////////////
 // old numeric notation
 char get_x16_natural_char_by_axis(AxisId id)
