@@ -102,6 +102,7 @@ public:
 	std::string turnig_algorithm() const { return turnig_algorithm_; }
 
 	void inverse();
+	void reflect(char ax_1, char ax_2); // ax_1, ax_2 - две соседние оси, отражение происходит относительно задаваемой ими плоскости
 
 	bool autorotation() const { return autorotation_; }
 	void set_autorotation(bool r) { autorotation_ = r; }

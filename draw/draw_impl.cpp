@@ -573,6 +573,21 @@ void IcosamateDrawing::inverse()
 	set_icosomate(ic);
 }
 
+void IcosamateDrawing::reflect(char ax_1, char ax_2)
+{
+	const Axes& aa = axes();
+	AxisId ax_id_1 = aa.get_axis(ax_1);
+	AxisId ax_id_2 = aa.get_axis(ax_2);
+	if (!aa.is_near(ax_id_1, ax_id_2))
+		return;
+
+	TurnAlg ta = ::reflect(turnig_algorithm_, ax_1, ax_2);
+	set_turnig_algorithm(ta);
+	IcosamateInSpace ic;
+	ic.actions(IcosamateInSpace::from_str(ta));
+	set_icosomate(ic);
+}
+
 void IcosamateDrawing::set_rotation_animation(bool r)
 {
 	rotation_animation_ = r; 

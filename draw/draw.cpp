@@ -1,3 +1,5 @@
+#include <vector>
+
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 
@@ -70,12 +72,30 @@ void GLWindowInput(const GLWindow *window)
 
 	bool clockwise = !InputIsKeyDown(VK_SHIFT);
 	bool ctrl = InputIsKeyDown(VK_CONTROL);
-	typedef void(IcosamateDrawing::* ChangeFun)(char, bool);
-	ChangeFun change_fun = ctrl ? &IcosamateDrawing::move : &IcosamateDrawing::turn;
-	for (char c = 'A'; c <= 'L'; ++c)
+	bool alt = InputIsKeyDown(VK_MENU);
+	if (!alt)
 	{
-		if (InputIsKeyPressed(c))
-			(icd().*change_fun)(c, clockwise);
+		typedef void(IcosamateDrawing::* ChangeFun)(char, bool);
+		ChangeFun change_fun = ctrl ? &IcosamateDrawing::move : &IcosamateDrawing::turn;
+		for (char c = 'A'; c <= 'L'; ++c)
+		{
+			if (InputIsKeyPressed(c))
+				(icd().*change_fun)(c, clockwise);
+		}
+	}
+	else
+	{
+		for (char c = 'A'; c <= 'L'; ++c)
+		{
+			if (InputIsKeyPressed(c))
+			{
+				for (char c2 = 'A'; c2 <= 'L'; ++c2)
+				{
+					if (InputIsKeyDown(c2) && c2!=c)
+						icd().reflect(c, c2);
+				}
+			}
+		}
 	}
 	if (ctrl && InputIsKeyPressed('Z'))
 		icd().undo();
