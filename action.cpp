@@ -94,7 +94,7 @@ ActionS IcosamateInSpace::reflect(const ActionS& acts, AxisId axis_id_1, AxisId 
 		AxisId ax_id = action_axis(a);
 		Action ra = a;
 		AxisId refl_ax_id = rmap.at(ax_id);
-		change_axis(a, refl_ax_id);
+		change_axis(ra, refl_ax_id);
 		r.push_back(inverse(ra));
 	}
 	return r;

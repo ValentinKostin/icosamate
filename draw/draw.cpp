@@ -84,6 +84,7 @@ void GLWindowInput(const GLWindow *window)
 			if (InputIsKeyPressed(c))
 				(icd().*change_fun)(c, clockwise);
 		}
+		g_last_alt_pressed = 0;
 	}
 	else
 	{
