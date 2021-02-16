@@ -42,6 +42,8 @@ void GLWindowUpdate(const GLWindow *window, double deltaTime)
 	icd().update();
 }
 
+char g_last_alt_pressed = 0;
+
 // функция обработки ввода с клавиатуры и мыши
 void GLWindowInput(const GLWindow *window)
 {
@@ -89,11 +91,13 @@ void GLWindowInput(const GLWindow *window)
 		{
 			if (InputIsKeyPressed(c))
 			{
-				for (char c2 = 'A'; c2 <= 'L'; ++c2)
+				if (g_last_alt_pressed != 0)
 				{
-					if (InputIsKeyDown(c2) && c2!=c)
-						icd().reflect(c, c2);
+					icd().reflect(g_last_alt_pressed, c);
+					g_last_alt_pressed = 0;
 				}
+				else
+					g_last_alt_pressed = c;
 			}
 		}
 	}
