@@ -31,6 +31,16 @@ IcosamateExplorer::IcosamateExplorer(std::ostream& log)	: log_(log)
 {
 }
 
+std::string mul_str(const TurnAlg& alg, size_t mul)
+{
+	std::string r;
+	if (mul != 1)
+		r += "(";
+	r += alg;
+	if (mul != 1)
+		r += ")x" + std::to_string(mul);
+	return r;
+}
 std::string mul_str(const ActionS& a, size_t mul)
 {
 	std::string r;
@@ -78,10 +88,8 @@ template<class M, class R> void add_action_res(M& m, const R& r, const ActionS& 
 		m[r] = a;
 }
 
-void IcosamateExplorer::process_actions(const ActionS& aa, size_t mul, size_t total_mul, bool update_maps)
+void IcosamateExplorer::process_actions_0(const ActionS& aa, size_t mul, size_t total_mul, bool update_maps)
 {
-	log_ << mul_str(aa, total_mul) << ": ";
-
 	auto acts = mul_actions(aa, mul);
 	auto tot_a = mul_actions(aa, total_mul);
 
@@ -99,15 +107,18 @@ void IcosamateExplorer::process_actions(const ActionS& aa, size_t mul, size_t to
 	log_ << r << std::endl;
 }
 
-void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
+void IcosamateExplorer::process_actions(const ActionS& aa, size_t mul, size_t total_mul, bool update_maps)
 {
-	if (mul > 0)
-	{
-		process_actions(aa, mul, mul);
-		ic_draw(ic_, mul_str(aa, mul));
-	}
+	log_ << mul_str(aa, total_mul) << ": ";
 
-	process_actions(aa, 1, 1);
+	process_actions_0(aa, mul, total_mul, update_maps);
+}
+
+void IcosamateExplorer::scramble_info(const TurnAlg& alg)
+{
+	log_ << alg << ": ";
+	ActionS aa = IcosamateInSpace::from_str(alg);
+	process_actions_0(aa, 1, 1);
 	if (!with_mults_)
 		return;
 
@@ -116,7 +127,8 @@ void IcosamateExplorer::actions(const ActionS& aa, size_t mul)
 	size_t prev_n = 1;
 	for (auto n : nn)
 	{
-		process_actions(aa, n-prev_n, n);
+		log_ << mul_str(alg, n) << ": ";
+		process_actions_0(aa, n - prev_n, n);
 		prev_n = n;
 	}
 }
@@ -218,7 +230,7 @@ void explore_near_axis(std::ostream& log, bool turn1, bool turn2, bool is_1_cw, 
 
 			ActionS aa = { a1, a2 };
 			IcosamateExplorer ex(log);
-			ex.actions(aa);
+			ex.scramble_info(IcosamateInSpace::to_str(aa));
 		}
 	}
 }

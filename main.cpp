@@ -203,11 +203,10 @@ int main(int argc, char* argv[])
 
 		if (args.count("test") > 0)
 			test(log);
-		else if (args.count("actions_info") > 0)
+		else if (args.count("scramble_info") > 0)
 		{
 			IcosamateExplorer ex(log);
-			size_t n = define_if_exist<size_t>(args, "n");
-			ex.actions(IcosamateInSpace::from_str(args.at("actions_info")), n);
+			ex.scramble_info(args.at("scramble_info"));
 		}
 		else if (args.count("tree") > 0)
 		{
