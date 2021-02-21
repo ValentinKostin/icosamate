@@ -567,6 +567,8 @@ void IcosamateDrawing::set_icosomate(const IcosamateInSpace& ic)
 void IcosamateDrawing::inverse()
 {
 	TurnAlg ta = ::inverse(turnig_algorithm_);
+	undo_.push_back(turnig_algorithm_);
+	redo_.clear();
 	set_turnig_algorithm(ta);
 	IcosamateInSpace ic;
 	ic.actions(IcosamateInSpace::from_str(ta));
@@ -582,6 +584,8 @@ void IcosamateDrawing::reflect(char ax_1, char ax_2)
 		return;
 
 	TurnAlg ta = ::reflect(turnig_algorithm_, ax_1, ax_2);
+	undo_.push_back(turnig_algorithm_);
+	redo_.clear();
 	set_turnig_algorithm(ta);
 	IcosamateInSpace ic;
 	ic.actions(IcosamateInSpace::from_str(ta));
@@ -624,6 +628,8 @@ void IcosamateDrawing::turn(char ax_name, bool clockwise)
 	Action a = ic_.turn_action(ax_id, clockwise);
 	ic_.action(a);
 
+	undo_.push_back(turnig_algorithm_);
+	redo_.clear();
 	turnig_algorithm_.push_back(ax_name);
 	if (!clockwise)
 		turnig_algorithm_.push_back('\'');
@@ -638,6 +644,8 @@ void IcosamateDrawing::move(char ax_name, bool clockwise)
 	Action a = ic_.move_action(ax_id, clockwise);
 	ic_.action(a);
 
+	undo_.push_back(turnig_algorithm_);
+	redo_.clear();
 	turnig_algorithm_.push_back('M');
 	turnig_algorithm_.push_back(ax_name);
 	if (!clockwise)
@@ -648,27 +656,30 @@ void IcosamateDrawing::move(char ax_name, bool clockwise)
 
 void IcosamateDrawing::undo()
 {
-	if (turnig_algorithm_.empty())
+	if (undo_.empty())
 		return;
-	std::string new_ta = turnig_algorithm_;
-	bool clockwise = new_ta.back() == '\'';
-	if (clockwise)
-		new_ta.pop_back();
-	check(!new_ta.empty());
-	const Axes& aa = axes();
-	char ac = new_ta.back();
-	if (!aa.is_axis_char(ac))
+
+	std::string ta = undo_.back();
+	undo_.pop_back();
+	redo_.push_back(turnig_algorithm_);
+
+	set_turnig_algorithm(ta);
+	IcosamateInSpace ic;
+	ic.actions(IcosamateInSpace::from_str(ta));
+	set_icosomate(ic);
+}
+
+void IcosamateDrawing::redo()
+{
+	if (redo_.empty())
 		return;
-	AxisId ax_id = aa.get_axis(ac);
-	new_ta.pop_back();
-	size_t n = new_ta.size();
-	bool was_move = n > 0 && new_ta[n - 1] == 'M';
-	if (was_move)
-		new_ta.pop_back();
 
-	Action inv_a = was_move ? IcosamateInSpace::move_action(ax_id, clockwise) : IcosamateInSpace::turn_action(ax_id, clockwise);
-	ic_.action(inv_a);
-	turnig_algorithm_.swap(new_ta);
+	std::string ta = redo_.back();
+	redo_.pop_back();
+	undo_.push_back(turnig_algorithm_);
 
-	update_draw_buffers();
+	set_turnig_algorithm(ta);
+	IcosamateInSpace ic;
+	ic.actions(IcosamateInSpace::from_str(ta));
+	set_icosomate(ic);
 }

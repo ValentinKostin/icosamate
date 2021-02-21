@@ -79,6 +79,8 @@ class IcosamateDrawing
 	// преобразование координаты -> пиксели экрана
 	GLPix to_pix(const Coord& c) const;
 
+	std::vector<std::string> undo_, redo_;
+
 public:
 	IcosamateDrawing();
 	~IcosamateDrawing();
@@ -120,6 +122,7 @@ public:
 	void turn(char ax_name, bool clockwise);
 	void move(char ax_name, bool clockwise);
 	void undo();
+	void redo();
 };
 
 IcosamateDrawing& icd();

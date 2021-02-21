@@ -72,7 +72,8 @@ void GLWindowInput(const GLWindow *window)
 	if (InputIsKeyPressed('R'))
 		icd().inverse();
 
-	bool clockwise = !InputIsKeyDown(VK_SHIFT);
+	bool shift = InputIsKeyDown(VK_SHIFT);
+	bool clockwise = !shift;
 	bool ctrl = InputIsKeyDown(VK_CONTROL);
 	bool alt = InputIsKeyDown(VK_MENU);
 	if (!alt)
@@ -103,7 +104,12 @@ void GLWindowInput(const GLWindow *window)
 		}
 	}
 	if (ctrl && InputIsKeyPressed('Z'))
-		icd().undo();
+	{	
+		if (shift)
+			icd().redo();
+		else
+			icd().undo();
+	}
 	if (ctrl && InputIsKeyPressed('S'))
 		library().save(icd());
 
