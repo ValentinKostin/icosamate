@@ -183,58 +183,68 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		Args args = get_args(argc, argv);
-		std::string command;
-		if (args.count("command") > 0)
-			command = args.at("command");
-
-		if (command == "test")
-			test(log);
-		else if (command == "explore")
+		if (argc <= 1)
 		{
-			if (args.count("actions") > 0)
+			ic_scramble("");
+			return 0;
+		}
+		
+		if (argc == 2)
+		{
+			auto s = std::string(argv[1]);
+			if (s.find('=') == std::string::npos && s.size() > 3 && s.substr(s.size() - 4) == ".png")
 			{
-				IcosamateExplorer ex(log);
-				size_t n = define_if_exist<size_t>(args, "n");
-				ex.actions(IcosamateInSpace::from_str(args.at("actions")), n);
-			}
-			else if (args.count("tree") > 0)
-			{
-				IcosamateExplorer ex(log);
-
-				bool with_solving = args.count("with_solving") == 0 || args.at("with_solving") != "0";
-				ex.set_with_solving(with_solving);
-				bool with_period = args.count("with_period") == 0 || args.at("with_period") != "0";
-				ex.set_with_period(with_period);
-				bool with_mults = args.count("with_mults") == 0 || args.at("with_mults") != "0";
-				ex.set_with_mults(with_mults);
-
-				size_t n = std::stoll(args.at("tree"));
-				bool add_cooms = args.count("add_commutators") > 0 && args.at("add_commutators") == "1";
-
-				ex.tree(n, add_cooms);
-			}
-			else if (args.count("type") > 0)
-			{
-				if (args.at("type") == "near_axis")
-					explore_near_axis(log);
+				raise("Недописано!");
+				return -9;
 			}
 		}
-		else if (command == "scramble" || command.empty())
+
+		Args args = get_args(argc, argv);
+
+		if (args.count("test") > 0)
+			test(log);
+		else if (args.count("actions_info") > 0)
+		{
+			IcosamateExplorer ex(log);
+			size_t n = define_if_exist<size_t>(args, "n");
+			ex.actions(IcosamateInSpace::from_str(args.at("actions_info")), n);
+		}
+		else if (args.count("tree") > 0)
+		{
+			IcosamateExplorer ex(log);
+
+			bool with_solving = args.count("with_solving") == 0 || args.at("with_solving") != "0";
+			ex.set_with_solving(with_solving);
+			bool with_period = args.count("with_period") == 0 || args.at("with_period") != "0";
+			ex.set_with_period(with_period);
+			bool with_mults = args.count("with_mults") == 0 || args.at("with_mults") != "0";
+			ex.set_with_mults(with_mults);
+
+			size_t n = std::stoll(args.at("tree"));
+			bool add_cooms = args.count("add_commutators") > 0 && args.at("add_commutators") == "1";
+
+			ex.tree(n, add_cooms);
+		}
+		else if (args.count("special_info") > 0)
+		{
+			if (args.at("special_info") == "near_axis")
+				explore_near_axis(log);
+		}
+		else if (args.count("scramble")>0)
 		{
 			std::string turning_algorithm = define_if_exist<std::string>(args, "scramble");
 			ic_scramble(turning_algorithm);
 		}
-		else if (command == "fill_library")
+		else if (args.count("fill_library_from_file")>0)
 		{
-			std::string fname = args.at("file_name");
+			std::string fname = args.at("fill_library_from_file");
 			size_t max_alg_len = define_if_exist<size_t>(args, "max_alg_len");
 			std::string string_diff = define_if_exist<std::string>(args, "string_diff");
 			std::string subdir = define_if_exist<std::string>(args, "subdir");
 			save_in_library(fname, max_alg_len, string_diff, library(), subdir);
 		}
 		else
-			raise(command + " - bad command");
+			raise("Bad command line arguments");
 	}
 	catch (const std::string& err)
 	{
