@@ -14,3 +14,4 @@ public:
 Library& library();
 
 void save_in_library(const FnameStr& file_name, size_t max_alg_len, const std::string& string_diff, Library& l, std::string subdir = "");
+void open_library_file(const FnameStr& file_name);

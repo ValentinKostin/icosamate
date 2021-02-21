@@ -194,8 +194,8 @@ int main(int argc, char* argv[])
 			auto s = std::string(argv[1]);
 			if (s.find('=') == std::string::npos && s.size() > 3 && s.substr(s.size() - 4) == ".png")
 			{
-				raise("Недописано!");
-				return -9;
+				open_library_file(s);
+				return 0;
 			}
 		}
 

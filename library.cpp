@@ -7,6 +7,7 @@ namespace fs = std::filesystem;
 #include "draw/freeimage/FreeImage.h"
 #include "draw/GLWindow.h"
 #include "explorer.h"
+#include "draw/draw.h"
 
 Library& library()
 {
@@ -88,4 +89,17 @@ void save_in_library(const FnameStr& file_name, size_t max_alg_len, const std::s
 		d = diff_with_any_from_str(string_diff);
 	TurnAlgS algs = read_turn_algs_from_file(file_name, max_alg_len, string_diff.empty() ? nullptr : &d);
 	save_in_library(algs, l, subdir);
+}
+
+void open_library_file(const FnameStr& file_name)
+{
+	if (file_name.size() < 4 || file_name.substr(file_name.size() - 4) != ".png")
+		return;
+
+	size_t i = file_name.find_last_of("/\\", file_name.size() - 4);
+	if (i == std::string::npos)
+		return;
+
+	std::string scramble = file_name.substr(i + 1, file_name.size() - i - 5);
+	ic_scramble(scramble);
 }
