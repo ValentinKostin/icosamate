@@ -39,7 +39,7 @@ TurnAlg remove_mults(const TurnAlg& s)
 	std::string r = beg;
 	for (size_t i = 0; i < n; i++)
 		r += sub;
-	if (bm + 1 < s.size())
+	if (bm < s.size())
 		r += s.substr(bm);
 
 	return remove_mults(r);
