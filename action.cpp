@@ -125,6 +125,26 @@ ActionS IcosamateInSpace::rotate(const ActionS& acts, AxisId axis_id, bool clock
 	return r;
 }
 
+ActionS IcosamateInSpace::center_symmetry(const ActionS& acts)
+{
+	std::map<AxisId, AxisId> rmap;
+	const Axes& aa = axes();
+	for (AxisId axis_id = 0; axis_id < aa.count(); axis_id++)
+		rmap.insert({ axis_id, aa.axis(axis_id).opposite_id_ });
+
+	ActionS r;
+	r.reserve(acts.size());
+	for (const Action& a : acts)
+	{
+		AxisId ax_id = action_axis(a);
+		AxisId refl_ax_id = rmap.at(ax_id);
+		Action ra = change_axis(a, refl_ax_id);
+		r.push_back(ra);
+	}
+	return r;
+}
+
+
 TurnAlg IcosamateInSpace::to_str(const ActionS& acts)
 {
 	const Axes& aa = axes();

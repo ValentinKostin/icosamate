@@ -71,6 +71,8 @@ void GLWindowInput(const GLWindow *window)
 		icd().set_arrows_visible(ArrowsType::Centers, !icd().is_arrows_visible(ArrowsType::Centers));
 	if (InputIsKeyPressed('R'))
 		icd().inverse();
+	if (InputIsKeyPressed('Y'))
+		icd().center_symmetry();
 
 	bool shift = InputIsKeyDown(VK_SHIFT);
 	bool clockwise = !shift;

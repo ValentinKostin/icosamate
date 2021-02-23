@@ -603,6 +603,17 @@ void IcosamateDrawing::rotate(char ax_name, bool clockwise)
 	set_icosomate(ic);
 }
 
+void IcosamateDrawing::center_symmetry()
+{
+	TurnAlg ta = ::center_symmetry(turnig_algorithm_);
+	undo_.push_back(turnig_algorithm_);
+	redo_.clear();
+	set_turnig_algorithm(ta);
+	IcosamateInSpace ic;
+	ic.actions(IcosamateInSpace::from_str(ta));
+	set_icosomate(ic);
+}
+
 void IcosamateDrawing::set_rotation_animation(bool r)
 {
 	rotation_animation_ = r; 
