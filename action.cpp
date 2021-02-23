@@ -139,7 +139,7 @@ ActionS IcosamateInSpace::center_symmetry(const ActionS& acts)
 		AxisId ax_id = action_axis(a);
 		AxisId refl_ax_id = rmap.at(ax_id);
 		Action ra = change_axis(a, refl_ax_id);
-		r.push_back(ra);
+		r.push_back(inverse(ra));
 	}
 	return r;
 }
