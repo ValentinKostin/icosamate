@@ -261,3 +261,59 @@ TurnAlg reflect(const TurnAlg& s, char ax_1, char ax_2)
 	return r;
 }
 
+
+TurnAlg simple_rotate(const TurnAlg& s, char ax, bool clockwise)
+{
+	const Axes& aa = axes();
+	AxisId ax_id = aa.get_axis(ax);
+
+	typedef IcosamateInSpace I;
+	ActionS acts = I::from_str(s);
+	ActionS refl_acts = I::rotate(acts, ax_id, clockwise);
+	return I::to_str(refl_acts);
+}
+
+TurnAlg mult_rotate(const TurnAlg& s, char ax, bool clockwise)
+{
+	check(s[0] == '(');
+	auto i = s.find_last_of('x');
+	check(i != std::string::npos);
+	check(i > 1 && s[i - 1] == ')');
+	for (size_t k = i + 1; k < s.size(); ++k)
+		check(is_digit(s[k]));
+
+	TurnAlg r;
+	r += s[0] + simple_rotate(s.substr(1, i - 2), ax, clockwise) + s.substr(i - 1);
+	return r;
+}
+
+TurnAlg rotate(const TurnAlg& s, char ax, bool clockwise)
+{
+	std::vector<MultAlg> mult_algs = define_mult_algs(s);
+	size_t ma_n = mult_algs.size();
+
+	TurnAlg r;
+	for (size_t i = 0; i < mult_algs.size(); ++i)
+	{
+		size_t b = i == 0 ? 0 : mult_algs[i - 1].beg_ + mult_algs[i - 1].size_;
+		TurnAlg sa = s.substr(b, mult_algs[i].beg_ - b);
+		if (!sa.empty())
+		{
+			sa = simple_rotate(sa, ax, clockwise);
+			r.insert(r.end(), sa.begin(), sa.end());
+		}
+		TurnAlg ma = s.substr(mult_algs[i].beg_, mult_algs[i].size_);
+		ma = mult_rotate(ma, ax, clockwise);
+		r.insert(r.end(), ma.begin(), ma.end());
+	}
+	size_t b = mult_algs.empty() ? 0 : mult_algs[ma_n - 1].beg_ + mult_algs[ma_n - 1].size_;
+	if (b < s.size())
+	{
+		TurnAlg sa = s.substr(b);
+		sa = simple_rotate(sa, ax, clockwise);
+		r.insert(r.end(), sa.begin(), sa.end());
+	}
+
+	return r;
+}
+

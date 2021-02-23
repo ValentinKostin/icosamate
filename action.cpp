@@ -99,6 +99,32 @@ ActionS IcosamateInSpace::reflect(const ActionS& acts, AxisId axis_id_1, AxisId 
 	return r;
 }
 
+// поворот "всего алгоритма" вокруг axis_id
+ActionS IcosamateInSpace::rotate(const ActionS& acts, AxisId axis_id, bool clockwise)
+{
+	std::map<AxisId, AxisId> rmap;
+	const Axes& aa = axes();
+	const Axis& a = aa.axis(axis_id);
+	rmap.insert({ axis_id, axis_id });
+	for (size_t i = 0; i < 5; i++)
+		rmap.insert({ a.near_axes_[i], a.near_axes_[(i + (clockwise ? 1 : 4)) % 5] });
+	const Axis& a_op = aa.axis(a.opposite_id_);
+	rmap.insert({ a.opposite_id_, a.opposite_id_ });
+	for (size_t i = 0; i < 5; i++)
+		rmap.insert({ a_op.near_axes_[i], a_op.near_axes_[(i + (clockwise ? 4 : 1)) % 5] });
+
+	ActionS r;
+	r.reserve(acts.size());
+	for (const Action& a : acts)
+	{
+		AxisId ax_id = action_axis(a);
+		AxisId refl_ax_id = rmap.at(ax_id);
+		Action ra = change_axis(a, refl_ax_id);
+		r.push_back(ra);
+	}
+	return r;
+}
+
 TurnAlg IcosamateInSpace::to_str(const ActionS& acts)
 {
 	const Axes& aa = axes();

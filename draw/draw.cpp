@@ -89,18 +89,30 @@ void GLWindowInput(const GLWindow *window)
 	}
 	else
 	{
-		for (char c = 'A'; c <= 'L'; ++c)
+		if (!ctrl)
 		{
-			if (InputIsKeyPressed(c))
+			for (char c = 'A'; c <= 'L'; ++c)
 			{
-				if (g_last_alt_pressed != 0)
+				if (InputIsKeyPressed(c))
 				{
-					icd().reflect(g_last_alt_pressed, c);
-					g_last_alt_pressed = 0;
+					if (g_last_alt_pressed != 0)
+					{
+						icd().reflect(g_last_alt_pressed, c);
+						g_last_alt_pressed = 0;
+					}
+					else
+						g_last_alt_pressed = c;
 				}
-				else
-					g_last_alt_pressed = c;
 			}
+		}
+		else
+		{
+			for (char c = 'A'; c <= 'L'; ++c)
+			{
+				if (InputIsKeyPressed(c))
+					icd().rotate(c, clockwise);
+			}
+			g_last_alt_pressed = 0;
 		}
 	}
 	if (ctrl && InputIsKeyPressed('Z'))

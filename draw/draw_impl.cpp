@@ -592,6 +592,17 @@ void IcosamateDrawing::reflect(char ax_1, char ax_2)
 	set_icosomate(ic);
 }
 
+void IcosamateDrawing::rotate(char ax_name, bool clockwise)
+{
+	TurnAlg ta = ::rotate(turnig_algorithm_, ax_name, clockwise);
+	undo_.push_back(turnig_algorithm_);
+	redo_.clear();
+	set_turnig_algorithm(ta);
+	IcosamateInSpace ic;
+	ic.actions(IcosamateInSpace::from_str(ta));
+	set_icosomate(ic);
+}
+
 void IcosamateDrawing::set_rotation_animation(bool r)
 {
 	rotation_animation_ = r; 
