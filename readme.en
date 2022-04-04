@@ -1,0 +1,108 @@
+
+The software is useful when one is solving icosamate. 
+Icosamate is an icosahedron-shaped twisty puzzle, 
+where each face consists of four triangles and where we can turn half of the puzzle around of vertex's axis.  
+The software can find simple algorithms which one can use in one's solving. 
+The application can visualize algorithms and has an interactive user interface where one can just turn the puzzle.
+
+The application employs Gelatin Brain notation.
+
+
+	Keyboard control in the icosamate window
+	----------------------------------------
+
+Arrows keys:
+Left, Right - turn view around the vertical screen axis;
+Up, Down - turn view around the horizontal screen axis;
+Shift + arrow - turn view around the axis which is perpendicular to the screen.
+
+Space - permanent view rotation in the last arrow-defined direction.
+
+A,B,C,...,L  - half of icosamate clockwise turn around the pointed axis, 
+if these keys one uses with Shift than the turn is contrary clockwise.
+
+R - the inverse algorithm.
+Y - the centrally symmetric reflection of the algorithm.
+
+Alt + an axis key, after (without releasing Alt) another axis key, 
+and these axes have to be neighbors (for example K, D) - 
+the reflection of the algorithm about the plane defined these axes.
+
+Alt + Ctrl + A,B,C,...,L  - the clockwise turn of the algorithm around the pointed axis,
+if Shift is down in addition - this turn is contrary clockwise.
+
+Ctrl + Z - undo.
+Shift + Ctrl + Z - redo.
+
+T - center elements movement arrows on/off.
+W - vertex elements movement and rotation arrows on/off.
+Q - axes on/off.
+
+F2 - switching to light or dark theme.
+                             
+Ctrl + S - save current image to png-file named the algorithm, 
+the saving goes to icl subdirectory (the algorithm library).
+
+
+	Command line options and application modes
+	------------------------------------------
+
+Run without options - the icosamate window.
+
+Option <full path to png-file from algorithm library> - open the icosamate window with the scramble from the file.
+
+Option scramble=<algorithm> (for example (BE'B'E)x4 ) - open the icosamate window with the scramble.
+
+! Scramble may contain turns around axes (if an axis is with the apostrophe sign then turn is contrary clockwise), 
+whole icosamate rotations around axes (for example, MB)
+and round braces with "x" sign and a number (it means once repeats the algorithm in the braces pointed times).
+
+Option scramble_info=<algorithm> - the information about the algorithm and its repetitions will be added to the log file.
+The information includes:
+ - the period (p),
+ - three values (d) that show how far our icosamate is from the solved icosamate: 
+	count of vertex elements in the wrong places,
+	count of wrong-oriented vertex elements in the right places,
+	count of face elements in the wrong places,
+ - also the same period (sp) and three values (sd) if the icosamate is not considered "strictly linked" to the axes; 
+
+Option tree=<algorithm length> with not obligatory suboptions - count and save to log-file ALL available algorithms 
+with the length and information about them (see option "scramble info"). Shall not use length more than 7 or 8 because the application working time will be too big.
+Also, information about the derived algorithms is saved in the log file. All algorithms start from B-turn. 
+Symmetric variations of algorithms are cleaned from the log file. Available suboptions:
+ - with_mults=1 - add all repetitions of the algorihtms,
+ - add_commutators=1 - add commutators of the algorithms,
+ - with_period=1 - add period information about all objects,
+ - with_solving=1 - count information if the icosamate is not considered "strictly linked" to the axes.
+For example, see file tree.bat.
+
+Option fill_library_from_file=<log file name> - create images in the library for all algorithms in log-file.
+Available suboptions:
+ - max_alg_len=<maximal algorithm length>
+ - string_diff=<three values (see option "scramble info")>. Once can set "x" sign instead of number, for example, 
+string_diff=0,2,x means that all algorithms have not to replace vertex elements, have to rotate exactly two from them
+and can replace any count of face elements.
+ - subdir=<subdirectory of library>.
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
